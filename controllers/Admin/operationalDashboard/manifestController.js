@@ -72,6 +72,10 @@ module.exports = {
                 console.log(err);
             } else if (rows.length == 0 ){
                console.log("no results found");
+               res.json({
+                status: 0,
+                data:"No data found"
+            })
             } else {
                 console.log("results found");
                 res.json({

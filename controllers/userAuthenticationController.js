@@ -61,6 +61,7 @@ module.exports = {
                 res.json({
                     id:results[0].id,
                     position:results[0].position,
+                    name:results[0].firstname + ' ' + results[0].lastname, 
                     status:true,
                     message:'successfully authenticated'
                 })

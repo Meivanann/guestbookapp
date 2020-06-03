@@ -93,10 +93,12 @@ module.exports = {
                    });
             } else {
 
+                console.log(rows);
                 //loop in consignments
                 Object.keys(rows).forEach(function(key) {
                     var row = rows[key];
 
+                    console.log(row);
                     //region fetch based upon destination code
                     let regionQuery = "SELECT * FROM region WHERE destination_code = ? ;"
                     connection.query(regionQuery,[row.destination_code], (regerr, regrows) => {

@@ -7,6 +7,14 @@ var connection = mysql.createConnection({
     database : 'psa',
     multipleStatements : true
   });
+
+// var connection = mysql.createConnection({
+//       host     : 'localhost',
+//       user     : 'root',
+//       password : 'Srichan@1502',
+//       database : 'psa',
+//       multipleStatements : true
+//     });
   connection.connect(function(err){
     if(!err) {
         console.log("Database is connected");
