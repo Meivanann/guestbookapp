@@ -211,7 +211,42 @@ module.exports = {
                     })
                 }
             })
+    },
+    destroy: (req,res) => {
+        let shipper_code, shipper_name;
+        let query = "SELECT * FROM shipping where id = ?;"
+        let shipping_id = req.params.shipping_id;
+        connection.query(query,shipping_id, (err,rows) => {
+            if(err){
+                res.json({
+                    status:false,
+                    message: 'there are some error with query'
+                })
+            } else if (rows.length == 0 ){
+                res.json({
+                    status: 2,
+                    message:' Data Doest exist'
+                })
+            } else {
+                shipper_code = rows[0].shipper_code;
+                shipper_name = rows[0].shipper_name;
 
+                let delete_query = "delete from shipping where id=?;"
+                connection.query(delete_query, shipping_id, (err,rows) => {
+                    if(err){
+                        res.json({
+                            status:false,
+                            message: 'there are some errors with query'
+                        })
+                    } else {
+                        res.json({
+                            status: 1,
+                            message: 'Shipping Record Deleted Successfully'
+                        })
+                    }
+                })
+            }
+        })
     }
 }
 

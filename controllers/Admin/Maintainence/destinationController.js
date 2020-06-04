@@ -189,5 +189,71 @@ module.exports = {
             status:true,
             message:'Destination  updated sucessfully'
         })
+    },
+    destroy: (req,res) => {
+        let destination_code, destination_name;
+        let query = "SELECT * FROM destination where id = ?;"
+        let destination_id = req.params.destination_id;
+        connection.query(query,destination_id, (err,rows) => {
+            if(err){
+                res.json({
+                    status:false,
+                    message: 'there are some error with query'
+                })
+            } else if (rows.length == 0 ){
+                res.json({
+                    status: 2,
+                    message:' Data Doest exist'
+                })
+            } else {
+                destination_code = rows[0].destination_code;
+                destination_name = rows[0].destination_name;
+
+                let delete_query = "delete from destination where id=?;"
+                connection.query(delete_query, destination_id, (err,rows) => {
+                    if(err){
+                        res.json({
+                            status:false,
+                            message: 'there are some errors with query'
+                        })
+                    } else {
+                        //deleting the destination record in region table
+                        let region_delete_query = "delete from region where destination_code=?;"
+                        connection.query(delete_query, destination_code, (err,rows) => {
+                            if(err){
+                                res.json({
+                                    status:false,
+                                    message: 'there arex some errors with query'
+                                })
+                            } else {
+                                res.json({
+                                    status: 1,
+                                    message: 'Destination Record Deleted Successfully'
+                                })
+                            }
+                        })
+                        //deleting the record in destination record in charges table
+                        let charge_delete_query = "delete from charges where destination_code=?;"
+                        connection.query(delete_query, destination_code, (err,rows) => {
+                            if(err){
+                                res.json({
+                                    status:false,
+                                    message: 'there are some errors with query'
+                                })
+                            } else {
+                                res.json({
+                                    status: 1,
+                                    message: 'Destination Record Deleted Successfully'
+                                })
+                            }
+                        })
+                        res.json({
+                            status: 1,
+                            message: 'Destination Record Deleted Successfully'
+                        })
+                    }
+                })
+            }
+        })
     }
 }

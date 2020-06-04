@@ -20,6 +20,9 @@ module.exports = app => {
     var outforDelivery = require('./../controllers/Admin/operationalDashboard/outForDeliveryController');
     var manifest = require('./../controllers/Admin/operationalDashboard/manifestController');
     var destinationController = require('./../controllers/Admin/Maintainence/destinationController');
+    var receiverController = require('./../controllers/Admin/Maintainence/receiverController');
+    var chargesController = require('./../controllers/Admin/Maintainence/chargesController');
+    var taxController =require('./../controllers/Admin/Maintainence/taxController');
 
     app.get("/", (req, res) => {
         res.json({ message: "Welcome to PSA Application ." });
@@ -61,17 +64,31 @@ module.exports = app => {
     app.get('/api/:id/outfordeliverycompleted', outforDelivery.ofdCompleted);
     app.post('/api/:id/updateoutfordelivery',outforDelivery.upload);
 
-    //maintaninence - Add Shipper
-    app.post('/api/:id/addShipper', shippingController.store);
-    app.post('/api/:id/updateShipper', shippingController.update);
-
     //manifest
     app.post('/api/:id/driverofd', manifest.driverofd);
     app.post('/api/:id/manifestsearch', manifest.manifestSearch);
 
+    //maintaninence - Add Shipper
+    app.post('/api/:id/addShipper', shippingController.store);
+    app.post('/api/:id/updateShipper', shippingController.update);
+    app.get('/api/:id/deleteShipper/:shipping_id', shippingController.destroy);
 
     //maintainence - Destination
     app.get('/api/:id/getdestination', destinationController.index);
     app.post('/api/:id/adddestination', destinationController.store);
     app.post('/api/:id/updatedestination', destinationController.update);
+    app.get('/api/:id/deletedestination/:destination_id', destinationController.destroy);
+
+    //maintanence - Receiver
+    app.get('/api/:id/getreceiver', receiverController.index);
+    app.post('/api/:id/addreceiver', receiverController.store);
+    app.post('/api/:id/updatereceiver', receiverController.update);
+    app.get('/api/:id/deletereceiver/:receiver_id', receiverController.destroy);
+
+    // Maintaninence - charges
+    app.get('/api/:id/getCharges/:shipper_code', chargesController.search);
+
+    //Maintainence - tax 
+    app.get('/api/:id/gettax', taxController.index);
+    app.post('/api/:id/updatetax', taxController.update);
 }
