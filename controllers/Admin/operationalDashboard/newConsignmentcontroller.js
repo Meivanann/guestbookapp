@@ -23,7 +23,7 @@ module.exports = {
 
     getDestinationDetails: (req,res) => {
         let shipper_code = req.params.shipper_code;
-        let query = "select distinct(c.destination_code) as destination_code, d.destination_name from charges c, destination d where shipper_code = ? and (carton_rate != '0.00' or m3_rate != '0.00' or p_rate != '0.00' or s_rate != '0.00' or m_rate != '0.00' or b_rate != '0.00' or xl_rate != '0.00' or pkt_rate != '0.00') and c.destination_code = d.destination_code order by destination_code;"
+        let query = "select distinct(c.destination_code) as destination_code, d.destination_name from charges c, destination d where shipper_code = ? and (pkt_rate != '0.00' or carton_rate != '0.00' or pallet_rate != '0.00' or  s_rate != '0.00' or m_rate != '0.00' or l_rate != '0.00' or xl_rate != '0.00' or m3_min_rate != '0.00' or m3_rate != '0.00' or weight_min_rate != '0.00' or weight_rate != '0.00') and c.destination_code = d.destination_code order by destination_code;"
        connection.query(query, shipper_code, (err,rows) => {
             if(err){
                 console.log(err);
@@ -49,6 +49,10 @@ module.exports = {
                 console.log(err);
             } else if (rows.length == 0 ){
                console.log("no results found");
+               res.json({
+                status: 2,
+                message: "No data Found"
+            })
             } else {
                 console.log("results found");
                 res.json({
@@ -64,6 +68,8 @@ module.exports = {
         let region = req.body.region;
         let today = new Date();
         let status;
+
+        console.log(req.body);
 
         console.log(region);
         var tracking_data1 = {
@@ -137,7 +143,7 @@ module.exports = {
             "other_charges":req.body.other_charges,
             "other_amount":req.body.other_amount,
             "sub_amount":req.body.sub_amount,
-            "tax_amount":req.body.gst_amount,
+            "tax_amount":req.body.tax_amount,
             "total_amount":req.body.total_amount,
             "status":status,
             "remarks":req.body.remarks,

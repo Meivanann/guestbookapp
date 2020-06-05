@@ -130,6 +130,7 @@ module.exports = {
     update: (req,res) => {
         let today = new Date();
 
+        console.log(req.body);
         //updating destination table
         var destination_data = {
             'destination_code'      :  req.body.destination_code,
@@ -212,39 +213,24 @@ module.exports = {
                 let delete_query = "delete from destination where id=?;"
                 connection.query(delete_query, destination_id, (err,rows) => {
                     if(err){
-                        res.json({
-                            status:false,
-                            message: 'there are some errors with query'
-                        })
+                        console.log(" Error With destination Query");
                     } else {
                         //deleting the destination record in region table
                         let region_delete_query = "delete from region where destination_code=?;"
                         connection.query(delete_query, destination_code, (err,rows) => {
                             if(err){
-                                res.json({
-                                    status:false,
-                                    message: 'there arex some errors with query'
-                                })
+                                console.log(" Error With region Query");
                             } else {
-                                res.json({
-                                    status: 1,
-                                    message: 'Destination Record Deleted Successfully'
-                                })
+                               console.log(" Region deleted successfully");
                             }
                         })
                         //deleting the record in destination record in charges table
                         let charge_delete_query = "delete from charges where destination_code=?;"
                         connection.query(delete_query, destination_code, (err,rows) => {
                             if(err){
-                                res.json({
-                                    status:false,
-                                    message: 'there are some errors with query'
-                                })
+                                console.log(" Error With charge Query");
                             } else {
-                                res.json({
-                                    status: 1,
-                                    message: 'Destination Record Deleted Successfully'
-                                })
+                                console.log(" Destination deleted successfully");
                             }
                         })
                         res.json({

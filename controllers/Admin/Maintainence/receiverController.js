@@ -155,7 +155,7 @@ module.exports = {
                         })
                     } else {
                         res.json({
-                            status: 1,
+                            status: true,
                             message: 'Receiving Record Deleted Successfully'
                         })
                     }

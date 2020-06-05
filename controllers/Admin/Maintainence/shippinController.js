@@ -181,7 +181,7 @@ module.exports = {
                     //updating account data
                     let updatequery = "UPDATE shipper_acc SET ? where shipper_code = ?"
                     var account_data = {
-                        'shipper_name' : req.bofy.shipper_name
+                        'shipper_name' : req.body.shipper_name
                     }
                     let data1 = [account_data , req.body.shipper_code];
 
@@ -199,7 +199,7 @@ module.exports = {
                     }
                     connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
                         if (lgerr) {
-                        console.log(lgerr)
+                            console.log(lgerr)
                         }else{
                             console.log("log added successfully");
                         }
@@ -218,10 +218,7 @@ module.exports = {
         let shipping_id = req.params.shipping_id;
         connection.query(query,shipping_id, (err,rows) => {
             if(err){
-                res.json({
-                    status:false,
-                    message: 'there are some error with query'
-                })
+                console.log(err);
             } else if (rows.length == 0 ){
                 res.json({
                     status: 2,
@@ -232,12 +229,9 @@ module.exports = {
                 shipper_name = rows[0].shipper_name;
 
                 let delete_query = "delete from shipping where id=?;"
-                connection.query(delete_query, shipping_id, (err,rows) => {
-                    if(err){
-                        res.json({
-                            status:false,
-                            message: 'there are some errors with query'
-                        })
+                connection.query(delete_query, shipping_id, (errr,rows) => {
+                    if(errr){
+                       console.log(errr);
                     } else {
                         res.json({
                             status: 1,

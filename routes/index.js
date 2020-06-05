@@ -87,6 +87,7 @@ module.exports = app => {
 
     // Maintaninence - charges
     app.get('/api/:id/getCharges/:shipper_code', chargesController.search);
+    app.post('/api/:id/updateCharges', chargesController.update);
 
     //Maintainence - tax 
     app.get('/api/:id/gettax', taxController.index);
