@@ -2,7 +2,7 @@ var connection = require('../../../config');
 
 module.exports = {
     driverofd: (req,res) => {
-        let query = "select o.*,(c.carton_size + c.m3_size + c.p_size + c.s_size + c.m_size + c.b_size + c.xl_size + c.pkt_size + c.other_charges) as quantity FROM out_for_delivery o join consignment c on c.cn_no = o.cn_no where o.driver_name = ? and date(o.datetime) BETWEEN ? and ? and o.status = 'In-progress' order by o.receiver_name"
+        let query = "select o.*,(c.carton_size + c.m3_size + c.m3_min_size + c.weight_min_size + c.weight_size + c.pallet_size + c.s_size + c.m_size + c.l_size + c.xl_size + c.pkt_size + c.other_charges) as quantity FROM out_for_delivery o join consignment c on c.cn_no = o.cn_no where o.driver_name = ? and date(o.datetime) BETWEEN ? and ? and o.status = 'In-progress' order by o.receiver_name"
         let data = [req.body.driver, req.body.start_date, req.body.end_date];
        connection.query(query,data, (err,rows) => {
             if(err){
