@@ -24,6 +24,9 @@ module.exports = app => {
     var chargesController = require('./../controllers/Admin/Maintainence/chargesController');
     var taxController =require('./../controllers/Admin/Maintainence/taxController');
 
+    //drivercontroller declaration
+    var driverConsignmentController = require('./../controllers/Driver/ConsignmentController');
+
     app.get("/", (req, res) => {
         res.json({ message: "Welcome to PSA Application ." });
     });
@@ -92,4 +95,10 @@ module.exports = app => {
     //Maintainence - tax 
     app.get('/api/:id/gettax', taxController.index);
     app.post('/api/:id/updatetax', taxController.update);
+
+
+    //driver - routes
+    // Consignemnt
+    app.get('/api/:id/getdriverofd', driverConsignmentController.index);
+    app.get('/api/:id/getdriverofdcompleted', driverConsignmentController.ofdCompleted);
 }

@@ -13,7 +13,7 @@ module.exports = {
                 })
             } else if (rows.length == 0 ){
                 res.json({
-                    status: -1,
+                    status: 2,
                     message:'Shipper code not found. Please enter a valid shipper code.'
                 })
             } else {
@@ -38,11 +38,11 @@ module.exports = {
     },
     update: (req,res) => {
         console.log(req.body.update_charges);
-        let arr = req.body.update_charges
+        // let arr = req.body.update_charges
         
-        arr.forEach(element => {
-            console.log(element);
-        });
+        // arr.forEach(element => {
+        //     console.log(element);
+        // });
         res.json({
             status:false,
             message: 'there are some error with query'
