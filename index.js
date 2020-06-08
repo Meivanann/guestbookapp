@@ -40,5 +40,5 @@ require("./routes/index.js")(app);
 
 
 app.listen(PORT, () => {
-    console.log('Server started on the port 8012')
+    console.log('Server started on the port 8011')
 });
