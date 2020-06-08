@@ -44,6 +44,7 @@ module.exports = app => {
     app.post('/api/:id/user-activation/destroy', userApprovalController.destroy);
 
     //dashboard - Consignment Hq
+    app.get('/api/:id/getallconsignments', consignmentController.getAllConsignments);
     app.get('/api/:id/getconsignmenthq', consignmentController.getConsignmentHq);
     app.get('/api/:id/getconsignmentnorth', consignmentController.getConsignmentNorth);
     app.get('/api/:id/getconsignmentsouth', consignmentController.getConsignmentSouth);
@@ -99,6 +100,7 @@ module.exports = app => {
 
     //driver - routes
     // Consignemnt
+    app.get('/api/:id/getdrivers', driverConsignmentController.getDriverDetails);
     app.get('/api/:id/getdriverofd', driverConsignmentController.index);
     app.get('/api/:id/getdriverofdcompleted', driverConsignmentController.ofdCompleted);
 }

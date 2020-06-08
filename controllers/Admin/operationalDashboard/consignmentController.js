@@ -2,6 +2,31 @@ var connection = require('./../../../config');
 
 module.exports = {
 
+    getAllConsignments: (req,res) => { 
+        let query = "SELECT cn_no FROM consignment;"
+
+        connection.query(query, (err,rows) => {
+            if(err){
+                res.json({
+                    status:false,
+                    message:'there are some error with query'
+                    })
+            } else if (rows.length == 0 ){
+                res.json({
+                    status:false,
+                    message:"No results found"
+                   });
+            } else {
+                res.json({
+                    status: true,
+                    data:rows
+                })
+            }
+            
+        })
+    },
+
+
     getConsignmentHq: (req,res) => { 
         let query = "SELECT * FROM consignment WHERE region = 'HQ' AND status='created' ORDER BY cn_datetime DESC; SELECT * FROM users WHERE position='driver';"
 
