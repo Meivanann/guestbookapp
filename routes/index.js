@@ -37,6 +37,7 @@ module.exports = app => {
 
     //dashboard routes
     app.get('/api/:id/operationaldashboard', operationalDashboardController.index);
+    app.get('/api/:id/getpodbill', operationalDashboardController.getPodBill);
 
     //userapproval
     app.get('/api/:id/user-activation', userApprovalController.index);

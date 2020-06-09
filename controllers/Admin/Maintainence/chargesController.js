@@ -26,7 +26,9 @@ module.exports = {
                     } else {
                         res.json({
                             status: 1,
-                            data:charge_rows
+                            data:charge_rows,
+                            shipper_code:shipper_code,
+                            shipper_name: rows[0].shipper_name
                         })
                     }
                 })

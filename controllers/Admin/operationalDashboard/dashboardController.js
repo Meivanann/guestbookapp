@@ -21,6 +21,26 @@ module.exports = {
         })
        
     },
+
+    getPodBill: (req,res) => {
+        console.log(req.params.id);
+        let query = "SELECT * FROM consignment where is_billed = 0 and status = 'Close';"
+       connection.query(query, (err,rows) => {
+            if(err){
+                console.log(err);
+            } else if (rows.length == 0 ){
+               console.log("no results found");
+            } else {
+                console.log("results found");
+                res.json({
+                    status: 1,
+                    data:rows
+                })
+            }
+            
+        })
+       
+    },
 }
 
 
