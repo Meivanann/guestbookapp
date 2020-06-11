@@ -23,7 +23,7 @@ module.exports = {
 
     getDestinationDetails: (req,res) => {
         let shipper_code = req.params.shipper_code;
-        let query = "select distinct(c.destination_code) as destination_code, d.destination_name from charges c, destination d where shipper_code = ? and (pkt_rate != '0.00' or carton_rate != '0.00' or pallet_rate != '0.00' or  s_rate != '0.00' or m_rate != '0.00' or l_rate != '0.00' or xl_rate != '0.00' or m3_min_rate != '0.00' or m3_rate != '0.00' or weight_min_rate != '0.00' or weight_rate != '0.00') and c.destination_code = d.destination_code order by destination_code;"
+        let query = "select distinct(c.destination_code) as destination_code, d.destination_name from charges c, destination d where shipper_code = ? and (pkt_rate != '0.00' or carton_rate != '0.00' or pallet_rate != '0.00' or p_rate != '0.00' or  s_rate != '0.00' or m_rate != '0.00' or l_rate != '0.00' or xl_rate != '0.00' or m3_min_rate != '0.00' or m3_rate != '0.00' or weight_min_rate != '0.00' or weight_rate != '0.00') and c.destination_code = d.destination_code order by destination_code;"
        connection.query(query, shipper_code, (err,rows) => {
             if(err){
                 console.log(err);
@@ -102,7 +102,7 @@ module.exports = {
                 "datetime": today
             }
         }
-        let quantity =  parseFloat(req.body.pkt_size) + parseFloat(req.body.carton_size) + parseFloat(req.body.pallet_size) + parseFloat(req.body.s_size) + parseFloat(req.body.m_size) + parseFloat(req.body.l_size) + parseFloat(req.body.xl_size) + parseFloat(req.body.m3_min_size) + parseFloat(req.body.m3_size) + parseFloat(req.body.weight_min_size) +   parseFloat(req.body.weight_size) + parseFloat(req.body.other_charges);
+        let quantity =  parseFloat(req.body.pkt_size) + parseFloat(req.body.carton_size) + parseFloat(req.body.pallet_size) + parseFloat(req.body.p_size)  + parseFloat(req.body.s_size) + parseFloat(req.body.m_size) + parseFloat(req.body.l_size) + parseFloat(req.body.xl_size) + parseFloat(req.body.m3_min_size) + parseFloat(req.body.m3_size) + parseFloat(req.body.weight_min_size) +   parseFloat(req.body.weight_size) + parseFloat(req.body.other_charges);
 
         console.log(quantity);
 
@@ -124,6 +124,8 @@ module.exports = {
             "carton_rate":req.body.carton_rate,
             "pallet_size":req.body.pallet_size,
             "pallet_rate":req.body.pallet_rate,
+            "p_size":req.body.p_size,
+            "p_rate":req.body.p_rate,
             "s_size":req.body.s_size,
             "s_rate":req.body.s_rate,
             "m_size":req.body.m_size,
@@ -253,6 +255,8 @@ module.exports = {
                         "carton_rate":req.body.carton_rate,
                         "pallet_size":req.body.pallet_size,
                         "pallet_rate":req.body.pallet_rate,
+                        "p_size":req.body.p_size,
+                        "p_rate":req.body.p_rate,
                         "s_size":req.body.s_size,
                         "s_rate":req.body.s_rate,
                         "m_size":req.body.m_size,
@@ -297,6 +301,8 @@ module.exports = {
                             "carton_rate":req.body.carton_rate,
                             "pallet_size":req.body.pallet_size,
                             "pallet_rate":req.body.pallet_rate,
+                            "p_size":req.body.p_size,
+                            "p_rate":req.body.p_rate,
                             "s_size":req.body.s_size,
                             "s_rate":req.body.s_rate,
                             "m_size":req.body.m_size,
@@ -357,6 +363,8 @@ module.exports = {
                             "carton_rate":req.body.carton_rate,
                             "pallet_size":req.body.pallet_size,
                             "pallet_rate":req.body.pallet_rate,
+                            "p_size":req.body.p_size,
+                            "p_rate":req.body.p_rate,
                             "s_size":req.body.s_size,
                             "s_rate":req.body.s_rate,
                             "m_size":req.body.m_size,

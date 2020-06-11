@@ -58,7 +58,7 @@ module.exports = {
                     'email'           :  req.body.email,
                     'credit_limit'    :  req.body.credit_limit,
                     'term_day'        :  req.body.term_day,
-                    'invoice_format'  :  req.body.invoice_format,
+                    // 'invoice_format'  :  req.body.invoice_format,
                     'deleted_by'      :  ''
                 }
 
@@ -160,7 +160,7 @@ module.exports = {
             'email'           :  req.body.email,
             'credit_limit'    :  req.body.credit_limit,
             'term_day'        :  req.body.term_day,
-            'invoice_format'  :  req.body.invoice_format,
+            // 'invoice_format'  :  req.body.invoice_format,
             'deleted_by'      :  '',
             'changed_on'      :  today,
             'changed_by'      :  req.params.id   

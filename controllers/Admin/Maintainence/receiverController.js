@@ -42,8 +42,18 @@ module.exports = {
                 
                 //adding a record in destination table
                 var receiver_data = {
-                    'receiver_code'    :  req.body.receiver_code,
-                    'receiver_name'    :  req.body.receiver_name,
+                    'receiver_code'       :  req.body.receiver_code,
+                    'receiver_name'       :  req.body.receiver_name,
+                    'contact'             :  req.body.contact,
+                    'address1'            :  req.body.address1,
+                    'city'                :  req.body.city,
+                    'state'               :  req.body.state,
+                    'country'             :  req.body.country,
+                    'postcode'            :  req.body.postcode,
+                    'telephone'           :  req.body.telephone,
+                    'mobile'              :  req.body.mobile,
+                    'fax'                 :  req.body.fax,
+                    'email'               :  req.body.email,
                     'created_on'          :  today,
                     'created_by'          :  req.params.id,
                     'deleted_by'          :  '',
@@ -90,6 +100,16 @@ module.exports = {
         var receiver_data = {
             'receiver_code'         :  req.body.receiver_code,
             'receiver_name'         :  req.body.receiver_name,
+            'contact'               :  req.body.contact,
+            'address1'              :  req.body.address1,
+            'city'                  :  req.body.city,
+            'state'                 :  req.body.state,
+            'country'               :  req.body.country,
+            'postcode'              :  req.body.postcode,
+            'telephone'             :  req.body.telephone,
+            'mobile'                :  req.body.mobile,
+            'fax'                   :  req.body.fax,
+            'email'                 :  req.body.email,
             'changed_on'            :  today,
             'changed_by'            :  req.params.id,
         }

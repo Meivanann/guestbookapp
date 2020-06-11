@@ -19,7 +19,7 @@ module.exports = {
             } else {
 
                 //fetching data from charges table
-                let charge_query = "select B.id,A.destination_code, B.carton_rate, B.m3_rate, B.m3_min_rate, B.pallet_rate, B.s_rate, B.m_rate, B.l_rate, B.xl_rate, B.pkt_rate, B.weight_min_rate, B.weight_rate, B.shipper_code FROM destination A ,charges B where A.destination_code=B.destination_code AND B.shipper_code='BUNCHO' AND A.DELETED_BY='' ORDER BY A.destination_code"
+                let charge_query = "select B.id,A.destination_code, B.carton_rate, B.m3_rate, B.m3_min_rate, B.pallet_rate, B.p_rate, B.s_rate, B.m_rate, B.l_rate, B.xl_rate, B.pkt_rate, B.weight_min_rate, B.weight_rate, B.shipper_code FROM destination A ,charges B where A.destination_code=B.destination_code AND B.shipper_code='BUNCHO' AND A.DELETED_BY='' ORDER BY A.destination_code"
                 connection.query(charge_query, shipper_code, (charge_err,charge_rows) => {
                     if(err){
                       con
@@ -47,6 +47,7 @@ module.exports = {
                 "carton_rate"       :   element.carton_rate,
                 "pkt_rate"          :   element.pkt_rate,
                 "pallet_rate"       :   element.pallet_rate,
+                "p_rate"            :   element.p_rate,
                 "s_rate"            :   element.s_rate,
                 "m_rate"            :   element.m_rate,
                 "l_rate"            :   element.l_rate,
