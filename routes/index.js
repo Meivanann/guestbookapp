@@ -27,6 +27,9 @@ module.exports = app => {
     //drivercontroller declaration
     var driverConsignmentController = require('./../controllers/Driver/ConsignmentController');
 
+    //finance controllers declarations
+    var invoiceController = require('./../controllers/Admin/FinancialDashboard/invoiceController');
+
     app.get("/", (req, res) => {
         res.json({ message: "Welcome to PSA Application ." });
     });
@@ -104,4 +107,15 @@ module.exports = app => {
     app.get('/api/:id/getdrivers', driverConsignmentController.getDriverDetails);
     app.get('/api/:id/getdriverofd', driverConsignmentController.index);
     app.get('/api/:id/getdriverofdcompleted', driverConsignmentController.ofdCompleted);
+
+
+    // financial Dasboard
+
+    // Invoice
+    app.get('/api/:id/getallinvoices', invoiceController.getAllInvoices);
+    app.get('/api/:id/checkinvoice/:invoice_no', invoiceController.checkInvoice);
+    app.post('/api/:id/previewinvoice', invoiceController.previewInvoice);
+    app.post('/api/:id/generateinvoice', invoiceController.generateInvoice);
+    app.post('/api/:id/recordpayment', invoiceController.recordPayment);
+
 }
