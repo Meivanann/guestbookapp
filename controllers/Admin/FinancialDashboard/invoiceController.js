@@ -110,7 +110,8 @@ module.exports = {
     },
     
     generateInvoice: (req,res) =>{
-        let total_amount = 0, sub_amount = 0, tax_amount = 0, shipper_details;
+        let today = new Date();
+        let total_amount = 0, sub_amount = 0, tax_amount = 0, shipper_details, shipper_acc_details, acc_bal = 0;
         let start_date = req.body.start_date;
         let end_date = req.body.end_date;
         let shipper_code = req.body.shipper_code;
@@ -135,6 +136,19 @@ module.exports = {
                     var row = rows[key];
                     sub_amount = sub_amount + parseFloat(row.sub_amount);
                     tax_amount = tax_amount + parseFloat(row.tax_amount);
+
+                    var consignment_update_datas = {
+                        "is_billed"   :   1
+                    }
+                    let consignment_update_data = [consignment_update_datas ,row.cn_no];
+
+                    connection.query("UPDATE consignment SET ? where cn_no = ?",consignment_update_data, function (error, results, fields) {
+                        if (error) {
+                            console.log(error);
+                        }else{
+                            console.log("condignment updated Successfully")
+                        }
+                    });
                 });
 
                 total_amount = sub_amount + tax_amount;
@@ -147,6 +161,7 @@ module.exports = {
                     }else{
                         shipper_details = shipper_rows[0];
 
+                        acc_bal = parseFloat(shipper_details.acc_bal) + total_amount; 
                            // creating an invoice record
                         var invoice_data = {
                             "invoice_no"        : invoice_number,
@@ -169,6 +184,38 @@ module.exports = {
                             if (error) {
                                 console.log(error);
                             }else{
+                                
+                                let shipper_acc_update = "UPDATE shipping SET ? where shipper_code = ?";
+                                var shipper_acc_update_data = {
+                                    "acc_bal"   :   acc_bal
+                                }
+                                let data111 = [shipper_acc_update_data ,shipper_code];
+
+                                connection.query(shipper_acc_update,data111, function (error, results, fields) {
+                                    if (error) {
+                                        console.log(error);
+                                    }else{
+                                        console.log("Shipping updated Successfully")
+                                    }
+                                });
+
+                                // inserting  Account of Statements
+                                var inv_acc_data = {
+                                    "shipper_code" : shipper_code,
+                                    "type"         : "Invoice",
+                                    "invoice_no"   :  invoice_number,
+                                    "amount"       :  total_amount,
+                                    "created_on"   :  today 
+                                }
+                                let acc_state_query = "INSERT INTO shipper_acc_statements SET ?"
+                                connection.query(acc_state_query, inv_acc_data, function (lgerr, lgres, fields) {
+                                    if (lgerr) {
+                                        console.log(lgerr)
+                                    }else{
+                                        console.log("Shippin account statement  added successfully");
+                                    }
+                                });
+
                                 res.json({
                                     status:true,
                                     message:'Invoice generated sucessfully'
@@ -187,6 +234,8 @@ module.exports = {
         let amount_paid = req.body.amount_paid;
         let payment_method = req.body.payment_method;
         let total_amount = req.body.total_amount;
+        let shipper_code = req.body.shipper_code;
+        let acc_bal = 0;
 
         // updating the invoice table and recording the payment
 
@@ -215,6 +264,29 @@ module.exports = {
                 console.log(error);
             }else{
                 
+                let shipper_query = "select * from shipping where shipper_code = ?"
+                connection.query(shipper_query, shipper_code, (err,shipper_rows) => {
+                    if(err){
+                        console.log(err);
+                    }else{
+                        acc_bal = parseFloat(shipper_rows[0].acc_bal) - parseFloat(amount_paid); 
+                        let shipper_acc_update = "UPDATE shipping SET ? where shipper_code = ?";
+                        var shipper_acc_update_data = {
+                            "acc_bal"   :   acc_bal
+                        }
+                        let data111 = [shipper_acc_update_data ,shipper_code];
+
+                        connection.query(shipper_acc_update,data111, function (error, results, fields) {
+                            if (error) {
+                                console.log(error);
+                            }else{
+                                console.log("Shipping updated Successfully")
+                            }
+                        });
+
+                    }
+                });
+
                 console.log(results);
                 //creating a log
                 var log_data = {

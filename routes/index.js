@@ -23,6 +23,8 @@ module.exports = app => {
     var receiverController = require('./../controllers/Admin/Maintainence/receiverController');
     var chargesController = require('./../controllers/Admin/Maintainence/chargesController');
     var taxController =require('./../controllers/Admin/Maintainence/taxController');
+    var creditNoteController = require('./../controllers/Admin/FinancialDashboard/creditNoteController');
+    var debitNoteController = require('./../controllers/Admin/FinancialDashboard/debitNoteController');
 
     //drivercontroller declaration
     var driverConsignmentController = require('./../controllers/Driver/ConsignmentController');
@@ -118,4 +120,11 @@ module.exports = app => {
     app.post('/api/:id/generateinvoice', invoiceController.generateInvoice);
     app.post('/api/:id/recordpayment', invoiceController.recordPayment);
 
+    // CreditNote
+    app.get('/api/:id/getallcreditnotes', creditNoteController.index);
+    app.post('/api/:id/createcreditnote', creditNoteController.store);
+
+    // DebitNote
+    app.get('/api/:id/getalldebitnotes', debitNoteController.index);
+    app.post('/api/:id/createdebitnote', debitNoteController.store);
 }
