@@ -116,6 +116,7 @@ module.exports = app => {
     // Invoice
     app.get('/api/:id/getallinvoices', invoiceController.getAllInvoices);
     app.get('/api/:id/checkinvoice/:invoice_no', invoiceController.checkInvoice);
+    app.post('/api/:id/getinvoice', invoiceController.getInvoices);
     app.post('/api/:id/previewinvoice', invoiceController.previewInvoice);
     app.post('/api/:id/generateinvoice', invoiceController.generateInvoice);
     app.post('/api/:id/recordpayment', invoiceController.recordPayment);

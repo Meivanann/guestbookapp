@@ -29,6 +29,46 @@ module.exports = {
        
     },
 
+    getInvoices: (req,res) => {
+        console.log(req.params.id);
+        let start_date = req.body.start_date;
+        let end_date = req.body.end_date;
+        let shipper_code = req.body.shipper_code;
+        let query, data;
+
+        console.log(start_date);
+        if(start_date != "" && end_date != "")
+        {
+            console.log("1");
+            query = "SELECT * FROM invoice where (invoice_date between ? and ?) and shipper_code = ?;"
+            data = [start_date, end_date, shipper_code];
+        }
+        else{
+            console.log("2");
+            query = "SELECT * FROM invoice where shipper_code = ?;"
+            data = [shipper_code];
+        }
+        
+       connection.query(query,data, (err,rows) => {
+            if(err){
+                console.log(err);
+            } else if (rows.length == 0 ){
+                res.json({
+                    status: 2,
+                    message:"No Results Found"
+                })
+            } else {
+                console.log("results found");
+                res.json({
+                    status: 1,
+                    data:rows
+                })
+            }
+            
+        })
+       
+    },
+
     checkInvoice: (req,res) => {
         let invoice_no = req.params.invoice_no;
         let query = "SELECT * FROM invoice where invoice_no = ?;"

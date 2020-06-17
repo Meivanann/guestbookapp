@@ -26,6 +26,7 @@ module.exports = {
     },
 
     store: (req,res) => {
+        var today = new Date();
         let shipper_code = req.body.shipper_code;
         let amount = req.body.amount;
 
