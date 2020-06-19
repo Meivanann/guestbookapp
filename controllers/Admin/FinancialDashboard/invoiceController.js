@@ -261,6 +261,7 @@ module.exports = {
                                     "shipper_code" : shipper_code,
                                     "type"         : "Invoice",
                                     "invoice_no"   :  invoice_number,
+                                    "description"  :  payment_due,
                                     "amount"       :  total_amount,
                                     "created_on"   :  today 
                                 }
@@ -295,74 +296,116 @@ module.exports = {
         let acc_bal = 0;
 
         // updating the invoice table and recording the payment
-
-        if(total_amount === amount_paid )
-        {
-            var invoice_data = {
-                "amount_paid"       :   amount_paid,
-                // "payment_method"    :   payment_method,
-                // "paid_on"           :   today,
-                "status"            :   "Paid"
-            }
-        }else{
-            var invoice_data = {
-                "amount_paid"       :   amount_paid,
-                // "payment_method"    :   payment_method,
-                // "paid_on"           :   today,
-                "status"            :   "Partially Paid"
-            }
-        }
-       
-        let query = "UPDATE invoice SET ? where invoice_no = ?";
-        let data1 = [invoice_data ,invoice_no];
-
-        connection.query(query,data1, function (error, results, fields) {
+        connection.query("select * from invoice where invoice_no = ?",invoice_no, function (error, invoice_rows, fields) {
             if (error) {
                 console.log(error);
             }else{
                 
-                let shipper_query = "select * from shipping where shipper_code = ?"
-                connection.query(shipper_query, shipper_code, (err,shipper_rows) => {
-                    if(err){
-                        console.log(err);
-                    }else{
-                        acc_bal = parseFloat(shipper_rows[0].acc_bal) - parseFloat(amount_paid); 
-                        let shipper_acc_update = "UPDATE shipping SET ? where shipper_code = ?";
-                        var shipper_acc_update_data = {
-                            "acc_bal"   :   acc_bal
-                        }
-                        let data111 = [shipper_acc_update_data ,shipper_code];
+                if(total_amount === amount_paid )
+                {
+                    var invoice_data = {
+                        "amount_paid"       :   parseFloat(invoice_rows[0].amount_paid) + parseFloat(amount_paid),
+                        "payment_method"    :   payment_method,
+                        "paid_on"           :   req.body.paid_on,
+                        "status"            :   "Paid"
+                    }
+                }else{
+                    var invoice_data = {
+                        "amount_paid"       :   parseFloat(invoice_rows[0].amount_paid) + parseFloat(amount_paid),
+                        "payment_method"    :   payment_method,
+                        "paid_on"           :   req.body.paid_on,
+                        "status"            :   "Partially Paid"
+                    }
+                }
+            
+                let query = "UPDATE invoice SET ? where invoice_no = ?";
+                let data1 = [invoice_data ,invoice_no];
 
-                        connection.query(shipper_acc_update,data111, function (error, results, fields) {
-                            if (error) {
-                                console.log(error);
+                connection.query(query,data1, function (error, results, fields) {
+                    if (error) {
+                        console.log(error);
+                    }else{
+                        
+                        let shipper_query = "select * from shipping where shipper_code = ?"
+                        connection.query(shipper_query, shipper_code, (err,shipper_rows) => {
+                            if(err){
+                                console.log(err);
                             }else{
-                                console.log("Shipping updated Successfully")
+                                acc_bal = parseFloat(shipper_rows[0].acc_bal) - parseFloat(amount_paid); 
+                                let shipper_acc_update = "UPDATE shipping SET ? where shipper_code = ?";
+                                var shipper_acc_update_data = {
+                                    "acc_bal"   :   acc_bal
+                                }
+                                let data111 = [shipper_acc_update_data ,shipper_code];
+
+                                connection.query(shipper_acc_update,data111, function (error, results, fields) {
+                                    if (error) {
+                                        console.log(error);
+                                    }else{
+                                        console.log("Shipping updated Successfully")
+                                    }
+                                });
+
                             }
                         });
 
+                        // inserting  Account of Statements
+                        var inv_acc_data = {
+                            "shipper_code" : shipper_code,
+                            "type"         : "Payment",
+                            "invoice_no"   :  invoice_no,
+                            "description"  :  "Payment for invoice " + invoice_no,
+                            "amount"       :  amount_paid,
+                            "created_on"   :  req.body.paid_on 
+                        }
+                        
+                        let acc_state_query = "INSERT INTO shipper_acc_statements SET ?"
+                        connection.query(acc_state_query, inv_acc_data, function (lgerr, lgres, fields) {
+                            if (lgerr) {
+                                console.log(lgerr)
+                            }else{
+                                console.log("Shippin account statement  added successfully");
+                            }
+                        });
+                        // inserting transaction details 
+
+                        var o_acc_data = {
+                            "type"         : "Income",
+                            "description"  :  "Payment for invoice " + invoice_no,
+                            "amount"       :  amount_paid,
+                            "account"      :  "Cash",
+                            "created_on"   :  today 
+                        }
+                        let o_acc_state_query = "INSERT INTO account_statements SET ?"
+                        connection.query(o_acc_state_query, o_acc_data, function (lgerr, lgres, fields) {
+                            if (lgerr) {
+                                console.log(lgerr)
+                            }else{
+                                console.log("Shippin account statement  added successfully");
+                            }
+                        });
+
+
+                        console.log(results);
+                        //creating a log
+                        var log_data = {
+                            "status": "user - " + req.params.id + "updated the invoice No. [" + invoice_no + " ] " 
+                        }
+                        connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
+                            if (lgerr) {
+                            console.log(lgerr)
+                            }else{
+                                console.log("log added successfully");
+                            }
+                        });
+
+                        res.json({
+                            status:true,
+                            message:'Invoice Updated sucessfully'
+                        })
                     }
                 });
-
-                console.log(results);
-                //creating a log
-                var log_data = {
-                    "status": "user - " + req.params.id + "updated the invoice No. [" + invoice_no + " ] " 
-                }
-                connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
-                    if (lgerr) {
-                    console.log(lgerr)
-                    }else{
-                        console.log("log added successfully");
-                    }
-                });
-
-                res.json({
-                    status:true,
-                    message:'Invoice Updated sucessfully'
-                })
             }
         });
-
     }
 }

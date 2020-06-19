@@ -32,6 +32,7 @@ module.exports = app => {
     var creditNoteController = require('./../controllers/Admin/FinancialDashboard/creditNoteController');
     var debitNoteController = require('./../controllers/Admin/FinancialDashboard/debitNoteController');
     var accStatementController = require('./../controllers/Admin/FinancialDashboard/customerStatementController');
+    var expenseController = require('./../controllers/Admin/FinancialDashboard/expenseController');
 
     app.get("/", (req, res) => {
         res.json({ message: "Welcome to PSA Application ." });
@@ -124,12 +125,20 @@ module.exports = app => {
 
     // CreditNote
     app.get('/api/:id/getallcreditnotes', creditNoteController.index);
+    app.get('/api/:id/getcreditnote/:shipper_code', creditNoteController.getCreditNote);
     app.post('/api/:id/createcreditnote', creditNoteController.store);
 
     // DebitNote
     app.get('/api/:id/getalldebitnotes', debitNoteController.index);
+    app.get('/api/:id/getdebitnote/:shipper_code', debitNoteController.getDebitNote);
     app.post('/api/:id/createdebitnote', debitNoteController.store);
 
     // Acoount-Statement
     app.post('/api/:id/getaccountstatement', accStatementController.getAccountStatement);
+
+    // Expense
+    app.get('/api/:id/getallexpenses', expenseController.getAllExpenses);
+    app.post('/api/:id/postexpense', expenseController.postExpense);
+
+    // transaction
 }

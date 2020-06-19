@@ -141,7 +141,7 @@ module.exports = {
                                 status = "assign to south";
                                 tracking_status = "TRANSIT JB"
                             }else if (regrows[0].region === "NORTH"){
-                                status = "assign to south";
+                                status = "assign to north";
                                 tracking_status = "TRANSIT PENANG"
                             }else {
                                 status = "out for delivery"

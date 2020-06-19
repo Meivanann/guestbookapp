@@ -25,6 +25,30 @@ module.exports = {
         })
     },
 
+    getDebitNote: (req,res) => {
+        let shipper_code = req.params.shipper_code;
+        let query = "select * from shipper_acc_statements where type = 'Debit' and shipper_code = ?;"
+
+        connection.query(query, shipper_code, (err,rows) => {
+            if(err){
+                res.json({
+                    status:false,
+                    message: 'there are some error with query'
+                })
+            } else if (rows.length == 0 ){
+                res.json({
+                    status: -1,
+                    message:' No results found'
+                })
+            } else {
+                res.json({
+                    status: 1,
+                    data:rows
+                })
+            }
+        })
+    },
+
     store: (req,res) => {
         var today = new Date();
         let shipper_code = req.body.shipper_code;
@@ -33,9 +57,10 @@ module.exports = {
          // inserting  Account of Statements
          var inv_acc_data = {
             "shipper_code" : shipper_code,
-            "type"         : "Credit",
+            "type"         : "Debit",
             "amount"       :  amount,
-            "created_on"   :  today 
+            "created_on"   :  today,
+            "description"  :  req.body.description
         }
         let acc_state_query = "INSERT INTO shipper_acc_statements SET ?"
         connection.query(acc_state_query, inv_acc_data, function (lgerr, lgres, fields) {

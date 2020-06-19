@@ -3,9 +3,33 @@ var connection = require('../../../config');
 
 module.exports = {
     index: (req,res) => {
-        let query = "SELECT * FROM psa.shipper_acc_statements where type='Credit';"
+        let query = "SELECT * FROM shipper_acc_statements where type='Credit';"
 
         connection.query(query, (err,rows) => {
+            if(err){
+                res.json({
+                    status:false,
+                    message: 'there are some error with query'
+                })
+            } else if (rows.length == 0 ){
+                res.json({
+                    status: -1,
+                    message:' No results found'
+                })
+            } else {
+                res.json({
+                    status: 1,
+                    data:rows
+                })
+            }
+        })
+    },
+
+    getCreditNote: (req,res) => {
+        let shipper_code = req.params.shipper_code;
+        let query = "select * from shipper_acc_statements where type = 'Credit' and shipper_code = ?;"
+
+        connection.query(query, shipper_code, (err,rows) => {
             if(err){
                 res.json({
                     status:false,
@@ -35,7 +59,8 @@ module.exports = {
             "shipper_code" : shipper_code,
             "type"         : "Credit",
             "amount"       :  amount,
-            "created_on"   :  today 
+            "created_on"   :  today,
+            "description"  :  req.body.description
         }
         let acc_state_query = "INSERT INTO shipper_acc_statements SET ?"
         connection.query(acc_state_query, inv_acc_data, function (lgerr, lgres, fields) {
