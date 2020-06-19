@@ -63,6 +63,9 @@ module.exports = {
         //         message:'file undefined error'
         //     })
         // }
+        console.log(req.body);
+        console.log(req.body.status);
+        console.log(req.files);
         try {
             if(req.body.status != 'Close'){
                 if(req.body.status === 'Completed'){
@@ -73,8 +76,6 @@ module.exports = {
                             message:"You need to upload receipt screenshot to Completed this task"
                         })
                     }else{
-
-                        console.log("s3");
                         var file = req.files.file;
 
                         let s3bucket = new AWS.S3({
@@ -94,7 +95,6 @@ module.exports = {
                                     console.log('error in callback');
                                     console.log(err);
                                 }
-                                console.log("success");
                                 console.log(data.Location);
                                 file_url = data.Location;
 
@@ -107,7 +107,7 @@ module.exports = {
                                         console.log("Tracking Data Deleted Successfully");
                                     }
                                 })
-                                console.log("s3");
+
                                 //adding rows in  tracking
                                 var tracking_data1 = {
                                     "cn_no": req.body.cn_no,
@@ -119,7 +119,7 @@ module.exports = {
                                     "status": "DELIVERED",
                                     "datetime": today
                                 }
-                                console.log("s3");
+                                
                                 //inserting record in tracking table
                                 connection.query('INSERT INTO tracking SET ?', tracking_data1, (err,rows) => {
                                     if(err){
@@ -135,7 +135,7 @@ module.exports = {
                                         console.log("Tracking 2 added sucessfully");
                                     }
                                 })
-                                console.log("s3");
+                                
                                 //updating status in consignment table
                                 let consignment_update_query = "UPDATE consignment set status = ? where cn_no = ?"
                                 let data1 = [req.body.status, req.body.cn_no];
@@ -146,7 +146,7 @@ module.exports = {
                                         console.log("Consignment updated  sucessfully");
                                     }
                                 })
-                                console.log("s3");
+                                
                                 //updating out for delivery
                                 let ofd_update_query = "UPDATE out_for_delivery set ? where cn_no = ?"
                                 var ofd_data = {
@@ -162,7 +162,7 @@ module.exports = {
                                         console.log("OFD updated  sucessfully");
                                     }
                                 })
-                                console.log("s3");
+                                
                                 //creating a log
                                 var log_data = {
                                     "status": "user - " + req.params.id + "updated Consignment No. [" + req.body.cn_no + " ] to " + req.body.status
@@ -174,7 +174,7 @@ module.exports = {
                                         console.log("log added successfully");
                                     }
                                 });
-                                console.log("s7");
+                                
                                 res.json({
                                     status:true,
                                     message:'Consignment Updated sucessfully'

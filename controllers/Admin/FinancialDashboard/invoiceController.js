@@ -82,10 +82,31 @@ module.exports = {
                     message:"NO Records found"
                 })
             } else {
-                res.json({
-                    status: true,
-                    data:rows
-                })
+                // fetching consignment records
+                let consignment_query = "SELECT * FROM consignment where (cn_datetime between ? and ? ) and status = 'Close' and shipper_code=?;"
+                let consignment_data = [rows[0].consignment_start_date, rows[0].consignment_end_date, rows[0].shipper_code];
+                console.log(consignment_data);
+                connection.query(consignment_query, consignment_data, (consignment_err,consignment_rows) => {
+                    if(err){
+                        console.log(err);
+                    }else{
+                        // fetching shipper details
+                        let shipper_query = "select * from shipping where shipper_code = ?"
+                        connection.query(shipper_query, rows[0].shipper_code, (err,shipper_rows) => {
+                            if(err){
+                                console.log(err);
+                            }else{
+                                shipper_details = shipper_rows[0];
+                                res.json({
+                                    status:true,
+                                    consignments: consignment_rows,
+                                    shipper: shipper_details,
+                                    invoice: rows
+                                })
+                            }
+                        });
+                    }
+                });
             }
             
         })
@@ -279,15 +300,15 @@ module.exports = {
         {
             var invoice_data = {
                 "amount_paid"       :   amount_paid,
-                "payment_method"    :   payment_method,
-                "paid_on"           :   today,
+                // "payment_method"    :   payment_method,
+                // "paid_on"           :   today,
                 "status"            :   "Paid"
             }
         }else{
             var invoice_data = {
                 "amount_paid"       :   amount_paid,
-                "payment_method"    :   payment_method,
-                "paid_on"           :   today,
+                // "payment_method"    :   payment_method,
+                // "paid_on"           :   today,
                 "status"            :   "Partially Paid"
             }
         }
