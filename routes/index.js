@@ -33,6 +33,7 @@ module.exports = app => {
     var debitNoteController = require('./../controllers/Admin/FinancialDashboard/debitNoteController');
     var accStatementController = require('./../controllers/Admin/FinancialDashboard/customerStatementController');
     var expenseController = require('./../controllers/Admin/FinancialDashboard/expenseController');
+    var transactionController = require('./../controllers/Admin/FinancialDashboard/TransactionController');
 
     app.get("/", (req, res) => {
         res.json({ message: "Welcome to PSA Application ." });
@@ -141,4 +142,6 @@ module.exports = app => {
     app.post('/api/:id/postexpense', expenseController.postExpense);
 
     // transaction
+    app.get('/api/:id/getalltransactions', transactionController.getAllTransactions);
+
 }

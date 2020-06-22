@@ -54,6 +54,7 @@ module.exports = {
         let shipper_code = req.body.shipper_code;
         let amount = req.body.amount;
 
+        console.log(req.body);
          // inserting  Account of Statements
          var inv_acc_data = {
             "shipper_code" : shipper_code,
