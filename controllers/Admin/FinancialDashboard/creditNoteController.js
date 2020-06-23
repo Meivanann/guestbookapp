@@ -36,10 +36,20 @@ module.exports = {
                     message: 'there are some error with query'
                 })
             } else if (rows.length == 0 ){
-                res.json({
-                    status: -1,
-                    message:' No results found'
-                })
+                let shipper_query = "select * from shipping where shipper_code = ?"
+                connection.query(shipper_query, shipper_code, (err,shipper_rows) => {
+                    if(err){
+                        console.log(err);
+                    }else{
+                        shipper_details = shipper_rows[0];
+                        res.json({
+                            status: -1,
+                            message:' No results found',
+                            shipper: shipper_details,
+                        })
+                    }
+                });
+             
             } else {
                 let shipper_query = "select * from shipping where shipper_code = ?"
                 connection.query(shipper_query, shipper_code, (err,shipper_rows) => {
