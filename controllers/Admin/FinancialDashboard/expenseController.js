@@ -26,7 +26,7 @@ module.exports = {
     },
 
     postExpense: (req, res) => {
-        
+        var today = new Date();
         let description = req.body.description;
         var o_acc_data = {
             "type"         : "Expense",
