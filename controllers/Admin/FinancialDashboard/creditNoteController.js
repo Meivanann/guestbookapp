@@ -72,6 +72,7 @@ module.exports = {
         var today = new Date();
         let shipper_code = req.body.shipper_code;
         let amount = req.body.amount;
+        let acc_bal =0;
 
         console.log(req.body);
          // inserting  Account of Statements
