@@ -189,6 +189,8 @@ module.exports = {
                         console.log("log added successfully");
                     }
                 });
+
+                console.log("Consignment Added succesfullt")
                 res.json({
                   status:true,
                   message:'Consignment Created sucessfully'

@@ -4,7 +4,7 @@ var connection = require('../../../config');
 module.exports = {
     getAllTransactions: (req,res) => {
         let query = "SELECT * FROM account_statements order by created_on desc;"
-
+        let total_amount = 0;
         connection.query(query, (err,rows) => {
             if(err){
                 res.json({
@@ -17,9 +17,21 @@ module.exports = {
                     message:' No results found'
                 })
             } else {
+
+                Object.keys(rows).forEach(function(key) {
+                    var row = rows[key];
+
+                    if(row.type === 'Income'){
+                        total_amount = total_amount + parseFloat(row.amount);
+                    }else{
+                        total_amount = total_amount - parseFloat(row.amount);
+                    }
+                });
+
                 res.json({
                     status: 1,
-                    data:rows
+                    data:rows,
+                    total_amount: total_amount
                 })
             }
         })
