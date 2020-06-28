@@ -34,6 +34,7 @@ module.exports = app => {
     var accStatementController = require('./../controllers/Admin/FinancialDashboard/customerStatementController');
     var expenseController = require('./../controllers/Admin/FinancialDashboard/expenseController');
     var transactionController = require('./../controllers/Admin/FinancialDashboard/TransactionController');
+    var chartAccountController = require('./../controllers/Admin/FinancialDashboard/chartsAccountController');
 
     app.get("/", (req, res) => {
         res.json({ message: "Welcome to PSA Application ." });
@@ -143,5 +144,12 @@ module.exports = app => {
 
     // transaction
     app.get('/api/:id/getalltransactions', transactionController.getAllTransactions);
+
+
+    // charts of accounts
+    app.get('/api/:id/getallaccounttypes', chartAccountController.getAllAccountTypes);
+    app.get('/api/:id/getallaccounts', chartAccountController.getAllAccounts);
+    app.post('/api/:id/createaccount', chartAccountController.postNewAccount);
+    
 
 }
