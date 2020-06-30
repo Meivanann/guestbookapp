@@ -20,9 +20,30 @@ module.exports = {
                 })
             } else {
                 console.log("results found");
-                res.json({
-                    status: 1,
-                    data:rows
+
+                let ofd_query  = "select * from out_for_delivery where cn_no = ?;"
+                connection.query(ofd_query,cn_no, (err,ofdrows) => {
+                    if(err){
+                        console.log(err);
+                        res.json({
+                            status: false,
+                            message:'Some Error in Query'
+                        })
+                    } else if (rows.length == 0 ){
+                        console.log("no ofd results found");
+                        res.json({
+                            status: 1,
+                            data:rows,
+                            attachment:null
+                        })
+                    } else {
+                        console.log("Ofd results found");
+                        res.json({
+                            status: 1,
+                            data:rows,
+                            attachment: ofdrows[0]
+                        })
+                    }
                 })
             }
             

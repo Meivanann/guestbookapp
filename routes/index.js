@@ -52,6 +52,8 @@ module.exports = app => {
     app.get('/api/:id/user-activation', userApprovalController.index);
     app.post('/api/:id/user-activation/approval', userApprovalController.update);
     app.post('/api/:id/user-activation/destroy', userApprovalController.destroy);
+    app.get('/api/:id/users', userApprovalController.getAllUsers);
+    app.post('/api/:id/user/destroy', userApprovalController.deleteUser);
 
     //dashboard - Consignment Hq
     app.get('/api/:id/getallconsignments', consignmentController.getAllConsignments);
@@ -128,12 +130,16 @@ module.exports = app => {
     // CreditNote
     app.get('/api/:id/getallcreditnotes', creditNoteController.index);
     app.get('/api/:id/getcreditnote/:shipper_code', creditNoteController.getCreditNote);
+    app.get('/api/:id/getcreditnote/:shipper_code/:credit_note_id', creditNoteController.getCreditNoteDetails);
     app.post('/api/:id/createcreditnote', creditNoteController.store);
+    app.post('/api/:id/creditnote/recordpayment', creditNoteController.recordPayment);
 
     // DebitNote
     app.get('/api/:id/getalldebitnotes', debitNoteController.index);
     app.get('/api/:id/getdebitnote/:shipper_code', debitNoteController.getDebitNote);
+    app.get('/api/:id/getdebitnote/:shipper_code/:debit_note_id', debitNoteController.getDebitNoteDetails);
     app.post('/api/:id/createdebitnote', debitNoteController.store);
+    app.post('/api/:id/debitnote/recordpayment', debitNoteController.recordPayment);
 
     // Acoount-Statement
     app.post('/api/:id/getaccountstatement', accStatementController.getAccountStatement);

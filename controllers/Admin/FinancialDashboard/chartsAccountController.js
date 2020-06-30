@@ -58,7 +58,7 @@ module.exports = {
          // inserting  Account of Statements
 
          var account_data = {
-            "account_type_id"       : shipper_code,
+            "account_type_id"       : account_type_id,
             "account_name"          : account_name,
             "created_on"            :  today
         }

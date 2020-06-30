@@ -8,7 +8,10 @@ const fs = require('fs')
 module.exports = {
     getAllInvoices: (req,res) => {
         console.log(req.params.id);
-        let query = "SELECT * FROM invoice;"
+        let today = new Date();
+        let last30Days = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 30)
+        let overdue_amount = 0, due = 0, average_date;
+        let query = "SELECT * FROM invoice order by invoice_date desc;"
        connection.query(query, (err,rows) => {
             if(err){
                 console.log(err);
@@ -19,9 +22,28 @@ module.exports = {
                 })
             } else {
                 console.log("results found");
+
+                Object.keys(rows).forEach(function(key) {
+                    var row = rows[key];
+                    
+                    if(row.status != 'Paid' && row.payment_due_date < today)
+                    {
+                        overdue_amount = overdue_amount + ( parseFloat(row.inv_total_amount) - parseFloat(row.amount_paid));
+                    }
+
+                    if(row.status != 'Paid' && row.payment_due_date < last30Days)
+                    {
+                        due = due + (parseFloat(row.inv_total_amount) - parseFloat(row.amount_paid));
+                    }
+
+                });
+
                 res.json({
                     status: 1,
-                    data:rows
+                    data:rows,
+                    overdue_amount:overdue_amount,
+                    due_30_days:due,
+                    average_time:rows[0].payment_due_date
                 })
             }
             
@@ -119,7 +141,7 @@ module.exports = {
         let end_date = req.body.end_date;
         let shipper_code = req.body.shipper_code;
         let payment_due =req.body.payment_due;
-        let invoice_number = req.body.invoice_number;
+        // let invoice_number = req.body.invoice_number;
         let invoice_date = req.body.invoice_date;
 
         let query = "SELECT * FROM consignment where (cn_datetime between ? and ? ) and status = 'Close' and shipper_code=? and is_billed = 0;"
@@ -158,7 +180,7 @@ module.exports = {
                             total_amount: total_amount,
                             payment_due:payment_due,
                             invoice_date:invoice_date,
-                            invoice_number:invoice_number
+                            // invoice_number:invoice_number
                         })
                     }
                 });
@@ -173,7 +195,7 @@ module.exports = {
         let end_date = req.body.end_date;
         let shipper_code = req.body.shipper_code;
         let payment_due =req.body.payment_due;
-        let invoice_number = req.body.invoice_number;
+        let invoice_number;
         let invoice_date = req.body.invoice_date;
 
         let query = "SELECT * FROM consignment where (cn_datetime between ? and ? ) and status = 'Close' and shipper_code=? and is_billed = 0;"
@@ -218,10 +240,10 @@ module.exports = {
                     }else{
                         shipper_details = shipper_rows[0];
 
-                        acc_bal = parseFloat(shipper_details.acc_bal) + total_amount; 
+                        acc_bal = parseFloat(shipper_details.acc_bal) + parseFloat(total_amount); 
                            // creating an invoice record
                         var invoice_data = {
-                            "invoice_no"        : invoice_number,
+                            // "invoice_no"        : invoice_number,
                             "invoice_date"      : invoice_date,
                             "shipper_code"      : shipper_code,
                             "shipper_name"      : shipper_details.shipper_name,
@@ -241,7 +263,7 @@ module.exports = {
                             if (error) {
                                 console.log(error);
                             }else{
-                                
+                                invoice_number = results.insertId;
                                 let shipper_acc_update = "UPDATE shipping SET ? where shipper_code = ?";
                                 var shipper_acc_update_data = {
                                     "acc_bal"   :   acc_bal
@@ -293,15 +315,15 @@ module.exports = {
         let payment_method = req.body.payment_method;
         let total_amount = req.body.total_amount;
         let shipper_code = req.body.shipper_code;
-        let acc_bal = 0;
+        let acc_bal = 0, amt = 0;
 
         // updating the invoice table and recording the payment
         connection.query("select * from invoice where invoice_no = ?",invoice_no, function (error, invoice_rows, fields) {
             if (error) {
                 console.log(error);
             }else{
-                
-                if(total_amount === amount_paid )
+                amt =  parseFloat(invoice_rows[0].inv_total_amount) -  parseFloat(invoice_rows[0].amount_paid);
+                if(amt === parseFloat(amount_paid) )
                 {
                     var invoice_data = {
                         "amount_paid"       :   parseFloat(invoice_rows[0].amount_paid) + parseFloat(amount_paid),
@@ -373,7 +395,7 @@ module.exports = {
                             "type"         : "Income",
                             "description"  :  "Payment for invoice " + invoice_no,
                             "amount"       :  amount_paid,
-                            "account"      :  "Cash",
+                            "account"      :  req.body.account,
                             "created_on"   :  today 
                         }
                         let o_acc_state_query = "INSERT INTO account_statements SET ?"
