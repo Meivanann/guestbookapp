@@ -3,7 +3,7 @@ var connection = require('./../../../config');
 module.exports = {
 
     getAllConsignments: (req,res) => { 
-        let query = "SELECT cn_no FROM consignment;"
+        let query = "SELECT cn_no FROM consignment where is_approved = 1;"
 
         connection.query(query, (err,rows) => {
             if(err){
@@ -28,7 +28,7 @@ module.exports = {
 
 
     getConsignmentHq: (req,res) => { 
-        let query = "SELECT * FROM consignment WHERE region = 'HQ' AND status='created' ORDER BY cn_datetime DESC; SELECT * FROM users WHERE position='driver';"
+        let query = "SELECT * FROM consignment WHERE region = 'HQ' AND status='created' and is_approved = 1 ORDER BY cn_datetime DESC; SELECT * FROM users WHERE position='driver';"
 
         connection.query(query, (err,rows) => {
             if(err){
@@ -52,7 +52,7 @@ module.exports = {
     },
 
     getConsignmentNorth: (req,res) => { 
-        let query = "SELECT * FROM consignment WHERE region = 'NORTH'  and status='assign to north' ORDER BY cn_datetime DESC; SELECT * FROM users WHERE position='driver';"
+        let query = "SELECT * FROM consignment WHERE region = 'NORTH'  and status='assign to north' and is_approved = 1 ORDER BY cn_datetime DESC; SELECT * FROM users WHERE position='driver';"
 
         connection.query(query, (err,rows) => {
             if(err){
@@ -76,7 +76,7 @@ module.exports = {
     },
 
     getConsignmentSouth: (req,res) => { 
-        let query = "SELECT * FROM consignment WHERE region = 'SOUTH'  and status='assign to south' ORDER BY cn_datetime DESC; SELECT * FROM users WHERE position='driver';"
+        let query = "SELECT * FROM consignment WHERE region = 'SOUTH'  and status='assign to south' and is_approved = 1 ORDER BY cn_datetime DESC; SELECT * FROM users WHERE position='driver';"
 
         connection.query(query, (err,rows) => {
             if(err){

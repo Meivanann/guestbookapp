@@ -149,7 +149,8 @@ module.exports = {
             "total_amount":req.body.total_amount,
             "status":status,
             "remarks":req.body.remarks,
-            "invoice_no":''
+            "invoice_no":'',
+            "is_approved": 1
         }
         //inserting a record in consignmnet table
         let query = "INSERT INTO consignment SET ?"

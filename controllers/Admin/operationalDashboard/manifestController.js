@@ -66,7 +66,7 @@ module.exports = {
             driver = "and consignment.driver_name = '" + driver_name +"'";
         }
 
-        let query = "select * from consignment " + city1 + " where date(cn_datetime) >= '" + start_date + "' and date(cn_datetime) <= '" + end_date +"' " + stat + " " + shipper + " " + destination + " " + city2 + " " + driver +" order by shipper_name";
+        let query = "select * from consignment " + city1 + " where date(cn_datetime) >= '" + start_date + "' and date(cn_datetime) <= '" + end_date +"' " + stat + " " + shipper + " " + destination + " " + city2 + " " + driver +" and is_approved = 1 order by shipper_name";
         connection.query(query, (err,rows) => {
             if(err){
                 console.log(err);

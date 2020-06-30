@@ -37,29 +37,55 @@ module.exports = {
         })
     },
 
-    // PostNewExpense: (req,res) => {
-    //     var today = new Date();
+    PostNewExpense: (req,res) => {
+        var today = new Date();
 
-    //      // inserting  Account of Statements
-    //      var acc_data = {
-    //         "account" : "Cash",
-    //         "type"         : "Debit",
-    //         "amount"       :  req.body.amount,
-    //         "created_on"   :  today,
-    //         "description"  :  req.body.description
-    //     }
+         // inserting  Account of Statements
+         var acc_data = {
+            "account"       : req.body.account,
+            "type"         : "Expense",
+            "amount"       :  req.body.amount,
+            "created_on"   :  today,
+            "description"  :  req.body.description
+        }
 
-    //     let acc_state_query = "INSERT INTO account_statements SET ?"
-    //     connection.query(acc_state_query, acc_data, function (lgerr, lgres, fields) {
-    //         if (lgerr) {
-    //             console.log(lgerr)
-    //         }else{
-    //             console.log("Account statement  added successfully");
-    //             res.json({
-    //                 status:true,
-    //                 message:'Account  statement add3ed sucessfully'
-    //             })
-    //         }
-    //     });
-    // },
+        let acc_state_query = "INSERT INTO account_statements SET ?"
+        connection.query(acc_state_query, acc_data, function (lgerr, lgres, fields) {
+            if (lgerr) {
+                console.log(lgerr)
+            }else{
+                console.log("Expense statement  added successfully");
+                res.json({
+                    status:true,
+                    message:'Expense  statement add3ed sucessfully'
+                })
+            }
+        });
+    },
+
+    PostNewIncome: (req,res) => {
+        var today = new Date();
+
+         // inserting  Account of Statements
+         var acc_data = {
+            "account"       : req.body.account,
+            "type"         : "Income",
+            "amount"       :  req.body.amount,
+            "created_on"   :  today,
+            "description"  :  req.body.description
+        }
+
+        let acc_state_query = "INSERT INTO account_statements SET ?"
+        connection.query(acc_state_query, acc_data, function (lgerr, lgres, fields) {
+            if (lgerr) {
+                console.log(lgerr)
+            }else{
+                console.log("Income statement  added successfully");
+                res.json({
+                    status:true,
+                    message:'Income  statement add3ed sucessfully'
+                })
+            }
+        });
+    },
 }

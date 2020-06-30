@@ -1,143 +1,54 @@
-ALTER TABLE `psa`.`shipper_acc_statements` 
-ADD COLUMN `description` VARCHAR(45) NULL AFTER `created_on`,
-ADD COLUMN `bal` VARCHAR(45) NULL AFTER `description`;
-
-
-ALTER TABLE `psa`.`invoice` 
-ADD COLUMN `payment_method` VARCHAR(45) NULL AFTER `consignment_end_date`,
-ADD COLUMN `paid_on` DATE NULL AFTER `payment_method`;
-
-
-ALTER TABLE `psa`.`shipper_acc_statements` 
-CHANGE COLUMN `created_on` `created_on` DATE NOT NULL ;
-
-
-
-CREATE TABLE `account_statements` (
+CREATE TABLE `consignment_approval` (
    `id` int NOT NULL AUTO_INCREMENT,
-   `type` varchar(50) NOT NULL,
-   `account` varchar(50) NOT NULL,
-   `amount` decimal(18,2) NOT NULL DEFAULT '0.00',
-   `created_on` date NOT NULL,
-   `description` varchar(45) DEFAULT NULL,
-   PRIMARY KEY (`id`)
- ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1
-
-
-
-
- CREATE TABLE `credit_note` (
-   `id` int NOT NULL AUTO_INCREMENT,
-   `credit_date` datetime NOT NULL,
+   `cn_no` varchar(20) NOT NULL,
    `shipper_code` varchar(20) NOT NULL,
-   `shipper_name` varchar(100) NOT NULL,
-   `amount` varchar(20) NOT NULL,
-   `pdf_name` varchar(50) DEFAULT NULL,
-   `status` varchar(50) NOT NULL DEFAULT 'Pending',
-   `payment_due_date` date NOT NULL,
-   `amount_paid` varchar(45) DEFAULT '0',
-   `payment_method` varchar(45) DEFAULT NULL,
-   `paid_on` date DEFAULT NULL,
-   PRIMARY KEY (`id`)
- ) ENGINE=InnoDB AUTO_INCREMENT=436 DEFAULT CHARSET=latin1
-
-
- CREATE TABLE `credit_note_details` (
-   `id` int NOT NULL AUTO_INCREMENT,
-   `credit_note_id` varchar(20) NOT NULL,
-   `shipper_code` varchar(20) NOT NULL,
-   `amount` varchar(20) NOT NULL,
-   `description` varchar(50) NOT NULL DEFAULT 'Pending',
-   PRIMARY KEY (`id`)
- ) ENGINE=InnoDB AUTO_INCREMENT=436 DEFAULT CHARSET=latin1
-
-
-
- CREATE TABLE `debit_note` (
-   `id` int NOT NULL AUTO_INCREMENT,
-   `debit_date` datetime NOT NULL,
-   `shipper_code` varchar(20) NOT NULL,
-   `shipper_name` varchar(100) NOT NULL,
-   `amount` varchar(20) NOT NULL,
-   `pdf_name` varchar(50) DEFAULT NULL,
-   `status` varchar(50) NOT NULL DEFAULT 'Pending',
-   `payment_due_date` date NOT NULL,
-   `amount_paid` varchar(45) DEFAULT '0',
-   `payment_method` varchar(45) DEFAULT NULL,
-   `paid_on` date DEFAULT NULL,
-   PRIMARY KEY (`id`)
- ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-
- CREATE TABLE `debit_note_details` (
-   `id` int NOT NULL AUTO_INCREMENT,
-   `debit_note_id` varchar(20) NOT NULL,
-   `shipper_code` varchar(20) NOT NULL,
-   `amount` varchar(20) NOT NULL,
-   `description` varchar(50) NOT NULL,
-   PRIMARY KEY (`id`)
- ) ENGINE=InnoDB AUTO_INCREMENT=436 DEFAULT CHARSET=latin1
-
-
- 
- 
- CREATE TABLE `vendors` (
-   `id` int NOT NULL AUTO_INCREMENT,
-   `name` varchar(500) NOT NULL,
-   `address1` varchar(100) DEFAULT NULL,
-   `city` varchar(500) NOT NULL,
-   `state` varchar(100) NOT NULL,
-   `postcode` varchar(10) NOT NULL,
-   `country` varchar(500) NOT NULL,
-   `telephone` varchar(20) DEFAULT NULL,
-   `mobile` varchar(20) DEFAULT NULL,
-   `fax` varchar(20) DEFAULT NULL,
-   `email` varchar(50) DEFAULT NULL,
-   `contact` varchar(20) DEFAULT NULL,
-   `remark` varchar(100) DEFAULT NULL,
-   `tax_exclusive` tinyint(1) DEFAULT NULL,
-   `manual_rate` tinyint(1) DEFAULT NULL,
-   `invoice_format` varchar(10) DEFAULT NULL,
-   `credit_limit` varchar(10) DEFAULT NULL,
-   `term_day` varchar(10) DEFAULT NULL,
-   `acc_bal` decimal(18,2) NOT NULL DEFAULT '0.00',
+   `shipper_name` varchar(100) DEFAULT NULL,
+   `receiver_name` varchar(50) NOT NULL,
+   `driver_name` varchar(50) NOT NULL DEFAULT '',
+   `destination_code` varchar(20) DEFAULT NULL,
+   `region` varchar(20) NOT NULL DEFAULT 'HQ',
+   `cn_datetime` datetime NOT NULL,
+   `delivery_no` varchar(20) DEFAULT NULL,
+   `quantity` varchar(20) NOT NULL DEFAULT '1',
+   `measure` varchar(20) DEFAULT NULL,
+   `weight` varchar(20) DEFAULT NULL,
+   `carton_size` int DEFAULT '0',
+   `carton_rate` varchar(20) DEFAULT NULL,
+   `m3_size` int NOT NULL DEFAULT '0',
+   `m3_rate` varchar(20) DEFAULT NULL,
+   `pallet_size` int NOT NULL DEFAULT '0',
+   `pallet_rate` varchar(20) DEFAULT NULL,
+   `s_size` int NOT NULL DEFAULT '0',
+   `s_rate` varchar(20) DEFAULT NULL,
+   `m_size` int NOT NULL DEFAULT '0',
+   `m_rate` varchar(20) DEFAULT NULL,
+   `l_size` int NOT NULL DEFAULT '0',
+   `l_rate` varchar(20) DEFAULT NULL,
+   `xl_size` int NOT NULL DEFAULT '0',
+   `xl_rate` varchar(20) DEFAULT NULL,
+   `pkt_size` int NOT NULL DEFAULT '0',
+   `pkt_rate` varchar(20) DEFAULT NULL,
+   `other_charges` int NOT NULL DEFAULT '0',
+   `other_amount` varchar(20) DEFAULT NULL,
+   `sub_amount` varchar(20) DEFAULT NULL,
+   `tax_amount` varchar(20) DEFAULT NULL,
+   `total_amount` varchar(20) DEFAULT NULL,
+   `invoice_no` varchar(20) NOT NULL,
    `created_on` timestamp NULL DEFAULT NULL,
    `created_by` varchar(20) DEFAULT NULL,
    `changed_on` timestamp NULL DEFAULT NULL,
    `changed_by` varchar(20) DEFAULT NULL,
-   `deleted_on` timestamp NULL DEFAULT NULL,
-   `deleted_by` varchar(20) DEFAULT NULL,
-   PRIMARY KEY (`id`)
- ) ENGINE=InnoDB DEFAULT CHARSET=latin1
-
-
- CREATE TABLE `bill` (
-   `id` int NOT NULL AUTO_INCREMENT,
-   `vendor_id` int NOT NULL,
-   `bill_date` date NOT NULL,
-   `amount` varchar(20) NOT NULL,
-   `pdf_name` varchar(50) DEFAULT NULL,
-   `status` varchar(50) NOT NULL DEFAULT 'Pending',
-   `payment_due_date` date NOT NULL,
-   `amount_paid` varchar(45) DEFAULT '0',
-   `payment_method` varchar(45) DEFAULT NULL,
-   `paid_on` date DEFAULT NULL,
+   `status` varchar(20) NOT NULL DEFAULT 'created',
+   `remarks` varchar(50) DEFAULT NULL,
+   `receiver_code` varchar(20) NOT NULL,
+   `m3_min_size` int NOT NULL DEFAULT '0',
+   `m3_min_rate` varchar(20) DEFAULT NULL,
+   `weight_min_size` int NOT NULL DEFAULT '0',
+   `weight_min_rate` varchar(20) DEFAULT NULL,
+   `weight_size` int NOT NULL DEFAULT '0',
+   `weight_rate` varchar(20) DEFAULT NULL,
+   `is_billed` tinyint(1) NOT NULL DEFAULT '0',
+   `p_size` int NOT NULL DEFAULT '0',
+   `p_rate` varchar(20) DEFAULT NULL,
    PRIMARY KEY (`id`)
  ) ENGINE=InnoDB  DEFAULT CHARSET=latin1
-
-
-
- CREATE TABLE `bill_details` (
-   `id` int NOT NULL AUTO_INCREMENT,
-   `bill_id` varchar(20) NOT NULL,
-   `item_name` varchar(45) NOT NULL,
-   `expense_category` varchar(45) NOT NULL,
-	`description` varchar(50) NOT NULL DEFAULT 'Pending',
-	`oty` varchar(50) NOT NULL DEFAULT '0',
-    `price` varchar(20) NOT NULL,
-	`total_amount` varchar(20) NOT NULL,
-   PRIMARY KEY (`id`)
- ) ENGINE=InnoDB DEFAULT CHARSET=latin1
-
-
- 

@@ -32,9 +32,14 @@ module.exports = app => {
     var creditNoteController = require('./../controllers/Admin/FinancialDashboard/creditNoteController');
     var debitNoteController = require('./../controllers/Admin/FinancialDashboard/debitNoteController');
     var accStatementController = require('./../controllers/Admin/FinancialDashboard/customerStatementController');
-    var expenseController = require('./../controllers/Admin/FinancialDashboard/expenseController');
+    var billController = require('../controllers/Admin/FinancialDashboard/billController');
     var transactionController = require('./../controllers/Admin/FinancialDashboard/TransactionController');
     var chartAccountController = require('./../controllers/Admin/FinancialDashboard/chartsAccountController');
+
+    // Client Controller declarations
+    var clinetNewCosignmentController = require('./../controllers/Client/NewConsignmentController');
+    var clientConsignmentController = require('./../controllers/Client/consignmentController');
+    var clientInvoiceController = require('./../controllers/Client/invoiceController');
 
     app.get("/", (req, res) => {
         res.json({ message: "Welcome to PSA Application ." });
@@ -124,7 +129,9 @@ module.exports = app => {
     app.get('/api/:id/checkinvoice/:invoice_no', invoiceController.checkInvoice);
     app.post('/api/:id/getinvoice', invoiceController.getInvoices);
     app.post('/api/:id/previewinvoice', invoiceController.previewInvoice);
+    app.post('/api/:id/consignmentpreviewinvoice', invoiceController.consignmentPreviewInvoice);
     app.post('/api/:id/generateinvoice', invoiceController.generateInvoice);
+    app.post('/api/:id/consignmentgenerateinvoice', invoiceController.consignmentGenerateInvoice);
     app.post('/api/:id/recordpayment', invoiceController.recordPayment);
 
     // CreditNote
@@ -145,17 +152,39 @@ module.exports = app => {
     app.post('/api/:id/getaccountstatement', accStatementController.getAccountStatement);
 
     // Expense
-    app.get('/api/:id/getallexpenses', expenseController.getAllExpenses);
-    app.post('/api/:id/postexpense', expenseController.postExpense);
+    app.get('/api/:id/getallvendors', billController.getAllVendors);
+    app.get('/api/:id/deletevendor', billController.destroyVendor);
+    app.post('/api/:id/postnewvendor', billController.postNewVendor);
+    app.post('/api/:id/updatevendor', billController.updateVendor);
+
+    app.get('/api/:id/getallbills', billController.getAllBills);
+    app.get('/api/:id/getbill/:vendor_id', billController.getBill);
+    app.get('/api/:id/getbilldetails/:vendor_id/:bill_id', billController.getBillDetails);
+    app.post('/api/:id/createbill', billController.createBill);
+    // app.post('/api/:id/creditnote/recordpayment', creditNoteController.recordPayment);
+
 
     // transaction
     app.get('/api/:id/getalltransactions', transactionController.getAllTransactions);
-
+    app.post('/api/:id/postexpense', transactionController.PostNewExpense);
+    app.post('/api/:id/postincome', transactionController.PostNewIncome);
 
     // charts of accounts
     app.get('/api/:id/getallaccounttypes', chartAccountController.getAllAccountTypes);
     app.get('/api/:id/getallaccounts', chartAccountController.getAllAccounts);
     app.post('/api/:id/createaccount', chartAccountController.postNewAccount);
+
+    // client routes starts here
     
+    // new consignment routes
+    app.post('/api/:id/client/postnewconsignment', clinetNewCosignmentController.postNewConsignmentClient);
+    app.post('/api/:id/client/updateconsignment', clinetNewCosignmentController.updateConsignment);
+
+    // Consignment routes
+    app.get('/api/:id/client/getallconsignments', clientConsignmentController.getAllConsignments);
+    app.get('/api/:id/client/getallapprovedconsignments', clientConsignmentController.getAllApprovedConsignments);
+
+    // invoice routes
+    app.get('/api/:id/client/getallinvoices', clientInvoiceController.getAllInvoices);
 
 }

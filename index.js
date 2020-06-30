@@ -50,7 +50,7 @@ var CronJob = require('cron').CronJob;
 var job = new CronJob('59 59 23 * * *', function() {
  
     //cron job for moving the consignments which is in out for delivery back to cosignments
-    let consignmentQuery = "SELECT * FROM consignment where status = 'out for delivery';"
+    let consignmentQuery = "SELECT * FROM consignment where status = 'out for delivery' and is_approved = 1;"
     connection.query(consignmentQuery, (err, rows) => {
         if(err){
            console.log("Error in some Query");
