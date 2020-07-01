@@ -53,6 +53,17 @@ module.exports = {
     },
 
     upload: (req,res) => {
+            const PDFDocument = require('pdfkit');
+            const fs = require('fs');
+            // const doc = new PDFDocument
+
+            //Pipe its output somewhere, like to a file or HTTP response 
+            //See below for browser usage 
+            // doc.pipe(fs.createWriteStream('output.pdf'))
+
+
+            //Add an image, constrain it to a given size, and center it vertically and horizontally 
+           
         let today = new Date();
         let file_url;
         // const doc = new PDFDocument;
@@ -77,7 +88,15 @@ module.exports = {
                         })
                     }else{
                         var file = req.files.file;
+                        const doc = new PDFDocument
+                        doc.image(file.data, {
+                            fit: [500, 400],
+                            align: 'center',
+                            valign: 'center'
+                            });
 
+
+                            doc.end()
                         let s3bucket = new AWS.S3({
                             accessKeyId: IAM_USER_KEY,
                             secretAccessKey: IAM_SECRET_KEY,
@@ -87,8 +106,8 @@ module.exports = {
                         // s3bucket.createBucket(function() {
                             var params = {
                                 Bucket: BUCKET_NAME,
-                                Key: req.body.cn_no,
-                                Body: file.data
+                                Key: req.body.cn_no + '.pdf',
+                                Body: doc
                             }
                             s3bucket.upload(params,function (err, data) {
                                 if(err){

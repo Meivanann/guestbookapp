@@ -136,7 +136,7 @@ module.exports = {
                             let ts = Date.now();
                             let date_ob = new Date(ts);
 
-                            let updateConsignmentQuery = "update consignment set driver_name = ?, region = ?, status = ?  where id = ?";
+                            let updateConsignmentQuery = "update consignment set driver_name = ?, region = ?, status = ?, expiry_date = ?  where id = ?";
                             if(regrows[0].region === "SOUTH"){
                                 status = "assign to south";
                                 tracking_status = "TRANSIT JB"
@@ -166,7 +166,7 @@ module.exports = {
 
                             }
                             
-                            let consignment_data = [driverName, regrows[0].region, status, row.id ];
+                            let consignment_data = [driverName, regrows[0].region, status, req.body.expiry_date ,row.id ];
                             console.log( "region : " + regrows[0].region);
                             console.log( "status : " + status);
                             console.log( "cn_no : " + row.cn_no);
@@ -241,10 +241,10 @@ module.exports = {
                     //updating the consignments
                     let ts = Date.now();
                     let date_ob = new Date(ts);
-                    let updateConsignmentQuery = "update consignment set driver_name = ?, status = ?  where id = ?";
+                    let updateConsignmentQuery = "update consignment set driver_name = ?, status = ?, expiry_date = ?  where id = ?";
                     let status = "out for delivery";
 
-                    let consignment_data = [driverName, status, row.id ];
+                    let consignment_data = [driverName, status, req.body.expiry_date, row.id ];
 
                     connection.query(updateConsignmentQuery, consignment_data, (err,rows) => {
                         if(err){
@@ -332,10 +332,10 @@ module.exports = {
                     //updating the consignments
                     let ts = Date.now();
                     let date_ob = new Date(ts);
-                    let updateConsignmentQuery = "update consignment set driver_name = ?, status = ?  where id = ?";
+                    let updateConsignmentQuery = "update consignment set driver_name = ?, status = ?, expiry_date = ?  where id = ?";
                     let status = "out for delivery";
 
-                    let consignment_data = [driverName, status, row.id ];
+                    let consignment_data = [driverName, status, req.body.expiry_date, row.id ];
 
                     connection.query(updateConsignmentQuery, consignment_data, (err,rows) => {
                         if(err){

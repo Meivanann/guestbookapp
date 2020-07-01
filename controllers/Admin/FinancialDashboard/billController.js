@@ -28,7 +28,7 @@ module.exports = {
     postNewVendor: (req, res) => {
         //inserting the record in shipping table
         var vendor_data = {
-            'name'            :  rq.body.name,
+            'name'            :  req.body.name,
             'contact'         :  req.body.contact,
             'address1'        :  req.body.address1,
             'city'            :  req.body.city,

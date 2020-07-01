@@ -50,9 +50,9 @@ module.exports = {
             } else if (rows.length == 0 ){
                console.log("no results found");
                res.json({
-                status: 2,
-                message: "No data Found"
-            })
+                    status: 2,
+                    message: "No data Found"
+                })
             } else {
                 console.log("results found");
                 res.json({
@@ -150,7 +150,8 @@ module.exports = {
             "status":status,
             "remarks":req.body.remarks,
             "invoice_no":'',
-            "is_approved": 1
+            "is_approved": 1,
+            "bill_to" : req.body.bill_to
         }
         //inserting a record in consignmnet table
         let query = "INSERT INTO consignment SET ?"
@@ -283,6 +284,7 @@ module.exports = {
                         "total_amount":req.body.total_amount,
                         "status":"Close",
                         "remarks":req.body.remarks,
+                        "bill_to" : req.body.bill_to
                     }
                 }else{
                     if(req.body.destination_code === destination_old){
@@ -329,6 +331,7 @@ module.exports = {
                             "total_amount":req.body.total_amount,
                             "status":status_old,
                             "remarks":req.body.remarks,
+                            "bill_to" : req.body.bill_to
                             }
                     } else{
                         
@@ -391,6 +394,7 @@ module.exports = {
                             "total_amount":req.body.total_amount,
                             "status":"created",
                             "remarks":req.body.remarks,
+                            "bill_to" : req.body.bill_to
                         }
 
                         //deleting records in tracking table

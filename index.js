@@ -68,7 +68,8 @@ var job = new CronJob('59 59 23 * * *', function() {
                 }else {
                     status = "created"
                 }
-
+                let today = new Date();
+                if(today >= row.eexpiry_date){
                 let updateConsignmentQuery = "update consignment set status = ?  where cn_no = ?";
                 let consignment_data = [ status, row.cn_no ];
                 let delete_tracking = "delete from out_for_delivery where cn_no = ?;"
@@ -87,6 +88,7 @@ var job = new CronJob('59 59 23 * * *', function() {
                         console.log("Deleted sucessfully");
                     }
                 })
+            }
 
             })
         }
