@@ -2,7 +2,7 @@ var connection = require('../../../config');
 
 module.exports = {
     index: (req,res) => {
-        let query = "SELECT * FROM destination where deleted_by = '';"
+        let query = "SELECT * FROM destination;"
 
         connection.query(query, (err,rows) => {
             if(err){
@@ -71,7 +71,7 @@ module.exports = {
                 })
 
                 //adding rows in charges table using shipping table
-                let chargeQuery = "select distinct shipper_code from shipping where deleted_by = ''  order by shipper_code;"
+                let chargeQuery = "select distinct shipper_code from shipping  order by shipper_code;"
                 connection.query(chargeQuery, (err,rows) => { 
                     if(err){
                         console.log(err);

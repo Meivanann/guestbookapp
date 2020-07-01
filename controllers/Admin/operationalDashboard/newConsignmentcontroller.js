@@ -3,7 +3,7 @@ var connection = require('../../../config');
 module.exports = {
     getShipperDetails: (req,res) => {
         console.log(req.params.id);
-        let query = "SELECT * FROM shipping where deleted_by = '';"
+        let query = "SELECT * FROM shipping"
        connection.query(query, (err,rows) => {
             if(err){
                 console.log(err);
