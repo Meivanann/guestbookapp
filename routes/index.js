@@ -1,3 +1,5 @@
+const dashboardController = require('./../controllers/Admin/operationalDashboard/dashboardController');
+
 module.exports = app => { 
 
     const redirectLogin = (req, res, next) => { 
@@ -65,9 +67,11 @@ module.exports = app => {
     app.get('/api/:id/getconsignmenthq', consignmentController.getConsignmentHq);
     app.get('/api/:id/getconsignmentnorth', consignmentController.getConsignmentNorth);
     app.get('/api/:id/getconsignmentsouth', consignmentController.getConsignmentSouth);
+    app.get('/api/:id/getconsignmentsforapproval', dashboardController.getAllConsignmentsForApproval);
     app.post('/api/:id/postconsignmenthq', consignmentController.postConsignmentHq);
     app.post('/api/:id/postconsignmentnorth', consignmentController.postConsignmentNorth);
     app.post('/api/:id/postconsignmentsouth', consignmentController.postConsignmentSouth);
+    app.post('/api/:id/postconsignmentapproval', dashboardController.postConsignmentApproval);
 
     //new-Consignment Api's
     app.get('/api/:id/getshipperdata', newConsignmentController.getShipperDetails);

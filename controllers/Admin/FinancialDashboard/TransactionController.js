@@ -45,7 +45,7 @@ module.exports = {
             "account"       : req.body.account,
             "type"         : "Expense",
             "amount"       :  req.body.amount,
-            "created_on"   :  today,
+            "created_on"   :  req.body.today_date,
             "description"  :  req.body.description
         }
 
@@ -71,7 +71,7 @@ module.exports = {
             "account"       : req.body.account,
             "type"         : "Income",
             "amount"       :  req.body.amount,
-            "created_on"   :  today,
+            "created_on"   :  req.body.today_date,
             "description"  :  req.body.description
         }
 
