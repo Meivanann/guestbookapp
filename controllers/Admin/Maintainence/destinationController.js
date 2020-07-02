@@ -241,5 +241,59 @@ module.exports = {
                 })
             }
         })
+    },
+
+    getDestinationShipperData: (req,res) => {
+        let query = "SELECT destination_code FROM charges where shipper_code = ?;"
+
+        connection.query(query, req.params.shipper_code, (err,rows) => {
+            if(err){
+                res.json({
+                    status:false,
+                    message: 'there are some error with query'
+                })
+            } else {
+                connection.query(query, req.params.shipper_code, (err,all_rows) => {
+                    if(err){
+                        res.json({
+                            status:false,
+                            message: 'there are some error with query'
+                        })
+                    } else {
+                            res.json({
+                                status: true,
+                                shipper_code:req.params.shipper_code,
+                                selectedDestinationCodes: rows,
+                                allDestinationCodes:all_rows
+                            })
+                    }
+                });
+            }
+        })
+    },
+
+    postDestinationShipperData:(req,res) => {
+        let shipper_code = req.body.shipper_code;
+        let data = JSON.parse(req.body.update_charges);
+
+        let query = "Delete from  charges where shipper_code = ?"
+        connection.query(query, shipper_code,(err,rows) => {
+            if(err){
+                res.json({
+                    status:false,
+                    message: 'there are some error with query'
+                })
+            }  else {
+                data.forEach(element => {
+                    console.log(element);
+                });
+                res.json({
+                    status: 1,
+                    data:"wait"
+                })
+            }
+        })
+
     }
+
 }

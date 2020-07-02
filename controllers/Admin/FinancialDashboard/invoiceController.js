@@ -144,6 +144,7 @@ module.exports = {
         // let invoice_number = req.body.invoice_number;
         let invoice_date = req.body.invoice_date;
 
+        console.log(req.body); 
         let query = "SELECT * FROM consignment where (cn_datetime between ? and ? ) and status = 'Close' and shipper_code=? and is_billed = 0 and is_approved = 1;"
         let data = [start_date, end_date, shipper_code];
 
@@ -298,7 +299,8 @@ module.exports = {
 
                                 res.json({
                                     status:true,
-                                    message:'Invoice generated sucessfully'
+                                    message:'Invoice generated sucessfully',
+                                    invoice_number: invoice_number
                                 })
                             }
                         });                
@@ -459,7 +461,7 @@ module.exports = {
                             sub_amount:rows[0].sub_amount,
                             tax_amount: rows[0].tax_amount,
                             total_amount: rows[0].total_amount,
-                            payment_due:req.body.payment_due_date,
+                            payment_due:req.body.payment_due,
                             invoice_date:req.body.invoice_date,
                             // invoice_number:invoice_number
                         })
@@ -570,7 +572,8 @@ module.exports = {
 
                                 res.json({
                                     status:true,
-                                    message:'Invoice generated sucessfully'
+                                    message:'Invoice generated sucessfully',
+                                    invoice_number:invoice_number
                                 })
                             }
                         });                

@@ -26,6 +26,30 @@ module.exports = {
         })
     },
 
+    getAllTheConsignments: (req,res) => { 
+        let query = "SELECT * FROM consignment;"
+
+        connection.query(query, (err,rows) => {
+            if(err){
+                res.json({
+                    status:false,
+                    message:'there are some error with query'
+                    })
+            } else if (rows.length == 0 ){
+                res.json({
+                    status:false,
+                    message:"No results found"
+                   });
+            } else {
+                res.json({
+                    status: true,
+                    data:rows
+                })
+            }
+            
+        })
+    },
+
 
     getConsignmentHq: (req,res) => { 
         let query = "SELECT * FROM consignment WHERE region = 'HQ' AND status='created' and is_approved = 1 ORDER BY cn_datetime DESC; SELECT * FROM users WHERE position='driver';"
@@ -395,5 +419,36 @@ module.exports = {
             status:true,
             message:"Successfully updated the records"
             });
-    }
+    },
+
+    deleteConsignment: (req,res) => { 
+        let cn_no = req.params.cn_no;
+
+        connection.query('delete from consignment where cn_no= ?',cn_no, function (lgerr, lgres, fields) {
+            if (lgerr) {
+                console.log(lgerr)
+            }else{
+                console.log("Consignment deleted successfully");
+                connection.query('delete from tracking where cn_no= ?',cn_no, function (err, lgres, fields) {
+                    if (err) {
+                        console.log(err)
+                    }else{
+                        console.log("Tracking deleted successfully");
+                    }
+                });
+                connection.query('delete from out_for_delivery where cn_no= ?',cn_no, function (er, lgres, fields) {
+                    if (er) {
+                        console.log(er)
+                    }else{
+                        console.log(" Out for delivery record deleted successfully");
+                    }
+                });
+
+                res.json({
+                    status:true,
+                    message:"Consignment Deleted Successfully"
+                    });
+            }
+        });
+    },
 }

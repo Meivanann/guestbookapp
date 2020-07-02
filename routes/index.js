@@ -1,4 +1,5 @@
 const dashboardController = require('./../controllers/Admin/operationalDashboard/dashboardController');
+const ConsignmentController = require('./../controllers/Driver/ConsignmentController');
 
 module.exports = app => { 
 
@@ -64,6 +65,7 @@ module.exports = app => {
 
     //dashboard - Consignment Hq
     app.get('/api/:id/getallconsignments', consignmentController.getAllConsignments);
+    app.get('/api/:id/getalltheconsignments', consignmentController.getAllTheConsignments);
     app.get('/api/:id/getconsignmenthq', consignmentController.getConsignmentHq);
     app.get('/api/:id/getconsignmentnorth', consignmentController.getConsignmentNorth);
     app.get('/api/:id/getconsignmentsouth', consignmentController.getConsignmentSouth);
@@ -72,6 +74,7 @@ module.exports = app => {
     app.post('/api/:id/postconsignmentnorth', consignmentController.postConsignmentNorth);
     app.post('/api/:id/postconsignmentsouth', consignmentController.postConsignmentSouth);
     app.post('/api/:id/postconsignmentapproval', dashboardController.postConsignmentApproval);
+    app.get('/api/:id/deleteconsignment/:cn_no', consignmentController.deleteConsignment);
 
     //new-Consignment Api's
     app.get('/api/:id/getshipperdata', newConsignmentController.getShipperDetails);
@@ -103,6 +106,7 @@ module.exports = app => {
     app.post('/api/:id/adddestination', destinationController.store);
     app.post('/api/:id/updatedestination', destinationController.update);
     app.get('/api/:id/deletedestination/:destination_id', destinationController.destroy);
+    app.get('/api/:id/getdestinationcodesofshipper/:shipper_code', destinationController.getDestinationShipperData);
 
     //maintanence - Receiver
     app.get('/api/:id/getreceiver', receiverController.index);
