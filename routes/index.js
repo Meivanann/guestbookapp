@@ -103,10 +103,12 @@ module.exports = app => {
 
     //maintainence - Destination
     app.get('/api/:id/getdestination', destinationController.index);
+    app.get('/api/:id/getregion/:destination_code', destinationController.getRegion);
     app.post('/api/:id/adddestination', destinationController.store);
     app.post('/api/:id/updatedestination', destinationController.update);
     app.get('/api/:id/deletedestination/:destination_id', destinationController.destroy);
     app.get('/api/:id/getdestinationcodesofshipper/:shipper_code', destinationController.getDestinationShipperData);
+    app.post('/api/:id/postdestinationcodesofshipper', destinationController.postDestinationShipperData);
 
     //maintanence - Receiver
     app.get('/api/:id/getreceiver', receiverController.index);

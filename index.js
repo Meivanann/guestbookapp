@@ -46,56 +46,56 @@ require("./routes/index.js")(app);
 //   });
 var connection = require('./config');
 
-// var CronJob = require('cron').CronJob;
-// var job = new CronJob('59 59 23 * * *', function() {
+var CronJob = require('cron').CronJob;
+var job = new CronJob('59 59 23 * * *', function() {
  
-//     //cron job for moving the consignments which is in out for delivery back to cosignments
-//     let consignmentQuery = "SELECT * FROM consignment where status = 'out for delivery' and is_approved = 1;"
-//     connection.query(consignmentQuery, (err, rows) => {
-//         if(err){
-//            console.log("Error in some Query");
-//         } else if (rows.length == 0 ){
-//            console.log("no Results Found");
-//         } else {
-//             Object.keys(rows).forEach(function(key) {
-//                 var row = rows[key];
-//                 let status;
+    //cron job for moving the consignments which is in out for delivery back to cosignments
+    let consignmentQuery = "SELECT * FROM consignment where status = 'out for delivery' and is_approved = 1;"
+    connection.query(consignmentQuery, (err, rows) => {
+        if(err){
+           console.log("Error in some Query");
+        } else if (rows.length == 0 ){
+           console.log("no Results Found");
+        } else {
+            Object.keys(rows).forEach(function(key) {
+                var row = rows[key];
+                let status;
 
-//                 if(row.region === "SOUTH"){
-//                     status = "assign to south";
-//                 }else if (row.region === "NORTH"){
-//                     status = "assign to south";
-//                 }else {
-//                     status = "created"
-//                 }
-//                 let today = new Date();
-//                 if(today >= row.eexpiry_date){
-//                 let updateConsignmentQuery = "update consignment set status = ?  where cn_no = ?";
-//                 let consignment_data = [ status, row.cn_no ];
-//                 let delete_tracking = "delete from out_for_delivery where cn_no = ?;"
+                if(row.region === "SOUTH"){
+                    status = "assign to south";
+                }else if (row.region === "NORTH"){
+                    status = "assign to south";
+                }else {
+                    status = "created"
+                }
+                let today = new Date();
+                if(today >= row.eexpiry_date){
+                let updateConsignmentQuery = "update consignment set status = ?  where cn_no = ?";
+                let consignment_data = [ status, row.cn_no ];
+                let delete_tracking = "delete from out_for_delivery where cn_no = ?;"
 
-//                 connection.query(updateConsignmentQuery, consignment_data, (err,rows) => {
-//                     if(err){
-//                         console.log(err)
-//                     } else {
-//                         console.log("updated sucessfully");
-//                     }
-//                 });
-//                 connection.query(delete_tracking, row.cn_no, (err,rows) => {
-//                     if(err){
-//                         console.log(err)
-//                     } else {
-//                         console.log("Deleted sucessfully");
-//                     }
-//                 })
-//             }
+                connection.query(updateConsignmentQuery, consignment_data, (err,rows) => {
+                    if(err){
+                        console.log(err)
+                    } else {
+                        console.log("updated sucessfully");
+                    }
+                });
+                connection.query(delete_tracking, row.cn_no, (err,rows) => {
+                    if(err){
+                        console.log(err)
+                    } else {
+                        console.log("Deleted sucessfully");
+                    }
+                })
+            }
 
-//             })
-//         }
-//     })
+            })
+        }
+    })
 
-// }, null, true, 'Asia/Singapore');
-// job.start();
+}, null, true, 'Asia/Singapore');
+job.start();
 
 
 app.listen(PORT, () => {
