@@ -1,0 +1,69 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js add express, mysql, read-excel-file, multer
+
+PATH: 
+  C:\Python38\Scripts\;C:\Python38\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\nodejs\;C:\ProgramData\chocolatey\bin;C:\Program Files\PuTTY\;C:\Program Files (x86)\Yarn\bin\;C:\Program Files\MySQL\MySQL Shell 8.0\bin\;C:\Users\Admin\AppData\Local\Microsoft\WindowsApps;;C:\Users\Admin\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Admin\AppData\Roaming\npm;C:\Users\Admin\AppData\Local\Yarn\bin
+
+Yarn version: 
+  1.22.4
+
+Node version: 
+  12.18.0
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/express,: Not found
+      at Request.params.callback [as _callback] (C:\Program Files (x86)\Yarn\lib\cli.js:66096:18)
+      at Request.self.callback (C:\Program Files (x86)\Yarn\lib\cli.js:140748:22)
+      at Request.emit (events.js:315:20)
+      at Request.<anonymous> (C:\Program Files (x86)\Yarn\lib\cli.js:141720:10)
+      at Request.emit (events.js:315:20)
+      at IncomingMessage.<anonymous> (C:\Program Files (x86)\Yarn\lib\cli.js:141642:12)
+      at Object.onceWrapper (events.js:421:28)
+      at IncomingMessage.emit (events.js:327:22)
+      at endReadableNT (_stream_readable.js:1221:12)
+      at processTicksAndRejections (internal/process/task_queues.js:84:21)
+
+npm manifest: 
+  {
+    "name": "psa",
+    "version": "1.0.0",
+    "description": "PSA",
+    "main": "index.js",
+    "scripts": {
+      "dev": "nodemon index"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+      "aws-sdk": "^2.687.0",
+      "body-parser": "^1.19.0",
+      "cookie-parser": "^1.4.5",
+      "cors": "^2.8.5",
+      "cron": "^1.8.2",
+      "cryptr": "^6.0.2",
+      "express": "^4.17.1",
+      "express-fileupload": "^1.1.7-alpha.3",
+      "express-session": "^1.17.1",
+      "fs": "0.0.1-security",
+      "handlebars": "^4.7.6",
+      "hash": "^0.2.1",
+      "jsonwebtoken": "^8.5.1",
+      "mysql": "^2.18.1",
+      "pdf-invoice": "^1.0.2",
+      "pdfkit": "^0.11.0",
+      "puppeteer": "^3.3.0"
+    },
+    "devDependencies": {
+      "nodemon": "^2.0.4",
+      "standard": "^14.3.4"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

@@ -13,7 +13,7 @@ module.exports = {
     index: (req,res) => {
         console.log(req.params.id);
         let cn_no = req.params.cn_no;
-        let query = "select * from out_for_delivery where status = 'In-progress' order by datetime desc;"
+        let query = "select o.*, c.quantity from out_for_delivery o, consignment c where o.status = 'In-progress' and o.cn_no = c.cn_no order by datetime desc;"
        connection.query(query,cn_no, (err,rows) => {
             if(err){
                 console.log(err);
@@ -300,6 +300,86 @@ module.exports = {
         catch (err) {
             console.log(err);
         }
+    },
+
+    deletePod : (req,res) => {
+        
+        let cn_no = req.params.cn_no;
+
+        console.log("delete pod fnction");
+
+
+        let s3bucket = new AWS.S3({
+            accessKeyId: IAM_USER_KEY,
+            secretAccessKey: IAM_SECRET_KEY,
+        });
+
+        var params = {
+            Bucket: BUCKET_NAME,
+            Key: 'DIRECT5.pdf',
+        };
+        s3bucket.deleteObject(params, function (err, data) {
+            if (data) {
+                console.log("File deleted successfully");
+            }
+            else {
+                console.log("Check if you have sufficient permissions : "+err);
+            }
+        });
+
+        
+        //deleting the records
+        let tracking_delete_query = "delete from tracking  where cn_no = ? and (status = 'ATTEMPTING' or status ='DELIVERED');"
+        connection.query(tracking_delete_query, cn_no, (err,rows) => {
+            if(err){
+                console.log(err)
+            } else {
+                console.log("Tracking Data Deleted Successfully");
+            }
+        })
+
+        let consignment_update_query = "UPDATE consignment set status = ? where cn_no = ?"
+        let data1 = ["out for delivery", cn_no];
+        connection.query(consignment_update_query, data1, (err,rows) => {
+            if(err){
+                console.log(err);
+            } else {
+                console.log("Consignment updated  sucessfully");
+            }
+        })
+        
+        //updating out for delivery
+        let ofd_update_query = "UPDATE out_for_delivery set ? where cn_no = ?"
+        var ofd_data = {
+            'status' : "In-progress",
+            'attachment' : "",
+            // 'datetime' : today
+        }
+        let data2 = [ofd_data, cn_no];
+        connection.query(ofd_update_query, data2, (err,rows) => {
+            if(err){
+                console.log(err);
+            } else {
+                console.log("OFD updated  sucessfully");
+            }
+        })
+        
+        //creating a log
+        var log_data = {
+            "status": "user - " + req.params.id + " updated Consignment No. [" + cn_no + " ] to oUT FOR DELIVERY"
+        }
+        connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
+            if (lgerr) {
+            console.log(lgerr)
+            }else{
+                console.log("log added successfully");
+            }
+        });
+        
+        res.json({
+            status:true,
+            message:'Consignment Updated sucessfully'
+        })
     }
 }
 

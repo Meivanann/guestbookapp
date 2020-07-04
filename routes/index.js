@@ -62,6 +62,8 @@ module.exports = app => {
     app.post('/api/:id/user-activation/destroy', userApprovalController.destroy);
     app.get('/api/:id/users', userApprovalController.getAllUsers);
     app.post('/api/:id/user/destroy', userApprovalController.deleteUser);
+    app.post('/api/:id/user/add', userApprovalController.addUser);
+    app.post('/api/:id/user/update', userApprovalController.updateUser);
 
     //dashboard - Consignment Hq
     app.get('/api/:id/getallconsignments', consignmentController.getAllConsignments);
@@ -91,6 +93,7 @@ module.exports = app => {
     app.get('/api/:id/outfordelivery', outforDelivery.index);
     app.get('/api/:id/outfordeliverycompleted', outforDelivery.ofdCompleted);
     app.post('/api/:id/updateoutfordelivery',outforDelivery.upload);
+    app.get('/api/:id/deletepod/:cn_no', outforDelivery.deletePod);
 
     //manifest
     app.post('/api/:id/driverofd', manifest.driverofd);
@@ -196,5 +199,8 @@ module.exports = app => {
 
     // invoice routes
     app.get('/api/:id/client/getallinvoices', clientInvoiceController.getAllInvoices);
+
+
+   
 
 }

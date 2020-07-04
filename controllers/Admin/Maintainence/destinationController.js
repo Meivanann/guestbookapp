@@ -163,7 +163,7 @@ module.exports = {
             'changed_by'            :  req.params.id,
         }
         let destination_query = "UPDATE destination SET ? where destination_code = ?"
-        let data = [destination_data, req.body.destination_code];
+        let data = [destination_data, req.body.existing_code];
 
         connection.query(destination_query,data, function (error, results, fields) {
             if (error) {
@@ -183,16 +183,12 @@ module.exports = {
             'destination_name'  : req.body.destination_name,
             'region'            : req.body.region
         }
-        let region_query = "UPDATE region SET ? where destination_code = ?"
-        let data1 = [region_data, req.body.destination_code];
+        let region_query = "UPDATE region SET ? where  destination_code = ?"
+        let data1 = [region_data, req.body.existing_code];
 
         connection.query(region_query,data1, function (error, results, fields) {
             if (error) {
                 console.log(error);
-                res.json({
-                    status:false,
-                    message:'there are some error with query'
-                })
             }else{
                 console.log("region taable updated sucessfully")
              }
@@ -204,7 +200,7 @@ module.exports = {
         }
         connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
             if (lgerr) {
-            console.log(lgerr)
+                console.log(lgerr)
             }else{
                 console.log("log added successfully");
             }

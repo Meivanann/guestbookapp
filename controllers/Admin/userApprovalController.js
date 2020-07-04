@@ -112,6 +112,73 @@ module.exports = {
         })
 
     },
+
+
+    addUser: (req,res) => {
+        let admin_id = req.params.id;
+        var today = new Date();
+        var encryptedString = cryptr.encrypt(req.body.password);
+        var users={
+            "firstname":req.body.firstname,
+            "lastname":req.body.lastname,
+            "email":req.body.email,
+            "username":req.body.username,
+            "password":encryptedString,
+            "position":req.body.position,
+            "active":1,
+            "created_at":today,
+            "updated_at":today
+        }
+    
+        connection.query('INSERT INTO users SET ?',users, function (error, results, fields) {
+          if (error) {
+            res.json({
+                status:false,
+                message:'there are some error with query'
+            })
+          }else{
+              res.json({
+                status:true,
+                data:results,
+                message:'user registered sucessfully'
+            })
+          }
+        });
+
+    },
+
+    updateUser: (req,res) => {
+        let user_id = req.body.id;
+        var today = new Date();
+        var encryptedString = cryptr.encrypt(req.body.password);
+        var users={
+            "firstname":req.body.firstname,
+            "lastname":req.body.lastname,
+            "email":req.body.email,
+            "username":req.body.username,
+            "password":encryptedString,
+            "position":req.body.position,
+            "active":1,
+            "updated_at":today
+        }
+
+        let data1 = [users ,user_id ]
+    
+        connection.query('UPDATE user SET ? where id = ?',data1, function (error, results, fields) {
+          if (error) {
+            res.json({
+                status:false,
+                message:'there are some error with query'
+            })
+          }else{
+              res.json({
+                status:true,
+                message:'user Updated sucessfully'
+            })
+          }
+        });
+
+    },
 }
 
 
