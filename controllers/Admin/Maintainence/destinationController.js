@@ -126,7 +126,8 @@ module.exports = {
 
                  //adding a log
                  var log_data = {
-                    "status": "user - " + req.params.id + "created destination -  name" + req.body.destination_name + " - " +  req.body.destination_code 
+                    "user_id" : req.params.id,
+                    "status": " has created a destination name " + req.body.destination_name + " - " +  req.body.destination_code 
                 }
                 connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
                     if (lgerr) {
@@ -196,7 +197,8 @@ module.exports = {
 
         //adding a log
         var log_data = {
-            "status": "user - " + req.params.id + "update destination -  name" + req.body.destination_name + " - " +  req.body.destination_code 
+            "user_id" : req.params.id,
+            "status": "has updated the  destination -  name" + req.body.destination_name + " - " +  req.body.destination_code 
         }
         connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
             if (lgerr) {

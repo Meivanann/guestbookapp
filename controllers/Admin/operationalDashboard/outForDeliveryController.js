@@ -13,7 +13,7 @@ module.exports = {
     index: (req,res) => {
         console.log(req.params.id);
         let cn_no = req.params.cn_no;
-        let query = "select o.*, c.quantity from out_for_delivery o, consignment c where o.status = 'In-progress' and o.cn_no = c.cn_no order by datetime desc;"
+        let query = "select o.*, c.quantity, c.expiry_date from out_for_delivery o, consignment c where o.status = 'In-progress' and o.cn_no = c.cn_no order by datetime desc;"
        connection.query(query,cn_no, (err,rows) => {
             if(err){
                 console.log(err);
@@ -184,7 +184,9 @@ module.exports = {
                                 
                                 //creating a log
                                 var log_data = {
-                                    "status": "user - " + req.params.id + "updated Consignment No. [" + req.body.cn_no + " ] to " + req.body.status
+                                    "user_id" : req.params.id,
+                                    "cn_no"   : req.body.cn_no,
+                                    "status": " has uploaded POD for  Consignment No. [" + req.body.cn_no + " ] to " + req.body.status
                                 }
                                 connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
                                     if (lgerr) {
@@ -233,7 +235,9 @@ module.exports = {
 
                             //creating a log
                         var log_data = {
-                            "status": "user - " + req.params.id + "updated Consignment No. [" + req.body.cn_no + " ] to " + req.body.status
+                            "user_id" : req.params.id,
+                            "cn_no"   : req.body.cn_no,
+                            "status": " has updated Consignment No. [" + req.body.cn_no + " ] to " + req.body.status
                         }
                         connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
                             if (lgerr) {
@@ -281,7 +285,9 @@ module.exports = {
 
                 //creating a log
                 var log_data = {
-                    "status": "user - " + req.params.id + "updated Consignment No. [" + req.body.cn_no + " ] to " + req.body.status
+                    "user_id" : req.params.id,
+                    "cn_no"   : req.body.cn_no,
+                    "status": " has updated Consignment No. [" + req.body.cn_no + " ] to " + req.body.status
                 }
                 connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
                     if (lgerr) {
@@ -366,7 +372,9 @@ module.exports = {
         
         //creating a log
         var log_data = {
-            "status": "user - " + req.params.id + " updated Consignment No. [" + cn_no + " ] to oUT FOR DELIVERY"
+            "user_id" : req.params.id,
+            "cn_no"   : cn_no,
+            "status": " has updated Consignment No. [" + cn_no + " ] to oUT FOR DELIVERY"
         }
         connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
             if (lgerr) {

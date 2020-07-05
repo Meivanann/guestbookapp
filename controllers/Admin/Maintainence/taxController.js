@@ -45,7 +45,8 @@ module.exports = {
                 console.log("Tax Data updated sucessfully")
                 //adding a log
                 var log_data = {
-                    "status": "user - " + req.params.id + "update  the tax "
+                    "user_id" : req.params.id,
+                    "status": " has updated  the tax "
                 }
                 connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
                     if (lgerr) {

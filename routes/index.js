@@ -1,5 +1,4 @@
-const dashboardController = require('./../controllers/Admin/operationalDashboard/dashboardController');
-const ConsignmentController = require('./../controllers/Driver/ConsignmentController');
+
 
 module.exports = app => { 
 
@@ -26,7 +25,7 @@ module.exports = app => {
     var receiverController = require('./../controllers/Admin/Maintainence/receiverController');
     var chargesController = require('./../controllers/Admin/Maintainence/chargesController');
     var taxController =require('./../controllers/Admin/Maintainence/taxController');
-    
+    var dashboardController=require('./../controllers/Admin/operationalDashboard/dashboardController')
     //drivercontroller declaration
     var driverConsignmentController = require('./../controllers/Driver/ConsignmentController');
 
@@ -77,6 +76,7 @@ module.exports = app => {
     app.post('/api/:id/postconsignmentsouth', consignmentController.postConsignmentSouth);
     app.post('/api/:id/postconsignmentapproval', dashboardController.postConsignmentApproval);
     app.get('/api/:id/deleteconsignment/:cn_no', consignmentController.deleteConsignment);
+    app.get('/api/:id/getlogs/:cn_no', consignmentController.getLogs);
 
     //new-Consignment Api's
     app.get('/api/:id/getshipperdata', newConsignmentController.getShipperDetails);

@@ -70,7 +70,9 @@ module.exports = {
 
                 //creating a log
                 var log_data = {
-                    "status": "user - " + req.params.id + "create new Consignment No. [" + req.body.cn_no + " ] to " + status
+                    "user_id" : req.params.id,
+                    "cn_no"   : req.body.cn_no,
+                    "status": " has create new Consignment No. [" + req.body.cn_no + " ] to " + status
                 }
                 connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
                     if (lgerr) {
@@ -165,7 +167,9 @@ module.exports = {
                         
                         //creating a log
                         var log_data = {
-                            "status": "user - " + req.params.id + "updated the Consignment No. [" + req.body.cn_no + " ] " 
+                            "user_id" : req.params.id,
+                            "cn_no"   : req.body.cn_no,
+                            "status": " has updated the Consignment No. [" + req.body.cn_no + " ] " 
                         }
                         connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
                             if (lgerr) {

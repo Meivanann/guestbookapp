@@ -218,7 +218,9 @@ module.exports = {
 
                             //creating a log
                             var log_data = {
-                               "status": "user - " + req.params.id + "move consignment no [" + row.cn_no + " ] to " + status
+                                "user_id"   : req.params.id,
+                                "cn_no"     : row.cn_no,
+                               "status": " has moved the  consignment no [" + row.cn_no + " ] to " + status
                             }
                             connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
                                 if (lgerr) {
@@ -311,7 +313,9 @@ module.exports = {
 
                     //creating a log
                     var log_data = {
-                        "status": "user - " + req.params.id + "move consignment no [" + row.cn_no + " ] to " + status
+                        "user_id"   : req.params.id,
+                        "cn_no"     : row.cn_no,
+                        "status": " has moved the  consignment no [" + row.cn_no + " ] to " + status
                     }
                     connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
                         if (lgerr) {
@@ -402,7 +406,9 @@ module.exports = {
 
                     //creating a log
                     var log_data = {
-                        "status": "user - " + req.params.id + "move consignment no [" + row.cn_no + " ] to " + status
+                        "user_id"   : req.params.id,
+                        "cn_no"     : row.cn_no,
+                        "status": " has moved the  consignment no [" + row.cn_no + " ] to " + status
                     }
                     connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
                         if (lgerr) {
@@ -444,11 +450,50 @@ module.exports = {
                     }
                 });
 
+                //creating a log
+                var log_data = {
+                    "user_id" : req.params.id,
+                    "cn_no"   : cn_no,
+                    "status": " has deleted the POD for  Consignment No. [" + cn_no + " ] and pushed back to out for delivery "
+                }
+                connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
+                    if (lgerr) {
+                    console.log(lgerr)
+                    }else{
+                        console.log("log added successfully");
+                    }
+                });
+
                 res.json({
                     status:true,
                     message:"Consignment Deleted Successfully"
                     });
             }
         });
+    },
+
+    getLogs: (req,res) => {
+        let cn_no = req.params.cn_no;
+        let query = "SELECT l.*, u.firstname FROM log l, users u where l.user_id = u.id and l.cn_no = ?;"
+       connection.query(query, cn_no, (err,rows) => {
+            if(err){
+                console.log(err);
+            } else if (rows.length == 0 ){
+                res.json({
+                    status: 2,
+                    message: "No consignment record found",
+                    data:rows
+                })
+            } else {
+        
+                res.json({
+                    status: true,
+                    logs:rows,
+                })
+                
+            }
+            
+        })
+       
     },
 }

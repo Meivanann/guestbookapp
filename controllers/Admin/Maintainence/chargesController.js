@@ -71,7 +71,8 @@ module.exports = {
 
                    //adding a log
                    var log_data = {
-                    "status": "user - " + req.params.id + "updates shipper code" + req.body.shipper_code + " - " +  req.body.shipper_name 
+                    "user_id" : req.params.id,
+                    "status": "has updated the charges for shipper code - " + req.body.shipper_code
                 }
                     connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
                         if (lgerr) {

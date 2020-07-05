@@ -146,8 +146,10 @@ module.exports = {
                 })
 
                 //creating a log
-                var log_data = {
-                    "status": "user - " + req.params.id + " approved Consignment No. [" + req.body.cn_no + " ]"
+                var log_data = { 
+                    "user_id" : req.params.id,
+                    "cn_no"   : req.body.cn_no,
+                    "status": " has  approved Consignment No. [" + req.body.cn_no + " ]"
                 }
                 connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
                     if (lgerr) {

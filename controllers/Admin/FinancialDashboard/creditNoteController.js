@@ -336,7 +336,8 @@ module.exports = {
                 console.log(results);
                 //creating a log
                 var log_data = {
-                    "status": "user - " + req.params.id + "updated the credit No. [" + credit_note_id + " ] " 
+                    "user_id"   : req.params.id,
+                    "status": " has recorded th payment for crednit Note number " + credit_note_id 
                 }
                 connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
                     if (lgerr) {
