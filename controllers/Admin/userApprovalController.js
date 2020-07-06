@@ -94,7 +94,7 @@ module.exports = {
     
     deleteUser: (req,res) => {
         let user_id = req.body.id;
-
+        console.log(req.body);
         let query = "delete from users where id = ?";
 
         connection.query(query, user_id, (err,rows) => {
@@ -110,11 +110,11 @@ module.exports = {
                 })
             }
         })
-
     },
 
 
     addUser: (req,res) => {
+        console.log(req.body);
         let admin_id = req.params.id;
         var today = new Date();
         var encryptedString = cryptr.encrypt(req.body.password);
@@ -129,25 +129,39 @@ module.exports = {
             "created_at":today,
             "updated_at":today
         }
-    
-        connection.query('INSERT INTO users SET ?',users, function (error, results, fields) {
-          if (error) {
-            res.json({
-                status:false,
-                message:'there are some error with query'
-            })
-          }else{
-              res.json({
-                status:true,
-                data:results,
-                message:'user registered sucessfully'
-            })
-          }
+
+        connection.query('select * from users where username = ?', req.body.username, function(err, rows){
+            if(err){
+                console.log(err);
+            } else if (rows.length === 0){
+                connection.query('INSERT INTO users SET ?',users, function (error, results, fields) {
+                    if (error) {
+                      console.log(error);
+          
+                      res.json({
+                          status:false,
+                          message:'there are some error with query'
+                      })
+                    }else{
+                        res.json({
+                          status:true,
+                          data:results,
+                          message:'user registered sucessfully'
+                      })
+                    }
+                  });
+            }else{
+                res.json({
+                    status:1,
+                    message:'Username Already Exists'
+                })
+            }
         });
 
     },
 
     updateUser: (req,res) => {
+        console.log(req.body);
         let user_id = req.body.id;
         var today = new Date();
         var encryptedString = cryptr.encrypt(req.body.password);
@@ -164,13 +178,15 @@ module.exports = {
 
         let data1 = [users ,user_id ]
     
-        connection.query('UPDATE user SET ? where id = ?',data1, function (error, results, fields) {
+        connection.query('UPDATE users SET ? where id = ?',data1, function (error, results, fields) {
           if (error) {
+              console.log(error);
             res.json({
                 status:false,
                 message:'there are some error with query'
             })
           }else{
+              console.log(results)
               res.json({
                 status:true,
                 message:'user Updated sucessfully'
@@ -179,6 +195,38 @@ module.exports = {
         });
 
     },
+
+    viewUser: (req,res) => {
+        let user_id = req.params.user_id;
+
+        let query = "select * from users where id = ?"
+
+        connection.query(query, user_id, (err,rows) => {
+            if(err){
+                res.json({
+                    status:false,
+                    message: 'there are some error with query'
+                })
+            } else if (rows.length == 0 ){
+                res.json({
+                    status: -1,
+                    message:' No results found'
+                })
+            } else {
+
+
+                res.json({
+                    status: 1,
+                    username:rows[0].username,
+                    password:cryptr.decrypt(rows[0].password),
+                    firstname:rows[0].firstname,
+                    lastname:rows[0].lastname,
+                    position:rows[0].position,
+                    email:rows[0].email,
+                })
+            }
+        })
+    }
 }
 
 

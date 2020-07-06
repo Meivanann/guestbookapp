@@ -22,6 +22,7 @@
     "handlebars": "^4.7.6",
     "hash": "^0.2.1",
     "jsonwebtoken": "^8.5.1",
+    "moment": "^2.27.0",
     "mysql": "^2.18.1",
     "pdf-invoice": "^1.0.2",
     "pdfkit": "^0.11.0",

@@ -21,7 +21,7 @@ module.exports = {
         "updated_at":today
     }
 
-    console.log(users);
+    // console.log(users);
     connection.query('INSERT INTO users SET ?',users, function (error, results, fields) {
       if (error) {
         res.json({
@@ -40,8 +40,8 @@ module.exports = {
   
   login: (req,res) => {
 
-    console.log("request");
-    console.log(req.body);
+    // console.log("request");
+    // console.log(req.body);
     var username=req.body.username;
     var password=req.body.password;
    

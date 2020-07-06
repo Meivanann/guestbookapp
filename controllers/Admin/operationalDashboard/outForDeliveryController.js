@@ -2,11 +2,12 @@ var connection = require('../../../config');
 
 const fs = require('fs');
 const AWS = require('aws-sdk');
-
+const moment = require('moment');
 
 const BUCKET_NAME = 'poddocs';
 const IAM_USER_KEY = 'AKIARRRQHZXBINF6YWP2';
 const IAM_SECRET_KEY = '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';
+
 
 
 module.exports = {
@@ -63,7 +64,8 @@ module.exports = {
 
 
             //Add an image, constrain it to a given size, and center it vertically and horizontally 
-           
+            let test = new Date( "dd-mm-yyyy");
+           console.log();
         let today = new Date();
         let file_url;
         // const doc = new PDFDocument;
@@ -87,120 +89,140 @@ module.exports = {
                             message:"You need to upload receipt screenshot to Completed this task"
                         })
                     }else{
-                        var file = req.files.file;
-                        const doc = new PDFDocument
-                        doc.image(file.data, {
-                            fit: [500, 400],
-                            align: 'center',
-                            valign: 'center'
+                        connection.query('select * from consignment where cn_no = ?', req.body.cn_no, (err,consignment_results) => {
+                            if(err){
+                                console.log(err);
+                            } else { 
+                            var file = req.files.file;
+                            const doc = new PDFDocument
+                            doc
+                                .font('Times-Bold')
+                                .fontSize(8)
+                                .text("GOODS DELIVERED BY: PSA TRANSPORT SDN BHD",  { align: "left" })
+                                .text("DO/CN NO: " + req.body.cn_no ,  { align: "left" })
+                                .text("VOLUME: " + consignment_results[0].quantity, { align: "left" })
+                                .text("DELIVERED DATE: " +  moment(new Date()).format('DD/MM/YYYY'), { align: "left" })
+                                .text("REMARKS", { align: "left" })
+                                .text("SHIPPER: " + consignment_results[0].shipper_code,250,82, { align: "left" })
+                                .text("RECEIVER: " + consignment_results[0].receiver_code,250,89, { align: "left" })
+                                .text("DESTINATION: " + consignment_results[0].destination_code,250,97, { align: "left" })
+                                .fontSize(15)
+                                .text("PROOF OF DELIVERY",430,78, { align: "left" })
+                                .moveDown();
+
+                            doc.image('./logo.png', 530, 65, {width: 55, height: 55})
+                                .moveDown();
+
+                            doc.image(file.data, 70, 100,{fit: [500, 500], align: 'center', valign: 'center'});
+                            // doc.image('images/test.jpeg', 430, 15, {fit: [100, 100], align: 'center', valign: 'center'})
+
+                                doc.end()
+                            let s3bucket = new AWS.S3({
+                                accessKeyId: IAM_USER_KEY,
+                                secretAccessKey: IAM_SECRET_KEY,
+                                Bucket: BUCKET_NAME
                             });
 
+                            // s3bucket.createBucket(function() {
+                                var params = {
+                                    Bucket: BUCKET_NAME,
+                                    Key: req.body.cn_no + '.pdf',
+                                    Body: doc
+                                }
+                                s3bucket.upload(params,function (err, data) {
+                                    if(err){
+                                        console.log('error in callback');
+                                        console.log(err);
+                                    }
+                                    console.log(data.Location);
+                                    file_url = data.Location;
 
-                            doc.end()
-                        let s3bucket = new AWS.S3({
-                            accessKeyId: IAM_USER_KEY,
-                            secretAccessKey: IAM_SECRET_KEY,
-                            Bucket: BUCKET_NAME
-                        });
+                                    //deleting the records
+                                    let tracking_delete_query = "delete from tracking  where cn_no = ? and (status = 'ATTEMPTING' or status ='DELIVERED');"
+                                    connection.query(tracking_delete_query, req.body.cn_no, (err,rows) => {
+                                        if(err){
+                                            console.log(err)
+                                        } else {
+                                            console.log("Tracking Data Deleted Successfully");
+                                        }
+                                    })
 
-                        // s3bucket.createBucket(function() {
-                            var params = {
-                                Bucket: BUCKET_NAME,
-                                Key: req.body.cn_no + '.pdf',
-                                Body: doc
+                                    //adding rows in  tracking
+                                    var tracking_data1 = {
+                                        "cn_no": req.body.cn_no,
+                                        "status": "ATTEMPTING",
+                                        "datetime": today
+                                    }
+                                    var tracking_data2 = {
+                                        "cn_no": req.body.cn_no,
+                                        "status": "DELIVERED",
+                                        "datetime": today
+                                    }
+                                    
+                                    //inserting record in tracking table
+                                    connection.query('INSERT INTO tracking SET ?', tracking_data1, (err,rows) => {
+                                        if(err){
+                                            console.log(err);
+                                        } else {
+                                            console.log("Tracking 1 added sucessfully");
+                                        }
+                                    })
+                                    connection.query('INSERT INTO tracking SET ?', tracking_data2, (err,rows) => {
+                                        if(err){
+                                            console.log(err);
+                                        } else {
+                                            console.log("Tracking 2 added sucessfully");
+                                        }
+                                    })
+                                    
+                                    //updating status in consignment table
+                                    let consignment_update_query = "UPDATE consignment set status = ? where cn_no = ?"
+                                    let data1 = [req.body.status, req.body.cn_no];
+                                    connection.query(consignment_update_query, data1, (err,rows) => {
+                                        if(err){
+                                            console.log(err);
+                                        } else {
+                                            console.log("Consignment updated  sucessfully");
+                                        }
+                                    })
+                                    
+                                    //updating out for delivery
+                                    let ofd_update_query = "UPDATE out_for_delivery set ? where cn_no = ?"
+                                    var ofd_data = {
+                                        'status' : req.body.status,
+                                        'attachment' : file_url,
+                                        'datetime' : today
+                                    }
+                                    let data2 = [ofd_data, req.body.cn_no];
+                                    connection.query(ofd_update_query, data2, (err,rows) => {
+                                        if(err){
+                                            console.log(err);
+                                        } else {
+                                            console.log("OFD updated  sucessfully");
+                                        }
+                                    })
+                                    
+                                    //creating a log
+                                    var log_data = {
+                                        "user_id" : req.params.id,
+                                        "cn_no"   : req.body.cn_no,
+                                        "status": " has uploaded POD for  Consignment No. [" + req.body.cn_no + " ] to " + req.body.status
+                                    }
+                                    connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
+                                        if (lgerr) {
+                                        console.log(lgerr)
+                                        }else{
+                                            console.log("log added successfully");
+                                        }
+                                    });
+                                    
+                                    res.json({
+                                        status:true,
+                                        message:'Consignment Updated sucessfully'
+                                    })
+                                })
                             }
-                            s3bucket.upload(params,function (err, data) {
-                                if(err){
-                                    console.log('error in callback');
-                                    console.log(err);
-                                }
-                                console.log(data.Location);
-                                file_url = data.Location;
-
-                                //deleting the records
-                                let tracking_delete_query = "delete from tracking  where cn_no = ? and (status = 'ATTEMPTING' or status ='DELIVERED');"
-                                connection.query(tracking_delete_query, req.body.cn_no, (err,rows) => {
-                                    if(err){
-                                        console.log(err)
-                                    } else {
-                                        console.log("Tracking Data Deleted Successfully");
-                                    }
-                                })
-
-                                //adding rows in  tracking
-                                var tracking_data1 = {
-                                    "cn_no": req.body.cn_no,
-                                    "status": "ATTEMPTING",
-                                    "datetime": today
-                                }
-                                var tracking_data2 = {
-                                    "cn_no": req.body.cn_no,
-                                    "status": "DELIVERED",
-                                    "datetime": today
-                                }
-                                
-                                //inserting record in tracking table
-                                connection.query('INSERT INTO tracking SET ?', tracking_data1, (err,rows) => {
-                                    if(err){
-                                        console.log(err);
-                                    } else {
-                                        console.log("Tracking 1 added sucessfully");
-                                    }
-                                })
-                                connection.query('INSERT INTO tracking SET ?', tracking_data2, (err,rows) => {
-                                    if(err){
-                                        console.log(err);
-                                    } else {
-                                        console.log("Tracking 2 added sucessfully");
-                                    }
-                                })
-                                
-                                //updating status in consignment table
-                                let consignment_update_query = "UPDATE consignment set status = ? where cn_no = ?"
-                                let data1 = [req.body.status, req.body.cn_no];
-                                connection.query(consignment_update_query, data1, (err,rows) => {
-                                    if(err){
-                                        console.log(err);
-                                    } else {
-                                        console.log("Consignment updated  sucessfully");
-                                    }
-                                })
-                                
-                                //updating out for delivery
-                                let ofd_update_query = "UPDATE out_for_delivery set ? where cn_no = ?"
-                                var ofd_data = {
-                                    'status' : req.body.status,
-                                    'attachment' : file_url,
-                                    'datetime' : today
-                                }
-                                let data2 = [ofd_data, req.body.cn_no];
-                                connection.query(ofd_update_query, data2, (err,rows) => {
-                                    if(err){
-                                        console.log(err);
-                                    } else {
-                                        console.log("OFD updated  sucessfully");
-                                    }
-                                })
-                                
-                                //creating a log
-                                var log_data = {
-                                    "user_id" : req.params.id,
-                                    "cn_no"   : req.body.cn_no,
-                                    "status": " has uploaded POD for  Consignment No. [" + req.body.cn_no + " ] to " + req.body.status
-                                }
-                                connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
-                                    if (lgerr) {
-                                    console.log(lgerr)
-                                    }else{
-                                        console.log("log added successfully");
-                                    }
-                                });
-                                
-                                res.json({
-                                    status:true,
-                                    message:'Consignment Updated sucessfully'
-                                })
-                            })
+                        })
                     }
                 }else{
                     if(req.files === null){

@@ -63,6 +63,7 @@ module.exports = app => {
     app.post('/api/:id/user/destroy', userApprovalController.deleteUser);
     app.post('/api/:id/user/add', userApprovalController.addUser);
     app.post('/api/:id/user/update', userApprovalController.updateUser);
+    app.get('/api/:id/user/:user_id', userApprovalController.viewUser);
 
     //dashboard - Consignment Hq
     app.get('/api/:id/getallconsignments', consignmentController.getAllConsignments);
