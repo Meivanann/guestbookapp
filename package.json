@@ -25,8 +25,7 @@
     "moment": "^2.27.0",
     "mysql": "^2.18.1",
     "pdf-invoice": "^1.0.2",
-    "pdfkit": "^0.11.0",
-    "puppeteer": "^3.3.0"
+    "pdfkit": "^0.11.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.4",
