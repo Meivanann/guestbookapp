@@ -102,9 +102,9 @@ module.exports = {
                 "datetime": today
             }
         }
-        let quantity =  parseFloat(req.body.pkt_size) + parseFloat(req.body.carton_size) + parseFloat(req.body.pallet_size) + parseFloat(req.body.p_size)  + parseFloat(req.body.s_size) + parseFloat(req.body.m_size) + parseFloat(req.body.l_size) + parseFloat(req.body.xl_size) + parseFloat(req.body.m3_min_size) + parseFloat(req.body.m3_size) + parseFloat(req.body.weight_min_size) +   parseFloat(req.body.weight_size) + parseFloat(req.body.other_charges);
+        // let quantity =  parseFloat(req.body.pkt_size) + parseFloat(req.body.carton_size) + parseFloat(req.body.pallet_size) + parseFloat(req.body.p_size)  + parseFloat(req.body.s_size) + parseFloat(req.body.m_size) + parseFloat(req.body.l_size) + parseFloat(req.body.xl_size) + parseFloat(req.body.m3_min_size) + parseFloat(req.body.m3_size) + parseFloat(req.body.weight_min_size) +   parseFloat(req.body.weight_size) + parseFloat(req.body.other_charges);
 
-        console.log(quantity);
+        // console.log(quantity);
 
         var consignment_data={
             "cn_no":req.body.cn_no,
@@ -116,7 +116,7 @@ module.exports = {
             "destination_code":req.body.destination_code,
             "region":req.body.region,
             "cn_datetime":today,
-            "quantity":quantity,
+            "quantity":req.body.quantity,
             // "measure":req.body.measure,
             "pkt_size":req.body.pkt_size,
             "pkt_rate":req.body.pkt_rate,
@@ -253,7 +253,7 @@ module.exports = {
                         "destination_code":req.body.destination_code,
                         "region":req.body.region,
                         "cn_datetime":today,
-                        "quantity":quantity,
+                        "quantity":req.body.quantity,
                         // "measure":req.body.measure,
                         "pkt_size":req.body.pkt_size,
                         "pkt_rate":req.body.pkt_rate,
@@ -300,7 +300,7 @@ module.exports = {
                             "destination_code":req.body.destination_code,
                             "region":req.body.region,
                             "cn_datetime":today,
-                            "quantity":quantity,
+                            "quantity":req.body.quantity,
                             // "measure":req.body.measure,
                             "pkt_size":req.body.pkt_size,
                             "pkt_rate":req.body.pkt_rate,
@@ -363,7 +363,7 @@ module.exports = {
                             "destination_code":req.body.destination_code,
                             "region":req.body.region,
                             "cn_datetime":today,
-                            "quantity":quantity,
+                            "quantity":req.body.quantity,
                             // "measure":req.body.measure,
                             "pkt_size":req.body.pkt_size,
                             "pkt_rate":req.body.pkt_rate,
