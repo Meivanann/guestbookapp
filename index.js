@@ -46,6 +46,8 @@ require("./routes/index.js")(app);
 //   });
 var connection = require('./config');
 
+
+
 var CronJob = require('cron').CronJob;
 var job = new CronJob('59 59 23 * * *', function() {
  
@@ -60,6 +62,8 @@ var job = new CronJob('59 59 23 * * *', function() {
             Object.keys(rows).forEach(function(key) {
                 var row = rows[key];
                 let status;
+                let today = new Date();
+                console.log();
 
                 if(row.region === "SOUTH"){
                     status = "assign to south";
@@ -68,27 +72,29 @@ var job = new CronJob('59 59 23 * * *', function() {
                 }else {
                     status = "created"
                 }
-                let today = new Date();
-                if(today >= row.eexpiry_date){
-                let updateConsignmentQuery = "update consignment set status = ?  where cn_no = ?";
-                let consignment_data = [ status, row.cn_no ];
-                let delete_tracking = "delete from out_for_delivery where cn_no = ?;"
+             
+                if(row.expiry_date != null && today >= row.expiry_date){
+                    let updateConsignmentQuery = "update consignment set status = ?  where cn_no = ?";
+                    let consignment_data = [ status, row.cn_no ];
+                    let delete_tracking = "delete from out_for_delivery where cn_no = ?;"
 
-                connection.query(updateConsignmentQuery, consignment_data, (err,rows) => {
-                    if(err){
-                        console.log(err)
-                    } else {
-                        console.log("updated sucessfully");
-                    }
-                });
-                connection.query(delete_tracking, row.cn_no, (err,rows) => {
-                    if(err){
-                        console.log(err)
-                    } else {
-                        console.log("Deleted sucessfully");
-                    }
-                })
-            }
+                    connection.query(updateConsignmentQuery, consignment_data, (err,rows) => {
+                        if(err){
+                            console.log(err)
+                        } else {
+                            console.log("updated sucessfully");
+                        }
+                    });
+                    connection.query(delete_tracking, row.cn_no, (err,rows) => {
+                        if(err){
+                            console.log(err)
+                        } else {
+                            console.log("Deleted sucessfully");
+                        }
+                    })
+                 }else{
+                     console.log("Consignment Not Applicable")
+                 }
 
             })
         }
