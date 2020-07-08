@@ -190,7 +190,8 @@ module.exports = app => {
 
     // client routes starts here
     
-    // new consignment routes
+    // new consignment routes3
+    app.get('/api/:id/generateconsignmentnumber', clinetNewCosignmentController.generateNeConsignmentNumber);
     app.post('/api/:id/client/postnewconsignment', clinetNewCosignmentController.postNewConsignmentClient);
     app.post('/api/:id/client/updateconsignment', clinetNewCosignmentController.updateConsignment);
 

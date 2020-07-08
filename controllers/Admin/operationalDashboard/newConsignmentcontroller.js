@@ -247,6 +247,7 @@ module.exports = {
              if(err){
                  console.log(err);
              }  else {
+                 console.log(rows[0]);
                 status_old = rows[0].status;
                 destination_old = rows[0].destination_code;
                 quantity =  req.body.carton_size + req.body.m3_size + req.body.p_size + req.body.s_size + req.body.m_size + req.body.b_size + req.body.xl_size + req.body.pkt_size + req.body.other_charges;
@@ -262,7 +263,7 @@ module.exports = {
                         // "pod": req.body.pod,
                         "destination_code":req.body.destination_code,
                         "region":req.body.region,
-                        "cn_datetime":today,
+                        // "cn_datetime":today,
                         "quantity":req.body.quantity,
                         // "measure":req.body.measure,
                         "pkt_size":req.body.pkt_size,
@@ -309,7 +310,7 @@ module.exports = {
                             // "pod": req.body.pod,
                             "destination_code":req.body.destination_code,
                             "region":req.body.region,
-                            "cn_datetime":today,
+                            // "cn_datetime":today,
                             "quantity":req.body.quantity,
                             // "measure":req.body.measure,
                             "pkt_size":req.body.pkt_size,
@@ -372,7 +373,7 @@ module.exports = {
                             // "pod": req.body.pod,
                             "destination_code":req.body.destination_code,
                             "region":req.body.region,
-                            "cn_datetime":today,
+                            // "cn_datetime":today,
                             "quantity":req.body.quantity,
                             // "measure":req.body.measure,
                             "pkt_size":req.body.pkt_size,

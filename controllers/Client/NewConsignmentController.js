@@ -1,7 +1,37 @@
 var connection = require('../../config');
 
 module.exports = {
-    
+     generateNeConsignmentNumber: (req, res) => {
+        let cn_no = 0;
+        let query = "SELECT * FROM consignment where is_online = 1 order by cn_no desc;"
+        connection.query(query, req.body.cn_no, (err,rows) => {
+             if(err){
+                 console.log(err);
+             }  else if (rows.length === 0) {
+                 res.json({
+                     status:true,
+                     cn_no : 1
+                 })
+             } else{
+                 console.log(req.params.id);
+                cn_no = parseFloat(rows[0].cn_no) + 1
+                connection.query('select * from shipping where user_id = ?', req.params.id, (shipping_err,shipping_rows) => {
+                    if(shipping_err){
+                        console.log(shipping_err);
+                    } else{
+                        console.log(shipping_rows);
+                        res.json({
+                            status:true,
+                            cn_no : cn_no,
+                            shipper_details :shipping_rows[0]
+                        });
+        
+                    }
+                });
+             }
+        });
+
+     },
     postNewConsignmentClient: (req,res) => {
         let region = req.body.region;
         let today = new Date();
@@ -55,7 +85,8 @@ module.exports = {
             "status":'created',
             "remarks":req.body.remarks,
             "invoice_no":'',
-            'is_approved' : 0
+            'is_approved' : 0,
+            'is_online' : 1
         }
         //inserting a record in consignmnet table
         let query = "INSERT INTO consignment SET ?"

@@ -145,8 +145,8 @@ module.exports = {
         let invoice_date = req.body.invoice_date;
 
         console.log(req.body); 
-        let query = "SELECT * FROM consignment where (cn_datetime between ? and ? ) and status = 'Close' and shipper_code=? and is_billed = 0 and is_approved = 1;"
-        let data = [start_date, end_date, shipper_code];
+        let query = "SELECT * FROM consignment where (cn_datetime between ? and ? ) and status = 'Close' and ( shipper_code=? or receiver_code = ?) and is_billed = 0 and is_approved = 1;"
+        let data = [start_date, end_date, shipper_code, shipper_code];
 
         connection.query(query, data, (err,rows) => {
             if(err){
@@ -160,8 +160,12 @@ module.exports = {
             }else{
                 Object.keys(rows).forEach(function(key) {
                     var row = rows[key];
-                    sub_amount = sub_amount + parseFloat(row.sub_amount);
-                    tax_amount = tax_amount + parseFloat(row.tax_amount);
+                    if((row.bill_to === 'shipper' && row.shipper_code === shipper_code) || (row.bill_to === 'receiver' && row.receiver_code === shipper_code)){
+                        console.log(row.bill_to);
+                        sub_amount = sub_amount + parseFloat(row.sub_amount);
+                        tax_amount = tax_amount + parseFloat(row.tax_amount);
+                    }
+                    
                 });
 
                 total_amount = sub_amount + tax_amount;
@@ -214,21 +218,24 @@ module.exports = {
             }else{
                 Object.keys(rows).forEach(function(key) {
                     var row = rows[key];
-                    sub_amount = sub_amount + parseFloat(row.sub_amount);
-                    tax_amount = tax_amount + parseFloat(row.tax_amount);
+                    if((row.bill_to === 'shipper' && row.shipper_code === shipper_code) || (row.bill_to === 'receiver' && row.receiver_code === shipper_code)){
+                            
+                        sub_amount = sub_amount + parseFloat(row.sub_amount);
+                        tax_amount = tax_amount + parseFloat(row.tax_amount);
 
-                    var consignment_update_datas = {
-                        "is_billed"   :   1
-                    }
-                    let consignment_update_data = [consignment_update_datas ,row.cn_no];
-
-                    connection.query("UPDATE consignment SET ? where cn_no = ?",consignment_update_data, function (error, results, fields) {
-                        if (error) {
-                            console.log(error);
-                        }else{
-                            console.log("condignment updated Successfully")
+                        var consignment_update_datas = {
+                            "is_billed"   :   1
                         }
-                    });
+                        let consignment_update_data = [consignment_update_datas ,row.cn_no];
+
+                        connection.query("UPDATE consignment SET ? where cn_no = ?",consignment_update_data, function (error, results, fields) {
+                            if (error) {
+                                console.log(error);
+                            }else{
+                                console.log("condignment updated Successfully")
+                            }
+                        });
+                    }
                 });
 
                 total_amount = sub_amount + tax_amount;
@@ -318,6 +325,7 @@ module.exports = {
         let total_amount = req.body.total_amount;
         let shipper_code = req.body.shipper_code;
         let acc_bal = 0, amt = 0;
+        console.log("record pay,emnt");
 
         // updating the invoice table and recording the payment
         connection.query("select * from invoice where invoice_no = ?",invoice_no, function (error, invoice_rows, fields) {
@@ -380,7 +388,7 @@ module.exports = {
                             "invoice_no"   :  invoice_no,
                             "description"  :  "Payment for invoice " + invoice_no,
                             "amount"       :  amount_paid,
-                            "created_on"   :  req.body.paid_on 
+                            "created_on"   :  today 
                         }
                         
                         let acc_state_query = "INSERT INTO shipper_acc_statements SET ?"
@@ -529,7 +537,8 @@ module.exports = {
                             "pdf_name"          : "test",
                             "payment_due_date"  : req.body.payment_due,
                             "consignment_start_date" : null,
-                            "consignment_end_date"  : null
+                            "consignment_end_date"  : null,
+                            "cn_no" : req.body.cn_no
                         };
 
                         let invoice_query = "INSERT INTO invoice SET ?"
