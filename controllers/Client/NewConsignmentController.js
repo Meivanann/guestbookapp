@@ -8,10 +8,19 @@ module.exports = {
              if(err){
                  console.log(err);
              }  else if (rows.length === 0) {
-                 res.json({
-                     status:true,
-                     cn_no : 1
-                 })
+                connection.query('select * from shipping where user_id = ?', req.params.id, (shipping_err,shipping_rows) => {
+                    if(shipping_err){
+                        console.log(shipping_err);
+                    } else{
+                        console.log(shipping_rows);
+                        res.json({
+                            status:true,
+                            cn_no : 1,
+                            shipper_details :shipping_rows[0]
+                        });
+        
+                    }
+                });
              } else{
                  console.log(req.params.id);
                 cn_no = parseFloat(rows[0].cn_no) + 1
