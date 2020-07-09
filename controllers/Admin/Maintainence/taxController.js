@@ -6,6 +6,7 @@ module.exports = {
 
         connection.query(query, (err,rows) => {
             if(err){
+                console.log(err);
                 res.json({
                     status:false,
                     message: 'there are some error with query'

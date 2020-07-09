@@ -49,6 +49,30 @@ module.exports = {
         })
     },
 
+    getAccounts: (req,res) => {
+        let category = req.params.category;
+        let query = "SELECT a.* FROM accounts a, account_types b where b.id = a.account_type_id and b.type=?"
+
+        connection.query(query, category,  (err,rows) => {
+            if(err){
+                res.json({
+                    status:false,
+                    message: 'there are some error with query'
+                })
+            } else if (rows.length == 0 ){
+                res.json({
+                    status: -1,
+                    message:' No results found'
+                })
+            } else {
+                res.json({
+                    status: 1,
+                    data:rows
+                })
+            }
+        })
+    },
+
     postNewAccount: (req,res) => {
         var today = new Date();
         let account_type_id = req.body.account_type_id;

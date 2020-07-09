@@ -87,6 +87,62 @@ module.exports = {
         }
       }
     });
+  },
+
+  setPassword: (req,res) => {
+    var today = new Date();
+    console.log(req.params);
+    console.log(req.body);
+    var id=req.params.id;
+    var old_password = req.body.old_password;
+    var new_password = req.body.new_password;
+   
+    connection.query('SELECT * FROM users WHERE id = ?',id, function (error, results, fields) {
+      if (error) {
+          res.json({
+            status:false,
+            message:'there are some error with query'
+            })
+      }else{
+       console.log(results);
+        if(results.length >0){
+            decryptedString = cryptr.decrypt(results[0].password);
+            if(old_password===decryptedString){
+              var encryptedString = cryptr.encrypt(req.body.new_password);
+              var users={
+                "password":encryptedString,
+                "updated_at":today
+              }
+    
+              let data1 = [users ,id ]
+          
+              connection.query('UPDATE users SET ? where id = ?',data1, function (error, results, fields) {
+                if (error) {
+                    console.log(error);
+                }else{
+                    console.log(results)
+                    res.json({
+                      status:true,
+                      message:"Password changed succesfully"
+                  })
+                }
+              });
+            }else{
+                res.json({
+                  status:false,
+                  message:"old password is wrong"
+                 });
+            }
+          
+        }
+        else{
+          res.json({
+              status:false,    
+            message:"user id does not exits"
+          });
+        }
+      }
+    });
   }
 }
 

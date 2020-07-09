@@ -82,7 +82,7 @@ module.exports = {
 
         let query = "UPDATE vendors SET ? where id = ?"
 
-        let data = [shipping_data, req.body.id];
+        let data = [vendor_data, req.body.id];
             connection.query(query,data, function (error, results, fields) {
                 if (error) {
                     console.log(error);
@@ -434,6 +434,105 @@ module.exports = {
                 })
             }
         });
-    }
+    },
+
+    getAllVendorProducts: (req,res) => {
+        let query = "SELECT * FROM vendors_products_services;"
+
+        connection.query(query, (err,rows) => {
+            if(err){
+                res.json({
+                    status:false,
+                    message: 'there are some error with query'
+                })
+            } else if (rows.length == 0 ){
+                res.json({
+                    status: -1,
+                    message:' No results found'
+                })
+            } else {
+                res.json({
+                    status: 1,
+                    data:rows
+                })
+            }
+        })
+    },
+
+    postNewVendorProduct: (req, res) => {
+
+        let today = new Date();
+
+        var vendor_data = {
+            'name'                  :  req.body.name,
+            'description'           :  req.body.contact,
+            'price'                 :  req.body.price,
+            'expense_category'      :  req.body.expense_category,
+            'created_on'            :  today,
+            'created_by'            :  req.params.id
+        }
+
+        connection.query('INSERT INTO vendors_products_services SET ?', vendor_data, (err,rows) => {
+            if(err){
+                console.log(err);
+            } else {
+                console.log("Vendor Products record added sucessfully");
+                res.json({
+                    status:true,
+                    message:'Vednor Products Added Successfully'
+                })
+            }
+        })
+    },
+
+    updateVendorProduct: (req, res) => {
+        let today = new Date();
+        var vendor_data = {
+            'name'                  :  req.body.name,
+            'description'           :  req.body.contact,
+            'price'                 :  req.body.price,
+            'expense_category'      :  req.body.expense_category,
+            'changed_on'            :  today,
+            'changed_by'            :  req.params.id   
+        }
+
+        let query = "UPDATE vendors_products_services SET ? where id = ?"
+
+        let data = [vendor_data, req.body.id];
+            connection.query(query,data, function (error, results, fields) {
+                if (error) {
+                    console.log(error);
+                    res.json({
+                        status:false,
+                        message:'there are some error with query'
+                    })
+                }else{ 
+                    console.log("Vendor Product updated sucessfully");
+                    res.json({
+                        status:true,
+                        message:'Vendor product updated Successfully'
+                    })
+                }
+            });
+    },
+
+    destroyVendorProduct: (req,res) => {
+        let query = "delete from vendors_products_services where id = ?";
+
+        connection.query(query, req.params.vendor_product_id, (err,rows) => {
+            if(err){
+                res.json({
+                    status:false,
+                    message: 'there are some errors with query'
+                })
+            } else {
+                res.json({
+                    status: 1,
+                    message: 'Vendor Product Deleted Successfully'
+                })
+            }
+        })
+
+    },
 
 }

@@ -203,8 +203,8 @@ module.exports = {
         let invoice_number;
         let invoice_date = req.body.invoice_date;
 
-        let query = "SELECT * FROM consignment where (cn_datetime between ? and ? ) and status = 'Close' and shipper_code=? and is_billed = 0 and is_approved = 1;"
-        let data = [start_date, end_date, shipper_code];
+        let query = "SELECT * FROM consignment where (cn_datetime between ? and ? ) and status = 'Close' and ( shipper_code=? or receiver_code = ?) and is_billed = 0 and is_approved = 1;"
+        let data = [start_date, end_date, shipper_code, shipper_code];
 
         connection.query(query, data, (err,rows) => {
             if(err){
@@ -445,7 +445,7 @@ module.exports = {
     consignmentPreviewInvoice: (req,res) =>{
         let total_amount = 0, sub_amount = 0, tax_amount = 0, shipper_details;
         let query = "SELECT * FROM consignment where cn_no = ? and is_billed = 0 and is_approved = 1;"
-        let today = new Date();
+        let today = new Date(), code;
         connection.query(query, req.body.cn_no, (err,rows) => {
             if(err){
                 console.log(err);
@@ -457,8 +457,13 @@ module.exports = {
                 })
             }else{
     
+                if(rows[0].bill_to === 'shipper'){
+                    code =  rows[0].shipper_code 
+                } else{
+                    code =  rows[0].receiver_code
+                }
                 let shipper_query = "select * from shipping where shipper_code = ?"
-                connection.query(shipper_query, rows[0].shipper_code, (err,shipper_rows) => {
+                connection.query(shipper_query, code, (err,shipper_rows) => {
                     if(err){
                         console.log(err);
                     }else{
@@ -484,7 +489,7 @@ module.exports = {
         let today = new Date();
         let total_amount = 0, sub_amount = 0, tax_amount = 0, shipper_details, shipper_acc_details, acc_bal = 0;
         let payment_due =req.body.payment_due;
-        let invoice_number;
+        let invoice_number, code ;
 
         let query = "SELECT * FROM consignment where cn_no = ? and is_billed = 0 and is_approved = 1;"
 
@@ -514,10 +519,14 @@ module.exports = {
                     }
                 });
 
-
+                if(rows[0].bill_to === 'shipper'){
+                    code =  rows[0].shipper_code 
+                } else{
+                    code =  rows[0].receiver_code
+                }
                 // getting the shipper details
                 let shipper_query = "select * from shipping where shipper_code = ?"
-                connection.query(shipper_query, rows[0].shipper_code, (err,shipper_rows) => {
+                connection.query(shipper_query, code, (err,shipper_rows) => {
                     if(err){
                         console.log(err);
                     }else{
@@ -564,7 +573,7 @@ module.exports = {
 
                                 // inserting  Account of Statements
                                 var inv_acc_data = {
-                                    "shipper_code" : rows[0].shipper_code,
+                                    "shipper_code" : code,
                                     "type"         : "Invoice",
                                     "invoice_no"   :  invoice_number,
                                     "description"  :  req.body.payment_due,

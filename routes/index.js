@@ -43,13 +43,57 @@ module.exports = app => {
     var clientConsignmentController = require('./../controllers/Client/consignmentController');
     var clientInvoiceController = require('./../controllers/Client/invoiceController');
 
-    app.get("/", (req, res) => {
-        res.json({ message: "Welcome to PSA Application ." });
+    app.get("/upload", (req, res) => {
+        const fs = require("fs");
+        const mysql = require("mysql");
+        const fastcsv = require("fast-csv");
+
+
+        let stream = fs.createReadStream("test.csv");
+        let csvData = [];
+        let csvStream = fastcsv
+        .parse()
+        .on("data", function(data) {
+            console.log(data);
+            csvData.push(data);
+        })
+        .on("end", function() {
+            // remove the first line: header
+            csvData.shift();
+
+            csvData.forEach(csv => {
+                console.log(csv[0]);
+            });
+            // create a new connection to the database
+            const connection = mysql.createConnection({
+                host     : 'localhost',
+                port     : '3306',
+                user     : 'root',
+                password : 'root',
+                database : 'psa',
+            });
+
+            // open the connection
+            connection.connect(error => {
+            if (error) {
+                console.error(error);
+            } else {
+                let query =
+                "INSERT INTO category (id, name) VALUES ?";
+                connection.query(query, [csvData], (error, response) => {
+                console.log(error || response);
+                });
+            }
+            });
+        });
+
+        stream.pipe(csvStream);
     });
 
     //login and register routes
     app.post('/register', userAuthenticationController.register);
     app.post('/login', userAuthenticationController.login);
+    app.post('/api/:id/setpassword', userAuthenticationController.setPassword);
 
     //dashboard routes
     app.get('/api/:id/operationaldashboard', operationalDashboardController.index);
@@ -167,7 +211,7 @@ module.exports = app => {
 
     // Expense
     app.get('/api/:id/getallvendors', billController.getAllVendors);
-    app.get('/api/:id/deletevendor', billController.destroyVendor);
+    app.get('/api/:id/deletevendor/:vendor_id', billController.destroyVendor);
     app.post('/api/:id/postnewvendor', billController.postNewVendor);
     app.post('/api/:id/updatevendor', billController.updateVendor);
 
@@ -175,6 +219,14 @@ module.exports = app => {
     app.get('/api/:id/getbill/:vendor_id', billController.getBill);
     app.get('/api/:id/getbilldetails/:vendor_id/:bill_id', billController.getBillDetails);
     app.post('/api/:id/createbill', billController.createBill);
+
+
+    // expenswe - products and services
+    app.get('/api/:id/getallvendorproducts', billController.getAllVendorProducts);
+    app.get('/api/:id/deletevendorproduct/:vendor_product_id', billController.destroyVendorProduct);
+    app.post('/api/:id/postnewvendorproduct', billController.postNewVendorProduct);
+    app.post('/api/:id/updatevendorproduct', billController.updateVendorProduct);
+
     // app.post('/api/:id/creditnote/recordpayment', creditNoteController.recordPayment);
 
 
@@ -186,6 +238,7 @@ module.exports = app => {
     // charts of accounts
     app.get('/api/:id/getallaccounttypes', chartAccountController.getAllAccountTypes);
     app.get('/api/:id/getallaccounts', chartAccountController.getAllAccounts);
+    app.get('/api/:id/getaccounts/:category', chartAccountController.getAccounts);
     app.post('/api/:id/createaccount', chartAccountController.postNewAccount);
 
     // client routes starts here
