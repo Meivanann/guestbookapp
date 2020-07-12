@@ -64,37 +64,45 @@ var job = new CronJob('59 59 23 * * *', function() {
                 let status;
                 let today = new Date();
                 console.log();
-
-                if(row.region === "SOUTH"){
-                    status = "assign to south";
-                }else if (row.region === "NORTH"){
-                    status = "assign to south";
-                }else {
-                    status = "created"
-                }
+                let regionQuery = "SELECT * FROM region WHERE destination_code = ? ;"
+                connection.query(regionQuery,row.destination_code, (regerr, regrows) => {
+                    if(err){
+                        console.log(regerr);
+                    }else { 
+                        if(regrows[0].region === "SOUTH"){
+                            status = "assign to south";
+                        }else if (regrows[0].region === "NORTH"){
+                            status = "assign to north";
+                        }else {
+                            status = "assign to hq";
+                        }
              
-                if(row.expiry_date != null && today >= row.expiry_date){
-                    let updateConsignmentQuery = "update consignment set status = ?  where cn_no = ?";
-                    let consignment_data = [ status, row.cn_no ];
-                    let delete_tracking = "delete from out_for_delivery where cn_no = ?;"
+                        if(row.expiry_date != null && today >= row.expiry_date){
+                            let updateConsignmentQuery = "update consignment set status = ?  where cn_no = ?";
+                            let consignment_data = [ status, row.cn_no ];
+                            let delete_tracking = "delete from out_for_delivery where cn_no = ?;"
 
-                    connection.query(updateConsignmentQuery, consignment_data, (err,rows) => {
-                        if(err){
-                            console.log(err)
-                        } else {
-                            console.log("updated sucessfully");
+                            connection.query(updateConsignmentQuery, consignment_data, (err,rows) => {
+                                if(err){
+                                    console.log(err)
+                                } else {
+                                    console.log("updated sucessfully");
+                                }
+                            });
+                            connection.query(delete_tracking, row.cn_no, (err,rows) => {
+                                if(err){
+                                    console.log(err)
+                                } else {
+                                    console.log("Deleted sucessfully");
+                                }
+                            })
+                        }else{
+                            console.log("Consignment Not Applicable")
                         }
-                    });
-                    connection.query(delete_tracking, row.cn_no, (err,rows) => {
-                        if(err){
-                            console.log(err)
-                        } else {
-                            console.log("Deleted sucessfully");
-                        }
-                    })
-                 }else{
-                     console.log("Consignment Not Applicable")
-                 }
+                        
+                    }
+                });
+            
 
             })
         }

@@ -52,7 +52,7 @@ module.exports = {
 
 
     getConsignmentHq: (req,res) => { 
-        let query = "SELECT * FROM consignment WHERE region = 'HQ' AND status='created' and is_approved = 1 ORDER BY cn_datetime DESC; SELECT * FROM users WHERE position='driver';"
+        let query = "SELECT * FROM consignment WHERE ((region = 'HQ' AND status='created') or status ='assign to hq') and is_approved = 1 ORDER BY cn_datetime DESC; SELECT * FROM users WHERE position='driver';"
 
         connection.query(query, (err,rows) => {
             if(err){
@@ -76,7 +76,7 @@ module.exports = {
     },
 
     getConsignmentNorth: (req,res) => { 
-        let query = "SELECT * FROM consignment WHERE region = 'NORTH'  and status='assign to north' and is_approved = 1 ORDER BY cn_datetime DESC; SELECT * FROM users WHERE position='driver';"
+        let query = "SELECT * FROM consignment where ((region='NORTH' and status='created') or status='assign to north') and is_approved = 1 ORDER BY cn_datetime DESC; SELECT * FROM users WHERE position='driver';"
 
         connection.query(query, (err,rows) => {
             if(err){
@@ -100,7 +100,7 @@ module.exports = {
     },
 
     getConsignmentSouth: (req,res) => { 
-        let query = "SELECT * FROM consignment WHERE region = 'SOUTH'  and status='assign to south' and is_approved = 1 ORDER BY cn_datetime DESC; SELECT * FROM users WHERE position='driver';"
+        let query = "SELECT * FROM consignment where ((region='SOUTH' and status='created') or status='assign to south') and is_approved = 1 ORDER BY cn_datetime DESC; SELECT * FROM users WHERE position='driver';"
 
         connection.query(query, (err,rows) => {
             if(err){
@@ -267,40 +267,54 @@ module.exports = {
                     //updating the consignments
                     let ts = Date.now();
                     let date_ob = new Date(ts);
+                    let status, out_for_deleivery_status;
                     let updateConsignmentQuery = "update consignment set driver_name = ?, status = ?, expiry_date = ?  where id = ?";
-                    let status = "out for delivery";
+                    
+                    if(row.status === 'created'){
+                        status = "assign to hq";
+                        out_for_deleivery_status = "HQ";
+                        let consignment_data = [driverName, status, req.body.expiry_date, row.id ];
+                        connection.query(updateConsignmentQuery, consignment_data, (err,rows) => {
+                            if(err){
+                                console.log(err)
+                            } else {
+                                console.log("updated sucessfully");
+                            }
+                        })
+                    } else{
+                        status = "out for delivery";
+                        out_for_deleivery_status = "ARRANGING";
+                        let consignment_data = [driverName, status, req.body.expiry_date, row.id ];
+                        connection.query(updateConsignmentQuery, consignment_data, (err,rows) => {
+                            if(err){
+                                console.log(err)
+                            } else {
+                                console.log("updated sucessfully");
+                            }
+                        })
 
-                    let consignment_data = [driverName, status, req.body.expiry_date, row.id ];
-
-                    connection.query(updateConsignmentQuery, consignment_data, (err,rows) => {
-                        if(err){
-                            console.log(err)
-                        } else {
-                            console.log("updated sucessfully");
+                         //out for delivery
+                        var ofd_data={
+                            'cn_no' : row.cn_no,
+                            'shipper_code': row.shipper_code,
+                            'destination_code': row.destination_code,
+                            'driver_name': driverName,
+                            'receiver_name': row.receiver_name,
                         }
-                    })
-                          
-                    //out for delivery
-                    var ofd_data={
-                        'cn_no' : row.cn_no,
-                        'shipper_code': row.shipper_code,
-                        'destination_code': row.destination_code,
-                        'driver_name': driverName,
-                        'receiver_name': row.receiver_name,
+
+                        connection.query('INSERT INTO out_for_delivery SET ?',ofd_data, function (ofderr, ofdres, fields) {
+                            if (ofderr) {
+                                console.log(ofderr)
+                            }else{
+                                console.log("out for delivery data added suceessfully");
+                            }
+                        });
                     }
-
-                    connection.query('INSERT INTO out_for_delivery SET ?',ofd_data, function (ofderr, ofdres, fields) {
-                        if (ofderr) {
-                            console.log(ofderr)
-                        }else{
-                            console.log("out for delivery data added suceessfully");
-                        }
-                    });
-                            
+     
                     //creating a record in tracking
                     var tracking_data={
                         "cn_no":row.cn_no,
-                        "status":'ARRANGING',
+                        "status":out_for_deleivery_status,
                         "datetime":date_ob,
                     }
                     connection.query('INSERT INTO tracking SET ?',tracking_data, function (trerr, trres, fields) {
@@ -360,40 +374,59 @@ module.exports = {
                     //updating the consignments
                     let ts = Date.now();
                     let date_ob = new Date(ts);
+                    let status, out_for_deleivery_status;
                     let updateConsignmentQuery = "update consignment set driver_name = ?, status = ?, expiry_date = ?  where id = ?";
-                    let status = "out for delivery";
+                
+ 
+                    if(row.status === 'created'){
+                        status = "assign to hq";
+                        out_for_deleivery_status = "HQ";
+                        let consignment_data = [driverName, status, req.body.expiry_date, row.id ];
 
-                    let consignment_data = [driverName, status, req.body.expiry_date, row.id ];
+                        connection.query(updateConsignmentQuery, consignment_data, (err,rows) => {
+                            if(err){
+                                console.log(err)
+                            } else {
+                                console.log("updated sucessfully");
+                            }
+                        })
+                    } else{
+                        status = "out for delivery";
+                        out_for_deleivery_status = "ARRANGING";
+                        let consignment_data = [driverName, status, req.body.expiry_date, row.id ];
 
-                    connection.query(updateConsignmentQuery, consignment_data, (err,rows) => {
-                        if(err){
-                            console.log(err)
-                        } else {
-                            console.log("updated sucessfully");
+                        connection.query(updateConsignmentQuery, consignment_data, (err,rows) => {
+                            if(err){
+                                console.log(err)
+                            } else {
+                                console.log("updated sucessfully");
+                            }
+                        })
+
+                        
+                        //out for delivery
+                        var ofd_data={
+                            'cn_no' : row.cn_no,
+                            'shipper_code': row.shipper_code,
+                            'destination_code': row.destination_code,
+                            'driver_name': driverName,
+                            'receiver_name': row.receiver_name,
                         }
-                    })
-                          
-                    //out for delivery
-                    var ofd_data={
-                        'cn_no' : row.cn_no,
-                        'shipper_code': row.shipper_code,
-                        'destination_code': row.destination_code,
-                        'driver_name': driverName,
-                        'receiver_name': row.receiver_name,
+
+                        connection.query('INSERT INTO out_for_delivery SET ?',ofd_data, function (ofderr, ofdres, fields) {
+                            if (ofderr) {
+                                console.log(ofderr)
+                            }else{
+                                console.log("out for delivery data added suceessfully");
+                            }
+                        });
                     }
-
-                    connection.query('INSERT INTO out_for_delivery SET ?',ofd_data, function (ofderr, ofdres, fields) {
-                        if (ofderr) {
-                            console.log(ofderr)
-                        }else{
-                            console.log("out for delivery data added suceessfully");
-                        }
-                    });
+                   
                             
                     //creating a record in tracking
                     var tracking_data={
                         "cn_no":row.cn_no,
-                        "status":'ARRANGING',
+                        "status":out_for_deleivery_status,
                         "datetime":date_ob,
                     }
                     connection.query('INSERT INTO tracking SET ?',tracking_data, function (trerr, trres, fields) {

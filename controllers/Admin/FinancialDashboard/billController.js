@@ -61,7 +61,7 @@ module.exports = {
     updateVendor: (req, res) => {
         let today = new Date();
         var vendor_data = {
-            'name'            :  rq.body.name,
+            'name'            :  req.body.name,
             'contact'         :  req.body.contact,
             'address1'        :  req.body.address1,
             'city'            :  req.body.city,
@@ -120,7 +120,7 @@ module.exports = {
     },
 
     getAllBills: (req,res) => {
-        let query = "select v.name, b.* from vendors v, bill b;"
+        let query = "select v.name, b.* from vendors v, bill b where b.vendor_id = v.id;"
 
         connection.query(query, (err,rows) => {
             if(err){
@@ -465,7 +465,7 @@ module.exports = {
 
         var vendor_data = {
             'name'                  :  req.body.name,
-            'description'           :  req.body.contact,
+            'description'           :  req.body.description,
             'price'                 :  req.body.price,
             'expense_category'      :  req.body.expense_category,
             'created_on'            :  today,
@@ -488,8 +488,8 @@ module.exports = {
     updateVendorProduct: (req, res) => {
         let today = new Date();
         var vendor_data = {
-            'name'                  :  req.body.name,
-            'description'           :  req.body.contact,
+            'name'                  :  req.body.name,                         
+            'description'           :  req.body.description,
             'price'                 :  req.body.price,
             'expense_category'      :  req.body.expense_category,
             'changed_on'            :  today,

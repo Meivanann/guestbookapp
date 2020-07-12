@@ -82,7 +82,7 @@ module.exports = {
                 }
 
                 if( region === "SOUTH"){
-                    status = "assign to south"
+                    status = "created"
                 
                     var tracking_data2 = {
                         "cn_no": req.body.cn_no,
@@ -90,7 +90,7 @@ module.exports = {
                         "datetime": today
                     }
                 }else if (region === "NORTH"){
-                    status = "assign to north";
+                    status = "created";
                     
                     var tracking_data2 = {
                         "cn_no": req.body.cn_no,
