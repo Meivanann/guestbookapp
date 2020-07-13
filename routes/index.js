@@ -122,6 +122,7 @@ module.exports = app => {
     app.post('/api/:id/postconsignmentapproval', dashboardController.postConsignmentApproval);
     app.get('/api/:id/deleteconsignment/:cn_no', consignmentController.deleteConsignment);
     app.get('/api/:id/getlogs/:cn_no', consignmentController.getLogs);
+    app.post('/api/:id/pushconsignmentback',consignmentController.postConsignmentBack);
 
     //new-Consignment Api's
     app.get('/api/:id/getshipperdata', newConsignmentController.getShipperDetails);

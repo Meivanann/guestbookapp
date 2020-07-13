@@ -69,9 +69,9 @@ var job = new CronJob('59 59 23 * * *', function() {
                     if(err){
                         console.log(regerr);
                     }else { 
-                        if(regrows[0].region === "SOUTH"){
+                        if(regrows[0].region === "SOUTH"  && row.region != "SOUTH"){
                             status = "assign to south";
-                        }else if (regrows[0].region === "NORTH"){
+                        }else if (regrows[0].region === "NORTH"  && row.region != "NORTH"){
                             status = "assign to north";
                         }else {
                             status = "assign to hq";

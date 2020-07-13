@@ -129,6 +129,8 @@ module.exports = {
         let consignmentQuery = "SELECT * FROM consignment WHERE id IN ("+ consignmentIds +");"
         let consignments;
         //fetch all the consignment request
+
+        console.log(req.body);
         connection.query(consignmentQuery, (err, rows) => {
             if(err){
                 res.json({
@@ -160,11 +162,12 @@ module.exports = {
                             let ts = Date.now();
                             let date_ob = new Date(ts);
 
-                            let updateConsignmentQuery = "update consignment set driver_name = ?, region = ?, status = ?, expiry_date = ?  where id = ?";
-                            if(regrows[0].region === "SOUTH"){
+                            console.log(regrows);
+                            let updateConsignmentQuery = "update consignment set driver_name = ?,  status = ?, expiry_date = ?  where id = ?";
+                            if(regrows[0].region === "SOUTH"  && row.region != "SOUTH"){
                                 status = "assign to south";
                                 tracking_status = "TRANSIT JB"
-                            }else if (regrows[0].region === "NORTH"){
+                            }else if (regrows[0].region === "NORTH" && row.region != "NORTH"){
                                 status = "assign to north";
                                 tracking_status = "TRANSIT PENANG"
                             }else {
@@ -190,8 +193,8 @@ module.exports = {
 
                             }
                             
-                            let consignment_data = [driverName, regrows[0].region, status, req.body.expiry_date ,row.id ];
-                            console.log( "region : " + regrows[0].region);
+                            let consignment_data = [driverName, status, req.body.expiry_date ,row.id ];
+                            // console.log( "region : " + regrows[0].region);
                             console.log( "status : " + status);
                             console.log( "cn_no : " + row.cn_no);
                             connection.query(updateConsignmentQuery, consignment_data, (err,rows) => {
@@ -528,5 +531,78 @@ module.exports = {
             
         })
        
+    },
+
+
+    postConsignmentBack: (req, res) => {
+        let consignmentIds = req.body.arr;
+        let consignmentQuery = "SELECT * FROM consignment WHERE id IN ("+ consignmentIds +");"
+        let consignments;
+        //fetch all the consignment request
+        connection.query(consignmentQuery, (err, rows) => {
+            if(err){
+                res.json({
+                    status:false,
+                    message:'there are some error with query'
+                    })
+            } else if (rows.length == 0 ){
+                res.json({
+                    status:false,
+                    message:"No results found"
+                   });
+            } else {
+
+                console.log(rows);
+                //loop in consignments
+                Object.keys(rows).forEach(function(key) {
+                    var row = rows[key];
+
+                    console.log(row);
+                    let status;
+                let today = new Date();
+                console.log();
+                let regionQuery = "SELECT * FROM region WHERE destination_code = ? ;"
+                connection.query(regionQuery,row.destination_code, (regerr, regrows) => {
+                    if(err){
+                        console.log(regerr);
+                    }else { 
+                        if(regrows[0].region === "SOUTH"  && row.region != "SOUTH"){
+                            status = "assign to south";
+                        }else if (regrows[0].region === "NORTH"  && row.region != "NORTH"){
+                            status = "assign to north";
+                        }else {
+                            status = "assign to hq";
+                        }
+             
+                            let updateConsignmentQuery = "update consignment set status = ?  where cn_no = ?";
+                            let consignment_data = [ status, row.cn_no ];
+                            let delete_tracking = "delete from out_for_delivery where cn_no = ?;"
+
+                            connection.query(updateConsignmentQuery, consignment_data, (err,rows) => {
+                                if(err){
+                                    console.log(err)
+                                } else {
+                                    console.log("cONSIGNMENT updated sucessfully");
+                                }
+                            });
+                            connection.query(delete_tracking, row.cn_no, (err,rows) => {
+                                if(err){
+                                    console.log(err)
+                                } else {
+                                    console.log("OFD Deleted sucessfully");
+                                }
+                            })
+                        
+                    }
+                });
+                  });
+                  res.json({
+                    status:true,
+                    message:"Successfully updated the records"
+                    });
+            }
+        })
+
+     
     },
 }
