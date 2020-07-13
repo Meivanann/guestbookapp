@@ -130,7 +130,7 @@ module.exports = app => {
     app.post('/api/:id/getchargedetails', newConsignmentController.getChargeDetails);
     app.post('/api/:id/postnewconsignment', newConsignmentController.postNewConsignment);
     app.post('/api/:id/updateconsignment', newConsignmentController.updateConsignment);
-    app.get('/api/:id/checkconsignmentnote/:cn_no', newConsignmentController.checkConsignmentNote);
+    app.post('/api/:id/checkconsignmentnote', newConsignmentController.checkConsignmentNote);
 
     //tracking
     app.get('/api/:id/tracking/:cn_no', trackingController.index);
@@ -220,7 +220,7 @@ module.exports = app => {
     app.get('/api/:id/getbill/:vendor_id', billController.getBill);
     app.get('/api/:id/getbilldetails/:vendor_id/:bill_id', billController.getBillDetails);
     app.post('/api/:id/createbill', billController.createBill);
-
+    app.post('/api/:id/bill/recordpayment', billController.recordPayment);
 
     // expenswe - products and services
     app.get('/api/:id/getallvendorproducts', billController.getAllVendorProducts);
@@ -228,7 +228,7 @@ module.exports = app => {
     app.post('/api/:id/postnewvendorproduct', billController.postNewVendorProduct);
     app.post('/api/:id/updatevendorproduct', billController.updateVendorProduct);
 
-    // app.post('/api/:id/creditnote/recordpayment', creditNoteController.recordPayment);
+    
 
 
     // transaction

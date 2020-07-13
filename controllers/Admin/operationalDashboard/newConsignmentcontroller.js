@@ -214,7 +214,7 @@ module.exports = {
     },
 
     checkConsignmentNote: (req,res) => {
-        let cn_no = req.params.cn_no;
+        let cn_no = req.body.cn_no;
         let query = "SELECT * FROM consignment where cn_no = ?;"
        connection.query(query, cn_no, (err,rows) => {
             if(err){

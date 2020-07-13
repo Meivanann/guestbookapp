@@ -535,47 +535,34 @@ module.exports = {
 
 
     postConsignmentBack: (req, res) => {
+        console.log(req.body);
+        let data = JSON.parse(req.body.arr);
         let consignmentIds = req.body.arr;
-        let consignmentQuery = "SELECT * FROM consignment WHERE id IN ("+ consignmentIds +");"
-        let consignments;
-        //fetch all the consignment request
-        connection.query(consignmentQuery, (err, rows) => {
-            if(err){
-                res.json({
-                    status:false,
-                    message:'there are some error with query'
-                    })
-            } else if (rows.length == 0 ){
-                res.json({
-                    status:false,
-                    message:"No results found"
-                   });
-            } else {
-
-                console.log(rows);
-                //loop in consignments
-                Object.keys(rows).forEach(function(key) {
-                    var row = rows[key];
-
-                    console.log(row);
-                    let status;
-                let today = new Date();
-                console.log();
-                let regionQuery = "SELECT * FROM region WHERE destination_code = ? ;"
-                connection.query(regionQuery,row.destination_code, (regerr, regrows) => {
+        let today = new Date();
+        Object.keys(data).forEach(function(key) {
+            var row = data[key];
+            console.log(row);
+            let query = "SELECT * FROM consignment where cn_no = ?;"
+            connection.query(query, row, (err,rowss) => {
+                 if(err){
+                     console.log(err);
+                 }else {
+                     console.log(rowss[0])
+                     let regionQuery = "SELECT * FROM region WHERE destination_code = ? ;"
+                connection.query(regionQuery,rowss[0].destination_code, (regerr, regrows) => {
                     if(err){
                         console.log(regerr);
                     }else { 
-                        if(regrows[0].region === "SOUTH"  && row.region != "SOUTH"){
+                        if(regrows[0].region === "SOUTH"  && rowss[0].region != "SOUTH"){
                             status = "assign to south";
-                        }else if (regrows[0].region === "NORTH"  && row.region != "NORTH"){
+                        }else if (regrows[0].region === "NORTH"  && rowss[0].region != "NORTH"){
                             status = "assign to north";
                         }else {
                             status = "assign to hq";
                         }
              
                             let updateConsignmentQuery = "update consignment set status = ?  where cn_no = ?";
-                            let consignment_data = [ status, row.cn_no ];
+                            let consignment_data = [ status, rowss[0].cn_no ];
                             let delete_tracking = "delete from out_for_delivery where cn_no = ?;"
 
                             connection.query(updateConsignmentQuery, consignment_data, (err,rows) => {
@@ -585,7 +572,7 @@ module.exports = {
                                     console.log("cONSIGNMENT updated sucessfully");
                                 }
                             });
-                            connection.query(delete_tracking, row.cn_no, (err,rows) => {
+                            connection.query(delete_tracking, rowss[0].cn_no, (err,rows) => {
                                 if(err){
                                     console.log(err)
                                 } else {
@@ -595,14 +582,15 @@ module.exports = {
                         
                     }
                 });
-                  });
-                  res.json({
-                    status:true,
-                    message:"Successfully updated the records"
-                    });
-            }
-        })
-
+                 }
+                 
+             })
+        });
+        res.json({
+            status:true,
+            message:"Successfully updated the records"
+            });
+        
      
     },
 }

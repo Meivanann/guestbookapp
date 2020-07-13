@@ -146,7 +146,7 @@ module.exports = {
 
     getBill: (req,res) => {
         let vendor_id = req.params.vendor_id;
-        let query = "select v.name, b.* from vendors v, bill b where b.vendor_id = ?;"
+        let query = "select v.name, b.* from vendors v, bill b where b.vendor_id = ? and b.vendor_id = v.id;"
 
         connection.query(query, vendor_id, (err,rows) => {
             if(err){
@@ -329,6 +329,7 @@ module.exports = {
     },
 
     recordPayment: (req,res) => {
+        console.log(req.body);
         let today = new Date();
         let bill_id = req.body.id;
         let amount_paid = req.body.amount_paid;
