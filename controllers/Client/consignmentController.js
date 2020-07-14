@@ -3,6 +3,7 @@ var connection = require('../../config');
 module.exports = {
     
     getAllConsignments: (req,res) => { 
+        console.log(req.params.id);
         let shipper_query = "SELECT * FROM shipping where user_id = ?;"
         let query = "SELECT * FROM consignment where is_approved != 1 and shipper_code = ?;"
 

@@ -3,6 +3,7 @@ var connection = require('../../config');
 module.exports = {
     
     getAllInvoices: (req,res) => { 
+        console.log(req.params.id);
         let shipper_query = "SELECT * FROM shipping where user_id = ?;"
         let query = "SELECT * FROM invoice where shipper_code = ? order by invoice_date desc;"
 

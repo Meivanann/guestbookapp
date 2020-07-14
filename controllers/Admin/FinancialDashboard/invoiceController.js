@@ -317,6 +317,117 @@ module.exports = {
             }
         })
     },
+
+    deleteInvoice: (req,res) => {
+        let invoice_no = req.body.invoice_no;
+        connection.query("select * from invoice where invoice_no = ? ", invoice_no, (invoice_err,invoice_rows) => {
+            if(invoice_err){
+                console.log(invoice_err);
+            } else if (invoice_rows.length == 0 ){
+                console.log(invoice_rows);
+                res.json({
+                    status: 2,
+                    message:"No Results Found"
+                })
+            }else{
+                let invoice_row = invoice_rows[0];
+
+                if(invoice_row.cn_no != null && invoice_row != ""){
+
+                    var consignment_update_datas = {
+                        "is_billed"   :   0
+                    }
+                    let consignment_update_data = [consignment_update_datas ,invoice_row.cn_no];
+
+                    connection.query("UPDATE consignment SET ? where cn_no = ?",consignment_update_data, function (error, results, fields) {
+                        if (error) {
+                            console.log(error);
+                        }else{
+                            console.log("consignment updated Successfully")
+                        }
+                    });
+                }else{
+                    let consignment_query = "SELECT * FROM consignment where (cn_datetime between ? and ? ) and status = 'Close' and ( shipper_code=? or receiver_code = ?) and is_billed = 1 and is_approved = 1;"
+                    let consignment_data = [invoice_row.consignment_start_date, invoice_row.consignment_end_date, invoice_row.shipper_code, invoice_row.shipper_code];
+            
+                    connection.query(consignment_query, consignment_data, (consignment_err,consignment_rows) => {
+                        if(consignment_err){
+                            console.log(consignment_err);
+                        } else if (consignment_rows.length == 0 ){
+                            console.log("No consignments found");
+                        }else{
+                            Object.keys(consignment_rows).forEach(function(key) {
+                                var row = consignment_rows[key];
+                                if((row.bill_to === 'shipper' && row.shipper_code === invoice_row.shipper_code) || (row.bill_to === 'receiver' && row.receiver_code === invoice_row.shipper_code)){
+                     
+                                    var consignment_update_datas = {
+                                        "is_billed"   :   0
+                                    }
+                                    let consignment_update_data = [consignment_update_datas ,row.cn_no];
+            
+                                    connection.query("UPDATE consignment SET ? where cn_no = ?",consignment_update_data, function (error, results, fields) {
+                                        if (error) {
+                                            console.log(error);
+                                        }else{
+                                            console.log("condignment updated Successfully")
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+                let shipper_query = "select * from shipping where shipper_code = ?"
+                connection.query(shipper_query, invoice_row.shipper_code, (err,shipper_rows) => {
+                    if(err){
+                        console.log(err);
+                    }else{
+                        let acc_bal = 0;
+                        shipper_details = shipper_rows[0];
+
+                        acc_bal = parseFloat(shipper_details.acc_bal) - parseFloat(invoice_row.inv_total_amount); 
+
+                        let shipper_acc_update = "UPDATE shipping SET ? where shipper_code = ?";
+                        var shipper_acc_update_data = {
+                            "acc_bal"   :   acc_bal
+                        }
+                        let data111 = [shipper_acc_update_data ,invoice_row.shipper_code];
+
+                        connection.query(shipper_acc_update,data111, function (error, results, fields) {
+                            if (error) {
+                                console.log(error);
+                            }else{
+                                console.log("Shipping updated Successfully")
+                            }
+                        });
+                    }
+                });
+
+                let delete_query = "delete from shipper_acc_statements where invoice_no = ? and type ='Invoice';"
+                connection.query(delete_query, invoice_no, (errr,rows) => {
+                    if(errr){
+                       console.log(errr);
+                    } else {
+                        console.log("Shipping account statement deleted successfully")
+                    }
+                });
+
+                let delete_query1 = "delete from invoice where invoice_no = ?;"
+                connection.query(delete_query1, invoice_no, (errr,rows) => {
+                    if(errr){
+                       console.log(errr);
+                    } else {
+                        console.log("Invoice deleted successfully")
+                    }
+                });
+
+                 res.json({
+                    status: true,
+                    message:"Invoice deleted successfully"
+                })
+            }
+        });
+    },
     recordPayment: (req,res) => {
         let invoice_no = req.body.invoice_no;
         let today = new Date();

@@ -113,7 +113,7 @@ module.exports = {
                             doc.image('./logo.png', 530, 65, {width: 55, height: 55})
                                 .moveDown();
 
-                            doc.image(file.data, 70, 100,{fit: [500, 500], align: 'center', valign: 'center'});
+                            doc.image(file.data, 70, 160,{fit: [500, 500], align: 'center', valign: 'center'});
                             // doc.image('images/test.jpeg', 430, 15, {fit: [100, 100], align: 'center', valign: 'center'})
 
                                 doc.end()

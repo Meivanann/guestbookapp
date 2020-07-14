@@ -190,6 +190,7 @@ module.exports = app => {
     app.post('/api/:id/previewinvoice', invoiceController.previewInvoice);
     app.post('/api/:id/consignmentpreviewinvoice', invoiceController.consignmentPreviewInvoice);
     app.post('/api/:id/generateinvoice', invoiceController.generateInvoice);
+    app.post('/api/:id/deleteinvoice', invoiceController.deleteInvoice);
     app.post('/api/:id/consignmentgenerateinvoice', invoiceController.consignmentGenerateInvoice);
     app.post('/api/:id/recordpayment', invoiceController.recordPayment);
 
