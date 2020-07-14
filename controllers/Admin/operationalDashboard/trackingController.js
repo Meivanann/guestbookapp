@@ -21,7 +21,7 @@ module.exports = {
             } else {
                 console.log("results found");
 
-                let ofd_query  = "select * from out_for_delivery where cn_no = ?;"
+                let ofd_query  = "select o.*, c.quantity from out_for_delivery o,consignment c where o.cn_no = c.cn_no and o.cn_no = ?;"
                 connection.query(ofd_query,cn_no, (err,ofdrows) => {
                     if(err){
                         console.log(err);
