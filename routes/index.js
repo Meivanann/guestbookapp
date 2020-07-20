@@ -1,6 +1,8 @@
 
 
 module.exports = app => { 
+    var fileUpload = require('express-fileupload');
+    app.use(fileUpload());
 
     const redirectLogin = (req, res, next) => { 
         console.log(req.session.userId);
@@ -43,52 +45,7 @@ module.exports = app => {
     var clientConsignmentController = require('./../controllers/Client/consignmentController');
     var clientInvoiceController = require('./../controllers/Client/invoiceController');
 
-    app.get("/upload", (req, res) => {
-        const fs = require("fs");
-        const mysql = require("mysql");
-        const fastcsv = require("fast-csv");
 
-
-        let stream = fs.createReadStream("test.csv");
-        let csvData = [];
-        let csvStream = fastcsv
-        .parse()
-        .on("data", function(data) {
-            console.log(data);
-            csvData.push(data);
-        })
-        .on("end", function() {
-            // remove the first line: header
-            csvData.shift();
-
-            csvData.forEach(csv => {
-                console.log(csv[0]);
-            });
-            // create a new connection to the database
-            const connection = mysql.createConnection({
-                host     : 'localhost',
-                port     : '3306',
-                user     : 'root',
-                password : 'root',
-                database : 'psa',
-            });
-
-            // open the connection
-            connection.connect(error => {
-            if (error) {
-                console.error(error);
-            } else {
-                let query =
-                "INSERT INTO category (id, name) VALUES ?";
-                connection.query(query, [csvData], (error, response) => {
-                console.log(error || response);
-                });
-            }
-            });
-        });
-
-        stream.pipe(csvStream);
-    });
 
     //login and register routes
     app.post('/register', userAuthenticationController.register);
@@ -253,6 +210,7 @@ module.exports = app => {
     // Consignment routes
     app.get('/api/:id/client/getallconsignments', clientConsignmentController.getAllConsignments);
     app.get('/api/:id/client/getallapprovedconsignments', clientConsignmentController.getAllApprovedConsignments);
+
 
     // invoice routes
     app.get('/api/:id/client/getallinvoices', clientInvoiceController.getAllInvoices);

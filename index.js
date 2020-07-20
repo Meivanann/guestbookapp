@@ -2,7 +2,7 @@ var express=require("express");
 var bodyParser=require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
-var fileUpload = require('express-fileupload');
+
 
 const {
     PORT = 8011,
@@ -22,7 +22,7 @@ var app = express();
 app.use(cors());
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb',extended:true, parameterLimit: 50000}));
-app.use(fileUpload());
+// app.use(fileUpload());
 app.use(cookieParser());
 app.use(session({
     name: SESS_NAME,
@@ -35,6 +35,9 @@ app.use(session({
         secure: IN_PROD
     }
 }))
+
+
+require("./fileupload.js")(app);
 
 require("./routes/index.js")(app);
 

@@ -41,7 +41,7 @@ module.exports = {
   login: (req,res) => {
 
     // console.log("request");
-    // console.log(req.body);
+    console.log(req.body);
     var username=req.body.username;
     var password=req.body.password;
    

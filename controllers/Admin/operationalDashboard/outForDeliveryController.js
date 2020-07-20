@@ -20,6 +20,10 @@ module.exports = {
                 console.log(err);
             } else if (rows.length == 0 ){
                console.log("no results found");
+               res.json({
+                status: 2,
+                message:"No results found"
+            });
             } else {
                 console.log("results found");
                 res.json({
@@ -41,6 +45,10 @@ module.exports = {
                 console.log(err);
             } else if (rows.length == 0 ){
                console.log("no results found");
+               res.json({
+                status: 2,
+                message:"No results found"
+            });
             } else {
                 console.log("results found");
                 res.json({
@@ -231,7 +239,7 @@ module.exports = {
                         let ofd_update_query = "UPDATE out_for_delivery set ? where cn_no = ?"
                         var ofd_data = {
                             'status' : req.body.status,
-                            'driver' : req.body.driver_name,
+                            'driver_name' : req.body.driver_name,
                         }
                         let data3 = [ofd_data, req.body.cn_no];
                         connection.query(ofd_update_query, data3, (err,rows) => {

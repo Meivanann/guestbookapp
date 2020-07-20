@@ -1,4 +1,5 @@
 var connection = require('../../../config');
+const { json } = require('body-parser');
 
 module.exports = {
     driverofd: (req,res) => {
@@ -24,15 +25,17 @@ module.exports = {
     },
 
     manifestSearch: (req,res) => {
+
+        console.log(req.body);
         let start_date = req.body.start_date;
         let end_date = req.body.end_date;
         let status = req.body.status;
         let shipper_code = req.body.shipper_code;
-        let destination_code = req.body.destination_code;
+        let destination_code = JSON.parse(req.body.destination_code);
         let city = req.body.city;
-        let driver_name = req.body.driver_name;
+        let driver_name =  JSON.parse(req.body.driver_name);
         let stat, shipper, destination, city1, city2, driver;
-
+        // console.log(destination_code.value);
         if(status === "Open"){
             stat = "and consignment.status != 'Close'";
         }else if(status === "Close"){
@@ -50,7 +53,7 @@ module.exports = {
         if(!destination_code){
             destination = "";
         }else{
-            destination = "and consignment.destination_code = '" + destination_code +"'";
+            destination = "and consignment.destination_code = '" + destination_code.value +"'";
         }
 
         if(!city){
@@ -63,10 +66,11 @@ module.exports = {
         if(!driver_name){
             driver = '';
         }else{
-            driver = "and consignment.driver_name = '" + driver_name +"'";
+            driver = "and consignment.driver_name = '" + driver_name.value +"'";
         }
 
         let query = "select * from consignment " + city1 + " where date(cn_datetime) >= '" + start_date + "' and date(cn_datetime) <= '" + end_date +"' " + stat + " " + shipper + " " + destination + " " + city2 + " " + driver +" and is_approved = 1 order by shipper_name";
+        console.log(query);
         connection.query(query, (err,rows) => {
             if(err){
                 console.log(err);

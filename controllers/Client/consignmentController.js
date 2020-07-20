@@ -59,6 +59,7 @@ module.exports = {
                             message:"No results found"
                            });
                     } else {
+                        // this.uploadconsignments();
                         res.json({
                             status: true,
                             data:rows
@@ -69,7 +70,7 @@ module.exports = {
             }
             
         })
-    },
+    }
 }
 
 

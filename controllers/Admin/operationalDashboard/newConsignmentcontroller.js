@@ -9,6 +9,10 @@ module.exports = {
                 console.log(err);
             } else if (rows.length == 0 ){
                console.log("no results found");
+               res.json({
+                    status: 2,
+                    message:"No results found"
+                });
             } else {
                 console.log("results found");
                 res.json({
@@ -29,6 +33,10 @@ module.exports = {
                 console.log(err);
             } else if (rows.length == 0 ){
                console.log("no results found");
+               res.json({
+                status: 2,
+                message:"No results found"
+            });
             } else {
                 console.log("results found");
                 res.json({

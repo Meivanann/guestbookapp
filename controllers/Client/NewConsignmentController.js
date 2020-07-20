@@ -2,9 +2,9 @@ var connection = require('../../config');
 
 module.exports = {
      generateNeConsignmentNumber: (req, res) => {
-        let cn_no = 0;
-        let query = "SELECT * FROM consignment where is_online = 1 order by cn_no desc;"
-        connection.query(query, req.body.cn_no, (err,rows) => {
+        let cn_no = 0000;
+        let query = "SELECT * FROM consignment where is_online = 1 order by id desc;" 
+        connection.query(query, (err,rows) => {
              if(err){
                  console.log(err);
              }  else if (rows.length === 0) {
@@ -15,7 +15,7 @@ module.exports = {
                         console.log(shipping_rows);
                         res.json({
                             status:true,
-                            cn_no : 1,
+                            cn_no : new Date().getFullYear() + '/' + (new Date().getMonth() + 1) + '/1' ,
                             shipper_details :shipping_rows[0]
                         });
         
@@ -23,7 +23,8 @@ module.exports = {
                 });
              } else{
                  console.log(req.params.id);
-                cn_no = parseFloat(rows[0].cn_no) + 1
+                 let test = (rows[0].cn_no).split('/');
+                cn_no = parseFloat(test[2]) + 1
                 connection.query('select * from shipping where user_id = ?', req.params.id, (shipping_err,shipping_rows) => {
                     if(shipping_err){
                         console.log(shipping_err);
@@ -31,7 +32,7 @@ module.exports = {
                         console.log(shipping_rows);
                         res.json({
                             status:true,
-                            cn_no : cn_no,
+                            cn_no : new Date().getFullYear() + '/' + (new Date().getMonth() + 1) + '/' + cn_no,
                             shipper_details :shipping_rows[0]
                         });
         
