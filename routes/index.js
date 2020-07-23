@@ -30,6 +30,7 @@ module.exports = app => {
     var dashboardController=require('./../controllers/Admin/operationalDashboard/dashboardController')
     //drivercontroller declaration
     var driverConsignmentController = require('./../controllers/Driver/ConsignmentController');
+    var drivercontroller = require('./../controllers/Driver/driverController');
 
     //finance controllers declarations
     var invoiceController = require('./../controllers/Admin/FinancialDashboard/invoiceController');
@@ -136,7 +137,8 @@ module.exports = app => {
     app.get('/api/:id/getdrivers', driverConsignmentController.getDriverDetails);
     app.get('/api/:id/getdriverofd', driverConsignmentController.index);
     app.get('/api/:id/getdriverofdcompleted', driverConsignmentController.ofdCompleted);
-
+    app.get('/api/:id/driver/getreceivercodes', drivercontroller.getReceiverCodes);
+    app.get('/api/:id/driver/getreceiverconsignments/:receiver_code', drivercontroller.getReceiverConsignments);
 
     // financial Dasboard
 

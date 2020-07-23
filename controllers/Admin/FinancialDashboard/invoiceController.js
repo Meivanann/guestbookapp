@@ -7,6 +7,7 @@ const fs = require('fs')
 
 module.exports = {
     getAllInvoices: (req,res) => {
+       
         console.log(req.params.id);
         let today = new Date();
         let last30Days = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 30)
@@ -37,13 +38,17 @@ module.exports = {
                     }
 
                 });
+                var date1 = new Date();
+                var date2 = new Date(rows[0].payment_due_date);
+                console.log(date2);
+                var diffDays = parseInt((date2 - date1) / (1000 * 60 * 60 * 24)); 
 
                 res.json({
                     status: 1,
                     data:rows,
                     overdue_amount:overdue_amount,
                     due_30_days:due,
-                    average_time:rows[0].payment_due_date
+                    average_time:diffDays
                 })
             }
             
