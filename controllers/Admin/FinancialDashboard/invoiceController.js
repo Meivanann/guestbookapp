@@ -110,7 +110,7 @@ module.exports = {
                 })
             } else {
                 // fetching consignment records
-                let consignment_query = "SELECT * FROM consignment where (cn_datetime between ? and ? ) and status = 'Close' and shipper_code=? and is_approved = 1;"
+                let consignment_query = "SELECT * FROM consignment where (cn_datetime between ? and ? ) and status = 'Close' and shipper_code=? and is_billed = 1 and is_approved = 1;"
                 let consignment_data = [rows[0].consignment_start_date, rows[0].consignment_end_date, rows[0].shipper_code];
                 console.log(consignment_data);
                 connection.query(consignment_query, consignment_data, (consignment_err,consignment_rows) => {
