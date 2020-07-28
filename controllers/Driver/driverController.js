@@ -1,5 +1,6 @@
 var connection = require('../../config');
 var commonFunction = require('../commonFunction');
+var moment = require('moment');
 var _ = require('lodash');
 module.exports = {
     getReceiverCodes: (req, res) => {
@@ -87,7 +88,7 @@ module.exports = {
                // let updatedoneQuery = "update consignment set status=?  where cn_no in( '" + ids + "')";
                let updatedoneQuery = "update consignment set status=?  where cn_no = ?";
                var deletedoneQuery = "delete  from out_for_delivery   where cn_no =? ";
-                let trackingQuery = "insert tracking(cn_no,descripation)values ? ";
+                let trackingQuery = "insert tracking(cn_no,descripation,datetime)values ? ";
                 let query = "SELECT * FROM consignment where cn_no = ? "
                 let regionQuery = "SELECT * FROM region WHERE destination_code =? ;"
 
@@ -195,12 +196,13 @@ module.exports = {
                                                 else {
 
                                                     let tracking = []
-                                                    cnnos.forEach(element => {
+                                                    //cnnos.forEach(element => {
                                                             tracking.push({
-                                                            cnno: element,
-                                                            message: message
+                                                            cnno: id,
+                                                            message: message,
+                                                            currenttime:moment().format('YYYY-MM-DD hh:mm:ss')
                                                         })
-                                                    });
+                                                   // });
                                                     let trackinglist = tracking.map((m) => Object.values(m))
                                                     sql.query(trackingQuery,[trackinglist], function (err, data) {
                                                         if (err) {
