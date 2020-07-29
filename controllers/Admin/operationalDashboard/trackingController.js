@@ -3,6 +3,7 @@ var connection = require('../../../config');
 module.exports = {
     index: (req,res) => {
         console.log(req.params.id);
+        console.log('sons')
         let {id,cn_no}=req.body
         // let cn_no = req.params.cn_no;
         let query = "select * from tracking where cn_no = ?;"

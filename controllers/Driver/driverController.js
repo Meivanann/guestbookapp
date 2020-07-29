@@ -37,6 +37,50 @@ module.exports = {
             }
         });
     },
+    getconsigmentlist: (req, res) => {
+     
+        let {driver_id}=req.body
+        if(driver_id!=undefined)
+        {
+        let driver_query = "select * from users where id=?;"
+        connection.query(driver_query, driver_id, (err, rows) => {
+            if (err) {
+                console.log(err);
+            } else if (rows.length == 0) {
+                console.log("no user found");
+            } else {
+                console.log("results found");
+                driver_name = rows[0].firstname;
+
+                let query = "SELECT  *,c.receiver_code  FROM out_for_delivery o, consignment c  where o.is_done = 1 and o.driver_name = ? and o.cn_no = c.cn_no   "
+                connection.query(query, driver_name, (err, rows) => {
+                    if (err) {
+                        console.log(err);
+                    } else if (rows.length == 0) {
+                        res.json({
+                            status: 2,
+                            message: "No results found"
+                        })
+                    } else {
+                        console.log("results found");
+                        res.json({
+                            status: 1,
+                            data: rows
+                        })
+                    }
+
+                })
+            }
+        });
+    }
+    else
+    {
+        res.json({
+            status: 0,
+            message:'Please pass driver_id'
+        })
+    }
+    },
     updateConsigmentstatus: async (req, res) => {
         let { cnnos, isdone, login_id, descripation } = req.body
         console.log(req.body)
