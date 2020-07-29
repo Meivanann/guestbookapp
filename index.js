@@ -52,16 +52,18 @@ var connection = require('./config');
 
 
 var CronJob = require('cron').CronJob;
-var job = new CronJob('59 59 23 * * *', function() {
- 
+//var job = new CronJob('59 59 23 * * *', function() {
+    var job = new CronJob('59 59 23 * * *', function() {
     //cron job for moving the consignments which is in out for delivery back to cosignments
-    let consignmentQuery = "SELECT * FROM consignment where status = 'out for delivery' and is_approved = 1;"
+    let consignmentQuery = "SELECT * FROM consignment as cd , out_for_delivery as c where cd.status = 'out for delivery' and cd.is_approved = 1 and c.is_done=0;"
     connection.query(consignmentQuery, (err, rows) => {
         if(err){
+            console.log(err);
            console.log("Error in some Query");
         } else if (rows.length == 0 ){
            console.log("no Results Found");
         } else {
+            console.log(rows)
             Object.keys(rows).forEach(function(key) {
                 var row = rows[key];
                 let status;

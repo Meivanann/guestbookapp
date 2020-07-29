@@ -12,7 +12,11 @@ module.exports = {
                 console.log(err);
                
             } else {
-                connection.query(query, results[0].shipper_code, (err,rows) => {
+                 if(results.length>0)
+                 {
+                let shippingcode=results[0].shipper_code!= undefined ?results[0].shipper_code:''
+              
+                connection.query(query, shippingcode, (err,rows) => {
                     if(err){
                         console.log(err);
                         res.json({
@@ -33,7 +37,7 @@ module.exports = {
                     
                 })
             }
-            
+        }
         })
     },
 
