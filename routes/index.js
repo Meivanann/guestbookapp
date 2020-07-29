@@ -91,7 +91,7 @@ module.exports = app => {
     app.post('/api/:id/checkconsignmentnote', newConsignmentController.checkConsignmentNote);
 
     //tracking
-    app.get('/api/:id/tracking/:cn_no', trackingController.index);
+    app.post('/api/:id/tracking', trackingController.index);
 
     //outforDelivery
     app.get('/api/:id/outfordelivery', outforDelivery.index);
