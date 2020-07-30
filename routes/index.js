@@ -140,6 +140,7 @@ module.exports = app => {
     app.get('/api/:id/driver/getreceivercodes', drivercontroller.getReceiverCodes);
     app.get('/api/:id/driver/getreceiverconsignments/:receiver_code', drivercontroller.getReceiverConsignments);
     app.post('/api/driver/receiverconsignmentsstatusupdate', drivercontroller.updateConsigmentstatus);
+    app.post('/api/driver/consigment_list', drivercontroller.getconsigmentlist);
 
     // financial Dasboard
 

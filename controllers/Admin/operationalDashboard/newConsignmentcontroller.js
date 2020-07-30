@@ -163,6 +163,7 @@ module.exports = {
                     "invoice_no":'',
                     "is_approved": 1,
                     "bill_to" : req.body.bill_to
+                    
                 }
                 //inserting a record in consignmnet table
                 let query = "INSERT INTO consignment SET ?"
@@ -259,9 +260,12 @@ module.exports = {
                 status_old = rows[0].status;
                 destination_old = rows[0].destination_code;
                 quantity =  req.body.carton_size + req.body.m3_size + req.body.p_size + req.body.s_size + req.body.m_size + req.body.b_size + req.body.xl_size + req.body.pkt_size + req.body.other_charges;
-
+               let online= rows[0].is_online==undefined? '' : rows[0].is_online
+               //let value={}
+               //let object=online==1? "descripation" : req.body.descripation : ''
                 //setting the data for update
                 if(status_old === "Close"){
+
                     consignment_data={
                         "cn_no":req.body.cn_no,
                         "shipper_code":req.body.shipper_code,
@@ -305,7 +309,8 @@ module.exports = {
                         "total_amount":req.body.total_amount,
                         "status":"Close",
                         "remarks":req.body.remarks,
-                        "bill_to" : req.body.bill_to
+                        "bill_to" : req.body.bill_to,
+                        "descripation" : req.body.descripation
                     }
                 }else{
                     if(req.body.destination_code === destination_old){
@@ -352,7 +357,8 @@ module.exports = {
                             "total_amount":req.body.total_amount,
                             "status":status_old,
                             "remarks":req.body.remarks,
-                            "bill_to" : req.body.bill_to
+                            "bill_to" : req.body.bill_to,
+                            "descripation" : req.body.descripation
                             }
                     } else{
                         
@@ -415,7 +421,8 @@ module.exports = {
                             "total_amount":req.body.total_amount,
                             "status":"created",
                             "remarks":req.body.remarks,
-                            "bill_to" : req.body.bill_to
+                            "bill_to" : req.body.bill_to,
+                            "descripation" : req.body.descripation
                         }
 
                         //deleting records in tracking table
@@ -437,6 +444,11 @@ module.exports = {
                 }
 
                 //updating the consignment
+                if(online==0 && online==undefined)
+                {
+                      delete  consignment_data.descripation
+                }
+               
                 let query = "UPDATE consignment SET ? where cn_no = ?"
                 let data1 = [consignment_data ,req.body.cn_no ]
                 connection.query(query,data1, function (error, results, fields) {

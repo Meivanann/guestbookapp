@@ -96,7 +96,8 @@ module.exports = {
             "remarks":req.body.remarks,
             "invoice_no":'',
             'is_approved' : 0,
-            'is_online' : 1
+            'is_online' : 1,
+            "descripation" : req.body.descripation
         }
         //inserting a record in consignmnet table
         let query = "INSERT INTO consignment SET ?"
@@ -133,12 +134,14 @@ module.exports = {
     },
 
     updateConsignment: (req,res) => {
+        console.log('sonwarriot');
         let today = new Date();
         let status, status_old, destination_old, quantity;
         let user_id = req.params.id;
         var consignment_data;
+      
 
-        console.log(req.body);
+        console.log('sonwarriot',req.body);
         //fetching the old record
         let query = "SELECT * FROM consignment where cn_no = ?;"
         connection.query(query, req.body.cn_no, (err,rows) => {
@@ -193,6 +196,7 @@ module.exports = {
                         "total_amount":req.body.total_amount,
                         "status":"created", 
                         "remarks":req.body.remarks,
+                        "descripation" : req.body.descripation
                     }
                 
                 //updating the consignment
