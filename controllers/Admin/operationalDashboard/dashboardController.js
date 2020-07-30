@@ -1,4 +1,5 @@
 var connection = require('../../../config');
+const commonFunction = require('../../commonFunction');
 
 module.exports = {
     index: (req,res) => {
@@ -50,20 +51,36 @@ module.exports = {
        
     },
 
-    getAllConsignmentsForApproval: (req,res) => {
+    getAllConsignmentsForApproval: async(req,res) => {
         console.log(req.params.id);
-        let query = "SELECT * FROM consignment where is_approved = 0 order by cn_datetime"
+            let reciverObject={}
+        let reciverquery="SELECT * FROM  shipping as r  ";
+
+        let reciverdata=await commonFunction.getQueryResults(reciverquery);
+
+        reciverdata.forEach(element => {
+            reciverObject[element.shipper_code]=element.address1
+        });
+        
+        let query = "SELECT * FROM consignment as c  where is_approved = 0 order by cn_datetime"
        connection.query(query, (err,rows) => {
             if(err){
                 console.log(err);
             } else if (rows.length == 0 ){
                console.log("no results found");
+
+           
                res.json({
                     status: 2,
                     message:"No results found"
                 });
             } else {
                 console.log("results found");
+                rows.forEach(element => {
+                    
+    
+                    element.receiver_address=reciverObject[element.receiver_code]? reciverObject[element.receiver_code]: ''
+                });
            
                 res.json({
                     status: 1,

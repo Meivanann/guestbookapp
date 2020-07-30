@@ -52,7 +52,7 @@ module.exports = {
 
 
     getConsignmentHq: (req,res) => { 
-        let query = "SELECT * FROM consignment WHERE ((region = 'HQ' AND status='created') or status ='assign to hq') and is_approved = 1 ORDER BY cn_datetime DESC; SELECT * FROM users WHERE position='driver';"
+        let query = "SELECT * FROM consignment WHERE ((region = 'HQ' AND status='created') or status ='assign to hq') and is_approved = 1 ORDER BY cn_no asc; SELECT * FROM users WHERE position='driver';"
 
         connection.query(query, (err,rows) => {
             if(err){
@@ -76,7 +76,7 @@ module.exports = {
     },
 
     getConsignmentNorth: (req,res) => { 
-        let query = "SELECT * FROM consignment where ((region='NORTH' and status='created') or status='assign to north') and is_approved = 1 ORDER BY cn_datetime DESC; SELECT * FROM users WHERE position='driver';"
+        let query = "SELECT * FROM consignment where ((region='NORTH' and status='created') or status='assign to north') and is_approved = 1 ORDER BY cn_no asc; SELECT * FROM users WHERE position='driver';"
 
         connection.query(query, (err,rows) => {
             if(err){
@@ -100,10 +100,11 @@ module.exports = {
     },
 
     getConsignmentSouth: (req,res) => { 
-        let query = "SELECT * FROM consignment where ((region='SOUTH' and status='created') or status='assign to south') and is_approved = 1 ORDER BY cn_datetime DESC; SELECT * FROM users WHERE position='driver';"
+        let query = "SELECT * FROM consignment where ((region='SOUTH' and status='created') or status='assign to south') and is_approved = 1 ORDER BY cn_no asc; SELECT * FROM users WHERE position='driver';"
 
         connection.query(query, (err,rows) => {
             if(err){
+                console.log(query)
                 res.json({
                     status:false,
                     message:'there are some error with query'
