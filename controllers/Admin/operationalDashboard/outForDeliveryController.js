@@ -14,7 +14,7 @@ module.exports = {
     index: (req,res) => {
         console.log(req.params.id);
         let cn_no = req.params.cn_no;
-        let query = "select o.*, c.quantity, c.expiry_date ,c.cn_datetime from out_for_delivery o, consignment c where o.status = 'In-progress' and o.cn_no = c.cn_no order by datetime desc;"
+        let query = "select o.*, c.quantity, c.expiry_date ,c.cn_datetime from out_for_delivery o, consignment c where o.status = 'In-progress' and o.cn_no = c.cn_no order by c.cn_no asc;"
        connection.query(query,cn_no, (err,rows) => {
             if(err){
                 console.log(err);
