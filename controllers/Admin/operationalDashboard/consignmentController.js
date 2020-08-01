@@ -158,6 +158,8 @@ module.exports = {
                             console.log(regerr);
                         }else { 
                         
+                            if(regrows.length > 0)
+                            { 
                             //updating the consignments
                             let status, tracking_status;
                             let ts = Date.now();
@@ -234,6 +236,7 @@ module.exports = {
                                 }
                             });
                         }
+                    }
                     })
                   });
             }

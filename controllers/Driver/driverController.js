@@ -52,7 +52,7 @@ module.exports = {
                 console.log("results found");
                 driver_name = rows[0].firstname;
 
-                let query = "SELECT  *,c.receiver_code  FROM out_for_delivery o, consignment c  where o.is_done = 1 and o.driver_name = ? and o.cn_no = c.cn_no   "
+                let query = "SELECT  *,c.receiver_code  FROM out_for_delivery o, consignment c  where o.is_done = 1 and o.driver_name = ? and o.cn_no = c.cn_no and o.status='In-progress'  "
                 connection.query(query, driver_name, (err, rows) => {
                     if (err) {
                         console.log(err);
@@ -322,7 +322,7 @@ module.exports = {
                 console.log("results found");
                 driver_name = rows[0].firstname;
 
-                let query = "SELECT  c.receiver_code, o.*  FROM out_for_delivery o, consignment c where c.receiver_code = ? and o.driver_name = ? and o.cn_no = c.cn_no  and o.is_done=0 order by o.datetime desc;"
+                let query = "SELECT  c.quantity,c.receiver_code, o.*  FROM out_for_delivery o, consignment c where c.receiver_code = ? and o.driver_name = ? and o.cn_no = c.cn_no  and o.is_done=0 order by o.datetime desc;"
                 let data = [receiver_code, driver_name];
                 connection.query(query, data, (err, rows) => {
                     if (err) {
