@@ -183,6 +183,7 @@ module.exports = app => {
     app.get('/api/:id/getbilldetails/:vendor_id/:bill_id', billController.getBillDetails);
     app.post('/api/:id/createbill', billController.createBill);
     app.post('/api/:id/bill/recordpayment', billController.recordPayment);
+    app.post('/api/bill/deleteBill', billController.deleteBill);
 
     // expenswe - products and services
     app.get('/api/:id/getallvendorproducts', billController.getAllVendorProducts);
