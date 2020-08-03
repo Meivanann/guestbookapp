@@ -148,12 +148,15 @@ module.exports = {
         let payment_due =req.body.payment_due;
         // let invoice_number = req.body.invoice_number;
         let invoice_date = req.body.invoice_date;
-
+        let data = [start_date, end_date, shipper_code,shipper_code];
         console.log(req.body); 
-        let query = "SELECT * FROM consignment where (cn_datetime between ? and ? ) and status = 'Close' and ( shipper_code=? or receiver_code = ?) and is_billed = 0 and is_approved = 1;"
-        let data = [start_date, end_date, shipper_code, shipper_code];
+        let query = "SELECT * FROM consignment where (cn_datetime between ? and ? ) and status = 'Close' and ( shipper_code=? or receiver_code = ?) and is_billed = 0 and is_approved = 1 and bill_to!='';"
+      
+        
 
         connection.query(query, data, (err,rows) => {
+            console.log(query)
+
             if(err){
                 console.log(err);
             } else if (rows.length == 0 ){
@@ -163,18 +166,32 @@ module.exports = {
                     message:"No Results Found"
                 })
             }else{
+                let result=[]
+            
                 Object.keys(rows).forEach(function(key) {
                     var row = rows[key];
+                    if(row.bill_to!=undefined)
+                    {
+                        console.log('ss',row.bill_to);
                     if((row.bill_to === 'shipper' && row.shipper_code === shipper_code) || (row.bill_to === 'receiver' && row.receiver_code === shipper_code)){
-                        console.log(row.bill_to);
+                        console.log('ssss',row.bill_to);
                         sub_amount = sub_amount + parseFloat(row.sub_amount);
                         tax_amount = tax_amount + parseFloat(row.tax_amount);
+                        result.push(rows[key]);
+
                     }
+                    // else
+                    // {
+                    //     console.log('correct');
+                        
+                    // }
+
+                }
                     
                 });
 
                 total_amount = sub_amount + tax_amount;
-
+ 
                 let shipper_query = "select * from shipping where shipper_code = ?"
                 connection.query(shipper_query, shipper_code, (err,shipper_rows) => {
                     if(err){
@@ -183,7 +200,7 @@ module.exports = {
                         shipper_details = shipper_rows[0];
                         res.json({
                             status:true,
-                            consignments: rows,
+                            consignments: result,
                             shipper: shipper_details,
                             sub_amount:sub_amount,
                             tax_amount: tax_amount,
