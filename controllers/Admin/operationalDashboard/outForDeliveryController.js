@@ -156,25 +156,25 @@ module.exports = {
                                     })
 
                                     //adding rows in  tracking
-                                    var tracking_data1 = {
-                                        "cn_no": req.body.cn_no,
-                                        "status": "ATTEMPTING",
-                                        "datetime": today
-                                    }
+                                    // var tracking_data1 = {
+                                    //     "cn_no": req.body.cn_no,
+                                    //     "status": "ATTEMPTING",
+                                    //     "datetime": today
+                                    // }
                                     var tracking_data2 = {
                                         "cn_no": req.body.cn_no,
-                                        "status": "DELIVERED",
+                                        "status": "POD_DELIVERED",
                                         "datetime": today
                                     }
                                     
                                     //inserting record in tracking table
-                                    connection.query('INSERT INTO tracking SET ?', tracking_data1, (err,rows) => {
-                                        if(err){
-                                            console.log(err);
-                                        } else {
-                                            console.log("Tracking 1 added sucessfully");
-                                        }
-                                    })
+                                    // connection.query('INSERT INTO tracking SET ?', tracking_data1, (err,rows) => {
+                                    //     if(err){
+                                    //         console.log(err);
+                                    //     } else {
+                                    //         console.log("Tracking 1 added sucessfully");
+                                    //     }
+                                    // })
                                     connection.query('INSERT INTO tracking SET ?', tracking_data2, (err,rows) => {
                                         if(err){
                                             console.log(err);
