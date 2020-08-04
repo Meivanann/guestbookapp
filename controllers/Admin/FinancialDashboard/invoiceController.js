@@ -148,9 +148,9 @@ module.exports = {
         let payment_due =req.body.payment_due;
         // let invoice_number = req.body.invoice_number;
         let invoice_date = req.body.invoice_date;
-        let data = [start_date, end_date, shipper_code,shipper_code];
+        let data = [ shipper_code,shipper_code];
         console.log(req.body); 
-        let query = "SELECT * FROM consignment where (cn_datetime between ? and ? ) and status = 'Close' and ( shipper_code=? or receiver_code = ?) and is_billed = 0 and is_approved = 1 and bill_to!='';"
+        let query = "SELECT * FROM consignment where (DATE_FORMAT(cn_datetime,'%Y-%m-%d') >= DATE('" + start_date + "') AND DATE_FORMAT(cn_datetime,'%Y-%m-%d')  <= DATE('" + end_date + "')) and status = 'Close' and ( shipper_code=? or receiver_code = ?) and is_billed = 0 and is_approved = 1 and bill_to!='' order by cn_no asc "
       
         
 
