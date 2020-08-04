@@ -16,7 +16,7 @@ module.exports = {
                 console.log("results found");
                 driver_name = rows[0].firstname;
 
-                let query = "SELECT distinct r.*,c.receiver_code  FROM out_for_delivery o, consignment c, shipping r where o.status = 'In-progress' and o.driver_name = ? and o.cn_no = c.cn_no and c.receiver_code = r.shipper_code order by datetime desc;"
+                let query = "SELECT distinct r.*,c.receiver_code  FROM out_for_delivery o, consignment c, shipping r where o.status = 'In-progress' and o.driver_name = ? and o.cn_no = c.cn_no and c.receiver_code = r.shipper_code  and o.is_done=0 order by datetime desc;"
                 connection.query(query, driver_name, (err, rows) => {
                     if (err) {
                         console.log(err);
@@ -87,6 +87,8 @@ module.exports = {
         let message = descripation
         let driver_query = "select * from users where id=" + login_id + "";
         let data = await commonFunction.getQueryResults(driver_query)
+        let trackingQuery = "insert tracking(cn_no,status,descripation,datetime)values ? ";
+        
         let ids = cnnos.join("','")
         console.log(ids)
         if (cnnos.length > 0) {
@@ -95,11 +97,33 @@ module.exports = {
             if (isdone == 1) // clicking done button
             {
 
+                let tracking=[]
                 let updatedoneQuery = "update out_for_delivery set is_done=1 where cn_no in('" + ids + "') ";
                 console.log('son', updatedoneQuery)
                 let updatedoneDate = await commonFunction.getQueryResults(updatedoneQuery);
-                if (updatedoneDate.affectedRows > 0) {
+
+
+                if (updatedoneDate.affectedRows > 0) 
+                {
+                    cnnos.forEach(result=> 
+                        {  
+                    tracking.push({
+                        cnno: result,
+                        status: 'DONE_DELIVERED',
+                        message: message,
+                        currenttime:moment().format('YYYY-MM-DD hh:mm:ss')
+                    })
+                })
+
+                let trackinglist = tracking.map((m) => Object.values(m))
+                    connection.query(trackingQuery, [trackinglist], function (err, data) {
+
+console.log('sss',trackingQuery,err)
+                   
+
                     res.json({ status: 1, message: "Done successfully" })
+
+                })
                 }
                 else {
                     res.json({ status: 2, message: "No updation done" })
@@ -132,7 +156,7 @@ module.exports = {
                // let updatedoneQuery = "update consignment set status=?  where cn_no in( '" + ids + "')";
                let updatedoneQuery = "update consignment set status=?  where cn_no = ?";
                var deletedoneQuery = "delete  from out_for_delivery   where cn_no =? ";
-                let trackingQuery = "insert tracking(cn_no,descripation,datetime)values ? ";
+                let trackingQuery = "insert tracking(cn_no,status,descripation,datetime)values ? ";
                 let query = "SELECT * FROM consignment where cn_no = ? "
                 let regionQuery = "SELECT * FROM region WHERE destination_code =? ;"
 
@@ -243,6 +267,7 @@ module.exports = {
                                                     //cnnos.forEach(element => {
                                                             tracking.push({
                                                             cnno: id,
+                                                            status: 'FAILED_TO_DELIVERED',
                                                             message: message,
                                                             currenttime:moment().format('YYYY-MM-DD hh:mm:ss')
                                                         })
