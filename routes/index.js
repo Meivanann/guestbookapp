@@ -102,6 +102,7 @@ module.exports = app => {
     //manifest
     app.post('/api/:id/driverofd', manifest.driverofd);
     app.post('/api/:id/manifestsearch', manifest.manifestSearch);
+    //app.post('/api/printdocument',outforDelivery.manifestdriverprint);
 
     //maintaninence - Add Shipper
     app.post('/api/:id/addShipper', shippingController.store);

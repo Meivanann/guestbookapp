@@ -3,11 +3,11 @@ var connection = require('../../../config');
 const fs = require('fs');
 const AWS = require('aws-sdk');
 const moment = require('moment');
-
+const PDFDocument = require('pdfkit');
+var commonFunction=require('../../commonFunction');   
 const BUCKET_NAME = 'poddocs';
 const IAM_USER_KEY = 'AKIARRRQHZXBINF6YWP2';
 const IAM_SECRET_KEY = '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';
-
 
 
 module.exports = {
@@ -61,7 +61,7 @@ module.exports = {
        
     },
 
-    upload: (req,res) => {
+    upload: async(req,res) => {
             const PDFDocument = require('pdfkit');
             const fs = require('fs');
             // const doc = new PDFDocument
@@ -97,10 +97,21 @@ module.exports = {
                             message:"You need to upload receipt screenshot to Completed this task"
                         })
                     }else{
-                        connection.query('select * from consignment where cn_no = ?', req.body.cn_no, (err,consignment_results) => {
+                        connection.query('select * from consignment where cn_no = ?', req.body.cn_no, async (err,consignment_results) => {
                             if(err){
                                 console.log(err);
-                            } else { 
+                            } else {
+                                
+                                var checkingQuery="Select * from out_for_delivery as o where cn_no ='"+req.body.cn_no+"'"
+                                var dataquery=await commonFunction.getQueryResults(checkingQuery)
+                                console.clear()
+                                console.log('sksks;',dataquery[0].attachment)
+                                if(dataquery[0].attachment!=undefined && dataquery[0].attachment!=''){
+                                        res.json({status:0,message:"Pod has been already uploaded this consigment"})
+
+                                } 
+                                else
+                                {  
                             var file = req.files.file;
                             const doc = new PDFDocument
                             doc
@@ -230,6 +241,7 @@ module.exports = {
                                     })
                                 })
                             }
+                        }
                         })
                     }
                 }else{
@@ -337,6 +349,301 @@ module.exports = {
             console.log(err);
         }
     },
+//     manifestdriverprint: async (req,res) => {
+        
+//         // const doc = new PDFDocument
+
+//         //Pipe its output somewhere, like to a file or HTTP response 
+//         //See below for browser usage 
+//         // doc.pipe(fs.createWriteStream('output.pdf'))
+
+
+//         //Add an image, constrain it to a given size, and center it vertically and horizontally 
+//         let test = new Date( "dd-mm-yyyy");
+//        console.log();
+//     let today = new Date();
+//     let file_url;
+//     // const doc = new PDFDocument;
+
+//     // if(!req.files){
+//     //     res.json({
+//     //         status:false,
+//     //         message:'file undefined error'
+//     //     })
+//     // }
+//     console.log(req.body);
+//     console.log(req.body);
+//    // console.log(req.files);
+//     try {
+//         if(req.body.status != 'Close'){
+//             if(req.body.status === 'Completed'){
+                
+//                 if(req.files === null){
+//                     res.json({
+//                         status: false,
+//                         message:"You need to upload receipt screenshot to Completed this task"
+//                     })
+//                 }else{
+
+                     
+ 
+ 
+
+//                     let query = "select o.*,(c.carton_size + c.m3_size + c.m3_min_size + c.weight_min_size + c.weight_size + c.pallet_size +  c.p_size + c.s_size + c.m_size + c.l_size + c.xl_size + c.pkt_size + c.other_charges) as quantity FROM out_for_delivery o join consignment c on c.cn_no = o.cn_no where o.driver_name ='" +req.body.driver +"'  and  (DATE_FORMAT(o.datetime,'%Y-%m-%d') >= DATE('" + req.body.start_date + "') AND DATE_FORMAT(o.datetime,'%Y-%m-%d')  <= DATE('" + req.body.end_date + "'))and o.status = 'In-progress' order by o.receiver_name"
+//                    let consignment_results=await commonFunction.getQueryResults(query)
+//                     // connection.query('select * from consignment where cn_no = ?', req.body.cn_no, (err,consignment_results) => {
+                        
+//                        // var file = req.files.file;
+//                         const doc = new PDFDocument
+//                         //var stream = doc.pipe(blobStream());
+//                         doc
+//                             .font('Times-Bold')
+//                             .fontSize(12)
+//                             .text("MANIFEST DRIVER",  { align: "left" })
+//                             .text("PSA TRANSPORT SDN BHD (344121-P)" ,  { align: "left" })
+
+
+
+
+
+                           
+//                             // .text("DO/CN NO: " + req.body.cn_no ,  { align: "left" })
+//                             // .text("VOLUME: " + consignment_results[0].quantity, { align: "left" })
+//                             // .text("DELIVERED DATE: " +  moment(new Date()).format('DD/MM/YYYY'), { align: "left" })
+//                             // .text("REMARKS", { align: "left" })
+//                             // .text("SHIPPER: " + consignment_results[0].shipper_code,250,82, { align: "left" })
+//                             // .text("RECEIVER: " + consignment_results[0].receiver_code,250,89, { align: "left" })
+//                             // .text("DESTINATION: " + consignment_results[0].destination_code,250,97, { align: "left" })
+//                             // .fontSize(15)
+//                             // .text("PROOF OF DELIVERY",430,78, { align: "left" })
+//                             .moveDown();
+//                             doc
+//                             .font('Times-Roman', 10)
+                             
+//                             .text("BANDAR PETALING JAYA SELATAN, PETALING" ,  { align: "left" })
+//                              .text("JAYA, SELANGOR 46000, MALAYSIA" ,  { align: "left" })
+//                              .text("PHONE: +603 - 77821548  E-MAIL:info@psatrans.com" ,  { align: "left" })
+//                              .text("FAX: +603 - 77859520   WEBSITE:http://www.psatrans.com" ,{ align: "left" })
+//                         doc.image('./logo.png', 530, 65, {width:60, height:40})
+//                             .moveDown();
+
+//                         // doc.image(70, 160,{fit: [500, 500], align: 'center', valign: 'center'});
+//                         // doc.image('images/test.jpeg', 430, 15, {fit: [100, 100], align: 'center', valign: 'center'})
+//                         console.log('ssss',doc)
+//                         doc.pipe(fs.createWriteStream('mei.pdf'));
+//                             doc.end()
+//                         // let s3bucket = new AWS.S3({
+//                         //     accessKeyId: IAM_USER_KEY,
+//                         //     secretAccessKey: IAM_SECRET_KEY,
+//                         //     Bucket: BUCKET_NAME
+//                         // });
+
+//                         // s3bucket.createBucket(function() {
+//                             // var params = {
+//                             //     Bucket: BUCKET_NAME,
+//                             //     Key: req.body.cn_no + '.pdf',
+//                             //     Body: doc
+//                             // }
+//                             // s3bucket.upload(params,function (err, data) {
+//                             //     if(err){
+//                             //         console.log('error in callback');
+//                             //         console.log(err);
+//                             //     }
+//                             //     console.log(data.Location);
+//                             //     file_url = data.Location;
+
+//                             //     //deleting the records
+//                             //     let tracking_delete_query = "delete from tracking  where cn_no = ? and (status = 'ATTEMPTING' or status ='DELIVERED');"
+//                             //     connection.query(tracking_delete_query, req.body.cn_no, (err,rows) => {
+//                             //         if(err){
+//                             //             console.log(err)
+//                             //         } else {
+//                             //             console.log("Tracking Data Deleted Successfully");
+//                             //         }
+//                             //     })
+
+//                             //     //adding rows in  tracking
+//                             //     // var tracking_data1 = {
+//                             //     //     "cn_no": req.body.cn_no,
+//                             //     //     "status": "ATTEMPTING",
+//                             //     //     "datetime": today
+//                             //     // }
+//                             //     var tracking_data2 = {
+//                             //         "cn_no": req.body.cn_no,
+//                             //         "status": "POD_DELIVERED",
+//                             //         "datetime": today
+//                             //     }
+                                
+//                             //     //inserting record in tracking table
+//                             //     // connection.query('INSERT INTO tracking SET ?', tracking_data1, (err,rows) => {
+//                             //     //     if(err){
+//                             //     //         console.log(err);
+//                             //     //     } else {
+//                             //     //         console.log("Tracking 1 added sucessfully");
+//                             //     //     }
+//                             //     // })
+//                             //     connection.query('INSERT INTO tracking SET ?', tracking_data2, (err,rows) => {
+//                             //         if(err){
+//                             //             console.log(err);
+//                             //         } else {
+//                             //             console.log("Tracking 2 added sucessfully");
+//                             //         }
+//                             //     })
+                                
+//                             //     //updating status in consignment table
+//                             //     let consignment_update_query = "UPDATE consignment set status = ? where cn_no = ?"
+//                             //     let data1 = [req.body.status, req.body.cn_no];
+//                             //     connection.query(consignment_update_query, data1, (err,rows) => {
+//                             //         if(err){
+//                             //             console.log(err);
+//                             //         } else {
+//                             //             console.log("Consignment updated  sucessfully");
+//                             //         }
+//                             //     })
+                                
+//                             //     //updating out for delivery
+//                             //     let ofd_update_query = "UPDATE out_for_delivery set ? where cn_no = ?"
+//                             //     var ofd_data = {
+//                             //         'status' : req.body.status,
+//                             //         'attachment' : file_url,
+//                             //         'datetime' : today
+//                             //     }
+//                             //     let data2 = [ofd_data, req.body.cn_no];
+//                             //     connection.query(ofd_update_query, data2, (err,rows) => {
+//                             //         if(err){
+//                             //             console.log(err);
+//                             //         } else {
+//                             //             console.log("OFD updated  sucessfully");
+//                             //         }
+//                             //     })
+                                
+//                             //     //creating a log
+//                             //     var log_data = {
+//                             //         "user_id" : req.params.id,
+//                             //         "cn_no"   : req.body.cn_no,
+//                             //         "status": " has uploaded POD for  Consignment No. [" + req.body.cn_no + " ] to " + req.body.status
+//                             //     }
+//                             //     connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
+//                             //         if (lgerr) {
+//                             //         console.log(lgerr)
+//                             //         }else{
+//                             //             console.log("log added successfully");
+//                             //         }
+//                             //     });
+                                
+//                             //     res.json({
+//                             //         status:true,
+//                             //         message:'Consignment Updated sucessfully'
+//                             //     })
+//                             // })
+//                        // }
+//                    // })
+//                 }
+//             }else{
+//                 // if(req.files === null){
+
+//                 //     //updating out for delivery
+//                 //     let ofd_update_query = "UPDATE out_for_delivery set ? where cn_no = ?"
+//                 //     var ofd_data = {
+//                 //         'status' : req.body.status,
+//                 //         'driver_name' : req.body.driver_name,
+//                 //     }
+//                 //     let data3 = [ofd_data, req.body.cn_no];
+//                 //     connection.query(ofd_update_query, data3, (err,rows) => {
+//                 //         if(err){
+//                 //             console.log(err);
+//                 //         } else {
+//                 //             console.log("OFD updated  sucessfully");
+//                 //         }
+//                 //     })
+
+//                 //      //deleting the records
+//                 //      let tracking_delete_query = "delete from tracking  where cn_no = ? and (status = 'ATTEMPTING' or status ='DELIVERED');"
+//                 //      connection.query(tracking_delete_query, req.body.cn_no, (err,rows) => {
+//                 //          if(err){
+//                 //              res.json({
+//                 //                  status:false,
+//                 //                  message: 'there are some errors with query'
+//                 //              })
+//                 //          } else {
+//                 //              console.log("Tracking Data Successfully");
+//                 //          }
+//                 //      })
+
+//                 //         //creating a log
+//                 //     var log_data = {
+//                 //         "user_id" : req.params.id,
+//                 //         "cn_no"   : req.body.cn_no,
+//                 //         "status": " has updated Consignment No. [" + req.body.cn_no + " ] to " + req.body.status
+//                 //     }
+//                 //     connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
+//                 //         if (lgerr) {
+//                 //         console.log(lgerr)
+//                 //         }else{
+//                 //             console.log("log added successfully");
+//                 //         }
+//                 //     });
+//                 //     res.json({
+//                 //         status:true,
+//                 //         message:'Consignment Updated sucessfully'
+//                 //     })
+//                 // }else{
+//                 //     res.json({
+//                 //         status: false,
+//                 //         message:"Please select Status as Completed to upload POD."
+//                 //     })
+//                 // }
+//             }
+//         }else {
+//             //updating out for delivery
+//             let ofd_update_query = "UPDATE out_for_delivery set ? where cn_no = ?"
+//             var ofd_data = {
+//                 'status' : req.body.status,
+//             }
+//             let data4 = [ofd_data, req.body.cn_no];
+//             connection.query(ofd_update_query, data4, (err,rows) => {
+//                 if(err){
+//                     console.log(err);
+//                 } else {
+//                     console.log("OFD updated  sucessfully");
+//                 }
+//             })
+
+//             //updating status in consignment table
+//             let consignment_update_query = "UPDATE consignment set status = ? where cn_no = ?"
+//             let data5 = [req.body.status, req.body.cn_no];
+//             connection.query(consignment_update_query, data5, (err,rows) => {
+//                 if(err){
+//                     console.log(err);
+//                 } else {
+//                     console.log("Consignment updated  sucessfully");
+//                 }
+//             })
+
+//             //creating a log
+//             var log_data = {
+//                 "user_id" : req.params.id,
+//                 "cn_no"   : req.body.cn_no,
+//                 "status": " has updated Consignment No. [" + req.body.cn_no + " ] to " + req.body.status
+//             }
+//             connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
+//                 if (lgerr) {
+//                 console.log(lgerr)
+//                 }else{
+//                     console.log("log added successfully");
+//                 }
+//             });
+//             res.json({
+//                 status:true,
+//                 message:'Consignment Updated sucessfully'
+//             })
+//         }
+        
+//     }
+//     catch (err) {
+//         console.log(err);
+//     }
+// },
 
     deletePod : (req,res) => {
         
