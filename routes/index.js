@@ -79,6 +79,7 @@ module.exports = app => {
     app.post('/api/:id/postconsignmentsouth', consignmentController.postConsignmentSouth);
     app.post('/api/:id/postconsignmentapproval', dashboardController.postConsignmentApproval);
     app.get('/api/:id/deleteconsignment/:cn_no', consignmentController.deleteConsignment);
+    app.post('/api/deleteonlineconsignment', consignmentController.onlineDeleteConsignment);
     app.get('/api/:id/getlogs/:cn_no', consignmentController.getLogs);
     app.post('/api/:id/pushconsignmentback',consignmentController.postConsignmentBack);
 
@@ -205,6 +206,7 @@ module.exports = app => {
     app.get('/api/:id/getallaccounts', chartAccountController.getAllAccounts);
     app.get('/api/:id/getaccounts/:category', chartAccountController.getAccounts);
     app.post('/api/:id/createaccount', chartAccountController.postNewAccount);
+    app.post('/api/editaccount', chartAccountController.editAccount);
 
     // client routes starts here
     
