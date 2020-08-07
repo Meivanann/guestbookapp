@@ -1,0 +1,6 @@
+{
+    "SERVERURL":"http://psatrans.s3-website.us-east-2.amazonaws.com",
+    "SERVERPORT":8011,
+    "localurl":"http://localhost"
+}
+ 
