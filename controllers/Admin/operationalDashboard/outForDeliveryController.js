@@ -419,7 +419,7 @@ module.exports = {
                                 console.log(results)
 
                                  
-                                var filePath = COMMONURL.localurl + ':' + COMMONURL.SERVERPORT + '/' + driver_name + '-' + month + '.pdf'
+                                var filePath = COMMONURL.SERVERURL + ':' + COMMONURL.SERVERPORT + '/' + driver_name + '-' + month + '.pdf'
                                 res.json({ invoice, filePath })
                             }
                         });
