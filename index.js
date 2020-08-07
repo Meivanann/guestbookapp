@@ -20,6 +20,7 @@ var app = express();
 
 
 app.use(cors());
+app.use(express.static('uploads'));
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb',extended:true, parameterLimit: 50000}));
 // app.use(fileUpload());
@@ -118,5 +119,6 @@ job.start();
 
 
 app.listen(PORT, () => {
-    console.log('Server started on the port 8011')
+     
+    console.log('Server started on the port 8011' )
 });
