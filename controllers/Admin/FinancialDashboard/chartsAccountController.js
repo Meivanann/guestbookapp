@@ -1,5 +1,6 @@
 
 var connection = require('../../../config');
+const commonFunction = require('../../commonFunction');
 
 
 module.exports = {
@@ -101,6 +102,37 @@ module.exports = {
             }
         });
 
+    },
+
+
+    editAccount: async(req,res) => {
+        var today = new Date();
+        let account_id=req.body.account_id;
+        let account_type_id = req.body.account_type_id;
+        let account_name = req.body.account_name;
+
+        console.log(req.body);
+         // inserting  Account of Statements
+
+        //  var account_data = {
+        //     "account_type_id"       : account_type_id,
+        //     "account_name"          : account_name,
+        //     "created_on"            :  today
+        // }
+
+        let acc__query = "update  accounts  SET account_name='"+account_name+"' where id="+account_id+" and account_type_id="+account_type_id+""
+        let acc__data=await commonFunction.getQueryResults(acc__query);
+
+        console.log(acc__data)
+        if(acc__data.affectedRows  > 0)
+        {
+            res.json({status:1,messsage:'Update account successfully' })
+        }
+
+        else
+        {
+            res.json({status:0,messsage:'No updation done' })
+        }
     }
 
 }

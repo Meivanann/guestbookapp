@@ -512,6 +512,52 @@ module.exports = {
         });
     },
 
+    onlineDeleteConsignment: (req,res) => { 
+        let cn_no = req.body.cn_no;
+        let login_id=req.body.login_id
+
+        connection.query('delete from consignment where cn_no= ?',cn_no, function (lgerr, lgres, fields) {
+            if (lgerr) {
+                console.log(lgerr)
+            }else{
+                console.log("Consignment deleted successfully");
+                connection.query('delete from tracking where cn_no= ?',cn_no, function (err, lgres, fields) {
+                    if (err) {
+                        console.log(err)
+                    }else{
+                        console.log("Tracking deleted successfully");
+                    }
+                });
+                connection.query('delete from out_for_delivery where cn_no= ?',cn_no, function (er, lgres, fields) {
+                    if (er) {
+                        console.log(er)
+                    }else{
+                        console.log(" Out for delivery record deleted successfully");
+                    }
+                });
+
+                //creating a log
+                var log_data = {
+                    "user_id" : req.body.login_id,
+                    "cn_no"   : cn_no,
+                    "status": " has deleted the POD for  Consignment No. [" + cn_no + " ] and pushed back to out for delivery "
+                }
+                connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
+                    if (lgerr) {
+                    console.log(lgerr)
+                    }else{
+                        console.log("log added successfully");
+                    }
+                });
+
+                res.json({
+                    status:true,
+                    message:"Consignment Deleted Successfully"
+                    });
+            }
+        });
+    },
+
     getLogs: (req,res) => {
         let cn_no = req.params.cn_no;
         let query = "SELECT l.*, u.firstname FROM log l, users u where l.user_id = u.id and l.cn_no = ?;"
