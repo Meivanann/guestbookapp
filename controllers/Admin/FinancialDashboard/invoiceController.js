@@ -96,6 +96,284 @@ module.exports = {
        
     },
 
+
+    // manifestdriverprint: async (req, res) => {
+
+    //     // const doc = new PDFDocument
+
+    //     //Pipe its output somewhere, like to a file or HTTP response 
+    //     //See below for browser usage 
+    //     // doc.pipe(fs.createWriteStream('output.pdf'))
+
+
+    //     //Add an image, constrain it to a given size, and center it vertically and horizontally 
+    //     let test = new Date("dd-mm-yyyy");
+    //     console.log();
+    //     let today = new Date();
+    //     let month = moment().format("YYY-MM-DD")
+       
+    //     // const doc = new PDFDocument;
+
+    //     // if(!req.files){
+    //     //     res.json({
+    //     //         status:false,
+    //     //         message:'file undefined error'
+    //     //     })
+    //     // }
+    //     console.log(req.body);
+    //     console.log(req.body);
+
+
+
+    //     // console.log(req.files);
+    //     var driver_name = req.body.driver;
+    //     var start_date = req.body.start_date;
+    //     var end_date = req.body.end_date;
+
+    //     var options = { height: "20.5in", width: "8.3in", border: "2", format: 'Letter' };
+    //     try {
+            
+    //         let query = "SELECT * FROM invoice where invoice_no = ?;"
+    //         connection.query(query, invoice_no, (err,rows) => {
+    //              if(err){
+    //                  console.log(err);
+    //              } else if (rows.length == 0 ){
+    //                  res.json({
+    //                      status: false,
+    //                      data:rows,
+    //                      message:"NO Records found"
+    //                  })
+    //              } else {
+    //                  // fetching consignment records
+    //                  let consignment_query = "SELECT * FROM consignment where (cn_datetime between ? and ? ) and status = 'Close' and shipper_code=? and is_billed = 1 and is_approved = 1 order by cn_no asc"
+    //                  let consignment_data = [rows[0].consignment_start_date, rows[0].consignment_end_date, rows[0].shipper_code];
+    //                  console.log(consignment_data);
+    //                  connection.query(consignment_query, consignment_data, (consignment_err,consignment_rows) => {
+    //                      if(err){
+    //                          console.log(err);
+    //                      }else{
+    //                          // fetching shipper details
+    //                          let shipper_query = "select * from shipping where shipper_code = ?"
+    //                          connection.query(shipper_query, rows[0].shipper_code, (err,shipper_rows) => {
+    //                              if(err){
+    //                                  console.log(err);
+    //                              }else{
+    //                                  shipper_details = shipper_rows[0];
+    //                                 //  const rows = invoice.consignment_results.map(await createRow).join(''); ///creating dynmaic table rows 
+    //                                 //  let table = await createTable(rows) //function for createtable
+    //                                 //  let tabledesign = await createHtml(table, driver_name, start_date, end_date) ////function for htm display in pdf
+             
+             
+             
+             
+                                    
+             
+             
+             
+    //                                  ///textInRowFirst(doc, 'Nombre o razón social', 100);
+    //                                  // generateInvoiceTable(doc, invoice);
+    //                                  //  generateFooter(doc);
+             
+             
+             
+    //                                  pdf.create(tabledesign, options).toFile('./uploads/' + driver_name + '-' + month + '.pdf', function (err, results) {
+    //                                      if (err) {
+    //                                          console.log(err);
+             
+    //                                      } else {
+    //                                          console.log(results)
+             
+                                              
+    //                                          var filePath = COMMONURL.SERVERURL + ':' + COMMONURL.SERVERPORT + '/' + driver_name + '-' + month + '.pdf'
+    //                                          res.json({ invoice, filePath })
+    //                                      }
+    //                                  });
+             
+             
+    //                              }
+    //                          });
+    //                      }
+    //                  });
+    //              }
+                 
+    //          })
+                        
+
+
+
+    //                     // doc.image(70, 160,{fit: [500, 500], align: 'center', valign: 'center'});
+    //                     // doc.image('images/test.jpeg', 430, 15, {fit: [100, 100], align: 'center', valign: 'center'})
+
+
+    //                     // let s3bucket = new AWS.S3({
+    //                     //     accessKeyId: IAM_USER_KEY,
+    //                     //     secretAccessKey: IAM_SECRET_KEY,
+    //                     //     Bucket: BUCKET_NAME
+    //                     // });
+
+    //                     // s3bucket.createBucket(function() {
+    //                     // var params = {
+    //                     //     Bucket: BUCKET_NAME,
+    //                     //     Key: req.body.cn_no + '.pdf',
+    //                     //     Body: doc
+    //                     // }
+    //                     // s3bucket.upload(params,function (err, data) {
+    //                     //     if(err){
+    //                     //         console.log('error in callback');
+    //                     //         console.log(err);
+    //                     //     }
+    //                     //     console.log(data.Location);
+    //                     //     file_url = data.Location;
+
+    //                     //     //deleting the records
+    //                     //     let tracking_delete_query = "delete from tracking  where cn_no = ? and (status = 'ATTEMPTING' or status ='DELIVERED');"
+    //                     //     connection.query(tracking_delete_query, req.body.cn_no, (err,rows) => {
+    //                     //         if(err){
+    //                     //             console.log(err)
+    //                     //         } else {
+    //                     //             console.log("Tracking Data Deleted Successfully");
+    //                     //         }
+    //                     //     })
+
+    //                     //     //adding rows in  tracking
+    //                     //     // var tracking_data1 = {
+    //                     //     //     "cn_no": req.body.cn_no,
+    //                     //     //     "status": "ATTEMPTING",
+    //                     //     //     "datetime": today
+    //                     //     // }
+    //                     //     var tracking_data2 = {
+    //                     //         "cn_no": req.body.cn_no,
+    //                     //         "status": "POD_DELIVERED",
+    //                     //         "datetime": today
+    //                     //     }
+
+    //                     //     //inserting record in tracking table
+    //                     //     // connection.query('INSERT INTO tracking SET ?', tracking_data1, (err,rows) => {
+    //                     //     //     if(err){
+    //                     //     //         console.log(err);
+    //                     //     //     } else {
+    //                     //     //         console.log("Tracking 1 added sucessfully");
+    //                     //     //     }
+    //                     //     // })
+    //                     //     connection.query('INSERT INTO tracking SET ?', tracking_data2, (err,rows) => {
+    //                     //         if(err){
+    //                     //             console.log(err);
+    //                     //         } else {
+    //                     //             console.log("Tracking 2 added sucessfully");
+    //                     //         }
+    //                     //     })
+
+    //                     //     //updating status in consignment table
+    //                     //     let consignment_update_query = "UPDATE consignment set status = ? where cn_no = ?"
+    //                     //     let data1 = [req.body.status, req.body.cn_no];
+    //                     //     connection.query(consignment_update_query, data1, (err,rows) => {
+    //                     //         if(err){
+    //                     //             console.log(err);
+    //                     //         } else {
+    //                     //             console.log("Consignment updated  sucessfully");
+    //                     //         }
+    //                     //     })
+
+    //                     //     //updating out for delivery
+    //                     //     let ofd_update_query = "UPDATE out_for_delivery set ? where cn_no = ?"
+    //                     //     var ofd_data = {
+    //                     //         'status' : req.body.status,
+    //                     //         'attachment' : file_url,
+    //                     //         'datetime' : today
+    //                     //     }
+    //                     //     let data2 = [ofd_data, req.body.cn_no];
+    //                     //     connection.query(ofd_update_query, data2, (err,rows) => {
+    //                     //         if(err){
+    //                     //             console.log(err);
+    //                     //         } else {
+    //                     //             console.log("OFD updated  sucessfully");
+    //                     //         }
+    //                     //     })
+
+    //                     //     //creating a log
+    //                     //     var log_data = {
+    //                     //         "user_id" : req.params.id,
+    //                     //         "cn_no"   : req.body.cn_no,
+    //                     //         "status": " has uploaded POD for  Consignment No. [" + req.body.cn_no + " ] to " + req.body.status
+    //                     //     }
+    //                     //     connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
+    //                     //         if (lgerr) {
+    //                     //         console.log(lgerr)
+    //                     //         }else{
+    //                     //             console.log("log added successfully");
+    //                     //         }
+    //                     //     });
+
+    //                     //     res.json({
+    //                     //         status:true,
+    //                     //         message:'Consignment Updated sucessfully'
+    //                     //     })
+    //                     // })
+    //                     // }
+    //                     // })
+                  
+    //                 // if(req.files === null){
+
+    //                 //     //updating out for delivery
+    //                 //     let ofd_update_query = "UPDATE out_for_delivery set ? where cn_no = ?"
+    //                 //     var ofd_data = {
+    //                 //         'status' : req.body.status,
+    //                 //         'driver_name' : req.body.driver_name,
+    //                 //     }
+    //                 //     let data3 = [ofd_data, req.body.cn_no];
+    //                 //     connection.query(ofd_update_query, data3, (err,rows) => {
+    //                 //         if(err){
+    //                 //             console.log(err);
+    //                 //         } else {
+    //                 //             console.log("OFD updated  sucessfully");
+    //                 //         }
+    //                 //     })
+
+    //                 //      //deleting the records
+    //                 //      let tracking_delete_query = "delete from tracking  where cn_no = ? and (status = 'ATTEMPTING' or status ='DELIVERED');"
+    //                 //      connection.query(tracking_delete_query, req.body.cn_no, (err,rows) => {
+    //                 //          if(err){
+    //                 //              res.json({
+    //                 //                  status:false,
+    //                 //                  message: 'there are some errors with query'
+    //                 //              })
+    //                 //          } else {
+    //                 //              console.log("Tracking Data Successfully");
+    //                 //          }
+    //                 //      })
+
+    //                 //         //creating a log
+    //                 //     var log_data = {
+    //                 //         "user_id" : req.params.id,
+    //                 //         "cn_no"   : req.body.cn_no,
+    //                 //         "status": " has updated Consignment No. [" + req.body.cn_no + " ] to " + req.body.status
+    //                 //     }
+    //                 //     connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
+    //                 //         if (lgerr) {
+    //                 //         console.log(lgerr)
+    //                 //         }else{
+    //                 //             console.log("log added successfully");
+    //                 //         }
+    //                 //     });
+    //                 //     res.json({
+    //                 //         status:true,
+    //                 //         message:'Consignment Updated sucessfully'
+    //                 //     })
+    //                 // }else{
+    //                 //     res.json({
+    //                 //         status: false,
+    //                 //         message:"Please select Status as Completed to upload POD."
+    //                 //     })
+    //                 // }
+               
+             
+
+    //     }
+    //     catch (err) {
+    //         console.log(err);
+    //     }
+    // },
+
     checkInvoice: (req,res) => {
         let invoice_no = req.params.invoice_no;
         let query = "SELECT * FROM invoice where invoice_no = ?;"
@@ -150,7 +428,7 @@ module.exports = {
         let invoice_date = req.body.invoice_date;
         let data = [ shipper_code,shipper_code];
         console.log(req.body); 
-        let query = "SELECT * FROM consignment where (DATE_FORMAT(cn_datetime,'%Y-%m-%d') >= DATE('" + start_date + "') AND DATE_FORMAT(cn_datetime,'%Y-%m-%d')  <= DATE('" + end_date + "')) and status = 'Close' and ( shipper_code=? or receiver_code = ?) and is_billed = 0 and is_approved = 1 and bill_to!=''  "
+        let query = "SELECT * FROM consignment where (DATE_FORMAT(cn_datetime,'%Y-%m-%d') >= DATE('" + start_date + "') AND DATE_FORMAT(cn_datetime,'%Y-%m-%d')  <= DATE('" + end_date + "')) and status = 'Close' and ( shipper_code=? or receiver_code = ?) and is_billed = 0 and is_approved = 1 and bill_to!='' order by cn_no asc "
       
         
 
@@ -577,7 +855,7 @@ module.exports = {
 
     consignmentPreviewInvoice: (req,res) =>{
         let total_amount = 0, sub_amount = 0, tax_amount = 0, shipper_details;
-        let query = "SELECT * FROM consignment where cn_no = ? and is_billed = 0 and is_approved = 1;"
+        let query = "SELECT * FROM consignment where cn_no = ? and is_billed = 0 and is_approved = 1 order by cn_no"
         let today = new Date(), code;
         connection.query(query, req.body.cn_no, (err,rows) => {
             if(err){
