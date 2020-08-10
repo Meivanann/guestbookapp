@@ -388,7 +388,7 @@ module.exports = {
                 })
             } else {
                 // fetching consignment records
-                let consignment_query = "SELECT * FROM consignment where (cn_datetime between ? and ? ) and status = 'Close' and shipper_code=? and is_billed = 1 and is_approved = 1 order by cn_no asc"
+                let consignment_query = "SELECT * FROM consignment as c left join  out_for_delivery as o  on o.cn_no=c.cn_no where (o.datetime between ? and ? ) and c.status = 'Close' and c.shipper_code=? and c.is_billed = 1 and c.is_approved = 1 order by c.cn_no asc"
                 let consignment_data = [rows[0].consignment_start_date, rows[0].consignment_end_date, rows[0].shipper_code];
                 console.log(consignment_data);
                 connection.query(consignment_query, consignment_data, (consignment_err,consignment_rows) => {
@@ -428,9 +428,10 @@ module.exports = {
         let invoice_date = req.body.invoice_date;
         let data = [ shipper_code,shipper_code];
         console.log(req.body); 
-        let query = "SELECT * FROM consignment where (DATE_FORMAT(cn_datetime,'%Y-%m-%d') >= DATE('" + start_date + "') AND DATE_FORMAT(cn_datetime,'%Y-%m-%d')  <= DATE('" + end_date + "')) and status = 'Close' and ( shipper_code=? or receiver_code = ?) and is_billed = 0 and is_approved = 1 and bill_to!='' order by cn_no asc "
       
-        
+        let query = "SELECT * FROM consignment as c left join out_for_delivery as o  on o.cn_no=c.cn_no where (DATE_FORMAT(o.datetime,'%Y-%m-%d') >= DATE('" + start_date + "') AND DATE_FORMAT(o.datetime,'%Y-%m-%d')  <= DATE('" + end_date + "')) and c.status = 'Close' and ( c.shipper_code=? or c.receiver_code = ?) and c.is_billed = 0 and c.is_approved = 1 and c.bill_to!='' order by c.cn_no asc "
+      
+       
 
         connection.query(query, data, (err,rows) => {
             console.log(query)
@@ -503,7 +504,7 @@ module.exports = {
         let invoice_number;
         let invoice_date = req.body.invoice_date;
 
-        let query = "SELECT * FROM consignment where (cn_datetime between ? and ? ) and status = 'Close' and ( shipper_code=? or receiver_code = ?) and is_billed = 0 and is_approved = 1;"
+        let query = "SELECT * FROM consignment as c  left join out_for_delivery as o  on o.cn_no=c.cn_no   where (o.datetime between ? and ? ) and c.status = 'Close' and ( c.shipper_code=? or c.receiver_code = ?) and c.is_billed = 0 and c.is_approved = 1;"
         let data = [start_date, end_date, shipper_code, shipper_code];
 
         connection.query(query, data, (err,rows) => {
