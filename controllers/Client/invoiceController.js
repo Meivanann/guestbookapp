@@ -11,6 +11,9 @@ module.exports = {
             if(err){
                 console.log(err);
             } else {
+
+           if(results.length > 0 )
+           {
                 connection.query(query, results[0].shipper_code, (err,rows) => {
                     if(err){
                         console.log(err);
@@ -32,6 +35,7 @@ module.exports = {
                     
                 })
             }
+        }
             
         })
     },
