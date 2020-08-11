@@ -46,6 +46,8 @@ module.exports = app => {
     var clientConsignmentController = require('./../controllers/Client/consignmentController');
     var clientInvoiceController = require('./../controllers/Client/invoiceController');
 
+    //report controller
+    var reportController=require('./../controllers/Admin/Report/reportController');
 
 
     //login and register routes
@@ -194,6 +196,8 @@ module.exports = app => {
     app.post('/api/:id/updatevendorproduct', billController.updateVendorProduct);
 
     
+    //report
+    app.post('/api/profitandloss', reportController.ProfitandLossreport);
 
 
     // transaction
