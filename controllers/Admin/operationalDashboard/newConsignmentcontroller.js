@@ -224,7 +224,7 @@ module.exports = {
 
     checkConsignmentNote: (req,res) => {
         let cn_no = req.body.cn_no;
-        let query = "SELECT * FROM consignment as c left join out_for_delivery as o  on o.cn_no=c.cn_no  where c.cn_no = ?;"
+        let query = "SELECT * FROM consignment as c    where c.cn_no = ?;"
        connection.query(query, cn_no, (err,rows) => {
             if(err){
                 console.log(err);
