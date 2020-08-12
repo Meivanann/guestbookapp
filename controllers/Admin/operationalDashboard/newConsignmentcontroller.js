@@ -312,6 +312,12 @@ module.exports = {
                         "bill_to" : req.body.bill_to,
                         "descripation" : req.body.descripation
                     }
+                    out_for_deliverydata={
+                        "cn_no":req.body.cn_no,
+                        "shipper_code":req.body.shipper_code,
+                        "receiver_name":req.body.receiver_name,
+                        "destination_code":req.body.destination_code,
+                    }
                 }else{
                     if(req.body.destination_code === destination_old){
                         consignment_data={
@@ -360,21 +366,29 @@ module.exports = {
                             "bill_to" : req.body.bill_to,
                             "descripation" : req.body.descripation
                             }
+                            out_for_deliverydata={
+                                "cn_no":req.body.cn_no,
+                                "shipper_code":req.body.shipper_code,
+                                "receiver_name":req.body.receiver_name,
+                                "destination_code":req.body.destination_code,
+                            }
                     } else{
                         
                         //deleteing the entry in ofd
                         let ofd_query = "DELETE FROM out_for_delivery WHERE cn_no = ?;"
                         connection.query(ofd_query,req.body.cn_no , (err,rows) => {
                             if(err){
-                                res.json({
-                                    status:false,
-                                    message: 'there are some errors with query'
-                                })
+                                console.log(err)
+                                // res.json({
+                                //     status:false,
+                                //     message: 'there are some errors with query'
+                                // })
                             } else {
-                                res.json({
-                                    status: 1,
-                                    message: 'OFD records deleted Successfully'
-                                })
+                                console.log('OFD records deleted Successfully')
+                                // res.json({
+                                //     status: 1,
+                                //     message: 'OFD records deleted Successfully'
+                                // })
                             }
                         })
 
@@ -425,19 +439,22 @@ module.exports = {
                             "descripation" : req.body.descripation
                         }
 
+                         
                         //deleting records in tracking table
                         let trr_query = "DELETE FROM tracking WHERE cn_no = ?;"
                         connection.query(trr_query,req.body.cn_no , (err,rows) => {
                             if(err){
-                                res.json({
-                                    status:false,
-                                    message: 'there are some errors with query'
-                                })
+                                console.log(err)
+                                // res.json({
+                                //     status:false,
+                                //     message: 'there are some errors with query'
+                                // })
                             } else {
-                                res.json({
-                                    status: 1,
-                                    message: 'Tracking  Records deleted Successfully'
-                                })
+                                console.log('Tracking  Records deleted Successfully')
+                                // res.json({
+                                //     status: 1,
+                                //     message: 'Tracking  Records deleted Successfully'
+                                // })
                             }
                         })
                     }
@@ -451,6 +468,8 @@ module.exports = {
                
                 let query = "UPDATE consignment SET ? where cn_no = ?"
                 let data1 = [consignment_data ,req.body.cn_no ]
+                let outquery="UPDATE out_for_delivery SET ? where cn_no = ?"
+                let outdata=[out_for_deliverydata ,req.body.cn_no ]
                 connection.query(query,data1, function (error, results, fields) {
                     if (error) {
                         console.log(error);
@@ -460,23 +479,32 @@ module.exports = {
                     })
                     }else{
                         
-                        //creating a log
-                        var log_data = {
-                            "user_id" : req.params.id,
-                            "cn_no"   : req.body.cn_no,
-                            "status"  : " has updated the Consignment No. [" + req.body.cn_no + " ] " 
-                        }
-                        connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
-                            if (lgerr) {
-                            console.log(lgerr)
-                            }else{
-                                console.log("log added successfully");
+                       
+                        connection.query(outquery,outdata, function (err, data, values) {
+                            if (error) {
+                                console.log(err)
                             }
-                        });
-
-                        res.json({
-                            status:true,
-                            message:'Consignment Updated sucessfully'
+                            else
+                            {
+                                //creating a log
+                                var log_data = {
+                                    "user_id" : req.params.id,
+                                    "cn_no"   : req.body.cn_no,
+                                    "status"  : " has updated the Consignment No. [" + req.body.cn_no + " ] " 
+                                }
+                                connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
+                                    if (lgerr) {
+                                    console.log(lgerr)
+                                    }else{
+                                        console.log("log added successfully");
+                                    }
+                                });
+        
+                                res.json({
+                                    status:true,
+                                    message:'Consignment Updated sucessfully'
+                                })
+                            }
                         })
                     }
                 })
