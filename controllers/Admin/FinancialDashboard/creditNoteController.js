@@ -1,6 +1,6 @@
 var connection = require('../../../config');
 const { parse } = require('handlebars');
-
+let commonFunction=require('../../commonFunction');
 
 module.exports = {
     index: (req,res) => {
@@ -28,6 +28,15 @@ module.exports = {
         })
     },
 
+    deleteCreditNote: async(req,res) => {
+        let credit_id = req.body.creditid;
+        let query = "DELETE credit_note FROM credit_note LEFT JOIN  credit_note_details ON credit_note.id = credit_note_details.credit_note_id  WHERE credit_note.id=" + credit_id + "";
+        let data=await commonFunction.getQueryResults(query);
+console.log(query)
+        res.json({status:1,message:'Delete credit note successfully' })
+
+      
+    },
     getCreditNote: (req,res) => {
         let shipper_code = req.params.shipper_code;
         let query = "select * from credit_note where shipper_code = ?;"

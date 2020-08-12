@@ -165,14 +165,14 @@ module.exports = app => {
     app.get('/api/:id/getcreditnote/:shipper_code/:credit_note_id', creditNoteController.getCreditNoteDetails);
     app.post('/api/:id/createcreditnote', creditNoteController.store);
     app.post('/api/:id/creditnote/recordpayment', creditNoteController.recordPayment);
-
+    app.post('/api/deletecreditnote', creditNoteController.deleteCreditNote);
     // DebitNote
     app.get('/api/:id/getalldebitnotes', debitNoteController.index);
     app.get('/api/:id/getdebitnote/:shipper_code', debitNoteController.getDebitNote);
     app.get('/api/:id/getdebitnote/:shipper_code/:debit_note_id', debitNoteController.getDebitNoteDetails);
     app.post('/api/:id/createdebitnote', debitNoteController.store);
     app.post('/api/:id/debitnote/recordpayment', debitNoteController.recordPayment);
-
+    app.post('/api/deletedebitnote', debitNoteController.deletedebitNote);
     // Acoount-Statement
     app.post('/api/:id/getaccountstatement', accStatementController.getAccountStatement);
 
@@ -198,7 +198,7 @@ module.exports = app => {
     
     //report
     app.post('/api/profitandloss', reportController.ProfitandLossreport);
-
+    app.get('/api/paymentaccountlist', reportController.getpaymentaccount);
 
     // transaction
     app.get('/api/:id/getalltransactions', transactionController.getAllTransactions);
