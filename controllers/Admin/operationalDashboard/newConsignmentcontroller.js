@@ -249,7 +249,7 @@ module.exports = {
         let status, status_old, destination_old, quantity;
         let user_id = req.params.id;
         var consignment_data;
-
+        var out_for_deliverydata;
         //fetching the old record
         let query = "SELECT * FROM consignment where cn_no = ?;"
         connection.query(query, req.body.cn_no, (err,rows) => {
