@@ -372,6 +372,17 @@ module.exports = {
         let total_amount = req.body.total_amount;
         let vendor_id = req.body.vendor_id;
         let acc_bal = 0, amt = 0;
+        let paymentObject = {
+
+            'payment_type': payment_method,
+            'account': 1,
+            'amount': amount_paid,
+            'type': 2,      //invoice
+            'debit': 0,
+            'credit': amount_paid,
+            'bill_id': bill_id
+        }
+
 
         // Fetching and updating the credit note table
         connection.query("select * from bill where id = ?", bill_id, function (error, results, fields) {
@@ -403,69 +414,73 @@ module.exports = {
                         console.log(uperr);
                     } else {
 
-                        // updating the vendor account
-                        let vendor_query = "select * from vendors where id = ?"
-                        connection.query(vendor_query, vendor_id, (vendor_err, vendor_rows) => {
-                            if (vendor_err) {
-                                console.log(vendor_err);
-                            } else {
-                                acc_bal = parseFloat(vendor_rows[0].acc_bal) - parseFloat(amount_paid);
-                                let vendor_acc_update = "UPDATE vendors SET ? where id = ?";
-                                var vendor_acc_update_data = {
-                                    "acc_bal": acc_bal
-                                }
-                                let data111 = [vendor_acc_update_data, vendor_id];
 
-                                connection.query(vendor_acc_update, data111, function (error, results, fields) {
-                                    if (error) {
-                                        console.log(error);
+
+                        var paymentQuery = "insert payments SET ? "
+                        connection.query(paymentQuery, paymentObject, function (err, datas) {
+                            if (error) {
+                                console.log(error);
+                            } else {
+
+                                // updating the vendor account
+                                let vendor_query = "select * from vendors where id = ?"
+                                connection.query(vendor_query, vendor_id, (vendor_err, vendor_rows) => {
+                                    if (vendor_err) {
+                                        console.log(vendor_err);
                                     } else {
-                                        console.log("Vendor updated Successfully")
+                                        acc_bal = parseFloat(vendor_rows[0].acc_bal) - parseFloat(amount_paid);
+                                        let vendor_acc_update = "UPDATE vendors SET ? where id = ?";
+                                        var vendor_acc_update_data = {
+                                            "acc_bal": acc_bal
+                                        }
+                                        let data111 = [vendor_acc_update_data, vendor_id];
+
+                                        connection.query(vendor_acc_update, data111, function (error, results, fields) {
+                                            if (error) {
+                                                console.log(error);
+                                            } else {
+                                                console.log("Vendor updated Successfully")
+                                            }
+                                        });
+
+                                    }
+                                }); var o_acc_data = {
+                                    "type": "Expense",
+                                    "description": "Payment for bil " + bill_id,
+                                    "amount": amount_paid,
+                                    "account": req.body.account,
+                                    "created_on": today
+                                }
+                                let o_acc_state_query = "INSERT INTO account_statements SET ?"
+                                connection.query(o_acc_state_query, o_acc_data, function (lgerr, lgres, fields) {
+                                    if (lgerr) {
+                                        console.log(lgerr)
+                                    } else {
+                                        console.log(" account statement  added successfully");
                                     }
                                 });
 
+
+                                console.log(results);
+                                //creating a log
+                                var log_data = {
+                                    "status": " has recorded the payment for bill no " + bill_id,
+                                    "user_id": req.params.id
+                                }
+                                connection.query('INSERT INTO log SET ?', log_data, function (lgerr, lgres, fields) {
+                                    if (lgerr) {
+                                        console.log(lgerr)
+                                    } else {
+                                        console.log("log added successfully");
+                                        res.json({
+                                            status: true,
+                                            message: 'bill Updated sucessfully'
+                                        })
+                                    }
+                                });
                             }
                         });
                     }
-                });
-
-
-
-
-                var o_acc_data = {
-                    "type": "Expense",
-                    "description": "Payment for bil " + bill_id,
-                    "amount": amount_paid,
-                    "account": req.body.account,
-                    "created_on": today
-                }
-                let o_acc_state_query = "INSERT INTO account_statements SET ?"
-                connection.query(o_acc_state_query, o_acc_data, function (lgerr, lgres, fields) {
-                    if (lgerr) {
-                        console.log(lgerr)
-                    } else {
-                        console.log(" account statement  added successfully");
-                    }
-                });
-
-
-                console.log(results);
-                //creating a log
-                var log_data = {
-                    "status": " has recorded the payment for bill no " + bill_id,
-                    "user_id": req.params.id
-                }
-                connection.query('INSERT INTO log SET ?', log_data, function (lgerr, lgres, fields) {
-                    if (lgerr) {
-                        console.log(lgerr)
-                    } else {
-                        console.log("log added successfully");
-                    }
-                });
-
-                res.json({
-                    status: true,
-                    message: 'bill Updated sucessfully'
                 })
             }
         });

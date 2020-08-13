@@ -3,6 +3,28 @@ var commonFunction = require('../../commonFunction');
 var _ = require('lodash')
 module.exports = {
 
+
+    getpaymentaccount: async (req, res) => {
+         
+        var paymentaccountQuery="SELECT *,a.id as account_id,a.account_name as account_name  FROM accounts as a inner join account_types as ac on ac.id=a.account_type_id where ac.id =1 group by ac.id";
+        var paymentaccountData=await commonFunction.getQueryResults(paymentaccountQuery);
+
+
+        if(paymentaccountData.length > 0 )
+        {
+
+            res.json({status:1,message:'payment account list',paymentaccountData})
+            
+        }
+        else
+        {
+
+            res.json({status:0,message:'No payment account list'})
+            
+        }
+
+
+    },
     ProfitandLossreport: async (req, res) => {
         let { start_date, end_date, report_type } = req.body
         let accountObject = {};
@@ -12,6 +34,8 @@ module.exports = {
         var bill = [];
         let incomes = [];
         let expense = []
+        let incomepaymentObject=[];
+        let expensepaymentObject={};
         let expenseObject = {}
 
         var finalResponse = [];
@@ -23,27 +47,41 @@ module.exports = {
             accountObject[element.accountypeid] = element.accounttypename;
             accountNameObject[element.accountid] = element.accountname
         });
-        //consigmentQuery
-        let consignmentQuery = "Select * from consignment as c where cn_datetime >= '" + start_date + "' AND cn_datetime  <= '" + end_date + "' and status = 'Close'  and is_approved = 1 "
-        let consignmentData = await commonFunction.getQueryResults(consignmentQuery);
+        //paymentQuery
+        let paymentQuery = "Select *,p.account as account_id from payments as p left join accounts as a on p.account=a.id  inner join account_types as at on at.id=a.account_type_id where p.created_date >= '" + start_date + "' AND p.created_date  <= '" + end_date + "' group by p.id"
+        let paymentData = await commonFunction.getQueryResults(paymentQuery);
 
-        //billdetailsQuery
+
+
+
+        // //billdetailsQuery
         let billDetailsQuery = "Select * from bill as b inner join  bill_details as bd on b.id=bd.bill_id inner join accounts as ac on ac.id=bd.expense_category where b.bill_date >= '" + start_date + "' AND b.bill_date  <= '" + end_date + "' and b.isdelete = 0 ";
         let billDetailsdata = await commonFunction.getQueryResults(billDetailsQuery);
 
         let transactionQuery = " Select *,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account  where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "' group by a.id ";
         let transactionData = await commonFunction.getQueryResults(transactionQuery);
-        // consignmentData.forEach(element => {
+        paymentData.forEach(element => {
 
-        //     if(consignmentObject[element.account_type_id]==undefined)
+            if(element.type=='Income')
 
-        //     {
+            {
 
-        //         consignmentObject[element.account_type_id]=[];
-        //     }
+                incomepaymentObject.push(element)
+            }
+            if(element.type=='Expense')
+
+            {
+                if (expensepaymentObject[element.account_type_id==undefined]) {
+                    expensepaymentObject[element.account_type_id]=[];
+                }
 
 
-        // });
+                expensepaymentObject[element.account_type_id].push(element)
+            }
+
+
+
+        });
 
         transactionData.forEach(element => {
             if (element.type == 'Income') {
@@ -67,7 +105,7 @@ module.exports = {
         // });
 
 
-        console.log('cost', transactionQuery)
+        console.log('cost', paymentQuery)
 
 
         if (billDetailsdata.length > 0) {
@@ -130,9 +168,9 @@ module.exports = {
             }))
             .value();
 
-        if (consignmentData.length > 0) {
-            var consigmentdetails =
-                _(consignmentData)
+        if (paymentData.length > 0) {
+            var paymentdetails =
+                _(incomepaymentObject)
                     .groupBy('account_id')
                     .map((objs, key) => ({
                         'account_id': key,
@@ -152,29 +190,32 @@ module.exports = {
         let incomearray = [];
         let Costofgoodsarray = [];
         let operatingexpensearray = []
-        incomearray.push(...consigmentdetails, ...transactiondetails);
+        incomearray.push(...paymentdetails,...transactiondetails);
         var carray = billDetailsdata.length == 0 ? '' : billObject[24];
         var oarray = billDetailsdata.length == 0 ? '' : billObject[25];
         var cexpensearray = expense.length > 0 ? expenseObject[25] : '';
         var oexpensearray = expense.length > 0 ? expenseObject[25] : '';
-        Costofgoodsarray.push(...carray, ...cexpensearray);
-        operatingexpensearray.push(...oarray, ...oexpensearray);
+
+        var cparray= paymentData.length > 0 ? expensepaymentObject[25] : '';
+        var oparray=paymentData.length > 0 ? expensepaymentObject[24] : '';
+        Costofgoodsarray.push(...carray,...cexpensearray,...cparray);
+        operatingexpensearray.push(...oarray,...oexpensearray,...oparray);
         var income = {
-            header: 'Income', totalvalue: _.sumBy(consigmentdetails, 'total'),
+            header: 'Income', totalvalue: _.sumBy(incomearray, 'total'),
             values: incomearray
         }
         var operatingexpense = {
-            header: 'Operating expense', totalvalue: _.sumBy(billObject[24], 'total'),
+            header: 'Operating expense', totalvalue: _.sumBy(operatingexpensearray, 'total'),
             values: operatingexpensearray
         }
         var Costofgoods = {
-            header: 'Cost of  goods sold', totalvalue: _.sumBy(billObject[25], 'total'),
+            header: 'Cost of  goods sold', totalvalue: _.sumBy(Costofgoodsarray, 'total'),
             values: Costofgoodsarray
         }
         finalResponse.push(income, operatingexpense, Costofgoods);
         var grossprofit = (income.totalvalue - Costofgoods.totalvalue);
         var netprofit = (grossprofit - operatingexpense.totalvalue)
-        res.json({ status: 1, message: 'Profit and loss report list', transactiondetails, incomes, grossprofit, netprofit, finalResponse, transactionData, consigmentdetails, billDetailsdata })
+        res.json({ status: 1, message: 'Profit and loss report list', paymentData,transactiondetails, incomes, grossprofit, netprofit, finalResponse, transactionData, billDetailsdata })
 
 
 

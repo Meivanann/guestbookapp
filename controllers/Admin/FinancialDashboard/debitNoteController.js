@@ -1,8 +1,18 @@
 var connection = require('../../../config');
 const { parse } = require('handlebars');
-
+let commonFunction=require('../../commonFunction');
 
 module.exports = {
+    deletedebitNote: async(req,res) => {
+        let debit_id = req.body.debitid;
+         
+        let query = "DELETE debit_note FROM debit_note LEFT JOIN  debit_note_details ON debit_note.id = debit_note_details.debit_note_id  WHERE debit_note.id=" + debit_id + "";
+        let data=await commonFunction.getQueryResults(query);
+
+        res.json({status:1,message:'Delete debit note successfully' })
+
+      
+    },
     index: (req,res) => {
         let query = "SELECT * FROM debit_note;"
 
