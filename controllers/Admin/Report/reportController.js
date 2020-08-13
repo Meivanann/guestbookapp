@@ -35,8 +35,13 @@ module.exports = {
         let incomes = [];
         let expense = []
         let incomepaymentObject=[];
-        let expensepaymentObject={};
+        let expensepaymentObject=[];
         let expenseObject = {}
+        let costofgoodsexpense=[];
+        let operatingexpensetransaction=[];
+        let costofgoodsexpensepayment=[];
+        let operatingexpensepayment=[]
+        var paymentdetails;
 
         var finalResponse = [];
         let accounttypeQuery = "Select *,at.id as accountypeid,at.name as accounttypename,a.id as accountid,a.account_name as accountname from accounts as a left join account_types as at on at.id=a.account_type_id ";
@@ -48,55 +53,68 @@ module.exports = {
             accountNameObject[element.accountid] = element.accountname
         });
         //paymentQuery
-        let paymentQuery = "Select *,p.account as account_id from payments as p left join accounts as a on p.account=a.id  inner join account_types as at on at.id=a.account_type_id where p.created_date >= '" + start_date + "' AND p.created_date  <= '" + end_date + "' group by p.id"
-        let paymentData = await commonFunction.getQueryResults(paymentQuery);
+        // let paymentQuery = "Select *,p.account as account_id from payments as p left join accounts as a on p.account=a.id  inner join account_types as at on at.id=a.account_type_id where p.created_date >= '" + start_date + "' AND p.created_date  <= '" + end_date + "' group by p.id"
+        // let paymentData = await commonFunction.getQueryResults(paymentQuery);
 
 
 
 
         // //billdetailsQuery
-        let billDetailsQuery = "Select * from bill as b inner join  bill_details as bd on b.id=bd.bill_id inner join accounts as ac on ac.id=bd.expense_category where b.bill_date >= '" + start_date + "' AND b.bill_date  <= '" + end_date + "' and b.isdelete = 0 ";
-        let billDetailsdata = await commonFunction.getQueryResults(billDetailsQuery);
+        // let billDetailsQuery = "Select * from bill as b inner join  bill_details as bd on b.id=bd.bill_id inner join accounts as ac on ac.id=bd.expense_category where b.bill_date >= '" + start_date + "' AND b.bill_date  <= '" + end_date + "' and b.isdelete = 0 ";
+        // let billDetailsdata = await commonFunction.getQueryResults(billDetailsQuery);
 
         let transactionQuery = " Select *,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account  where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "' group by a.id ";
         let transactionData = await commonFunction.getQueryResults(transactionQuery);
-        paymentData.forEach(element => {
+        // paymentData.forEach(element => {
 
-            if(element.type=='Income')
+        //     if(element.type=='Income')
 
-            {
+        //     {
 
-                incomepaymentObject.push(element)
-            }
-            if(element.type=='Expense')
+        //         incomepaymentObject.push(element)
+        //     }
+        //     if(element.type=='Expense')
 
-            {
-                if (expensepaymentObject[element.account_type_id==undefined]) {
-                    expensepaymentObject[element.account_type_id]=[];
-                }
-
-
-                expensepaymentObject[element.account_type_id].push(element)
-            }
+        //     {
+        //         // if (expensepaymentObject[element.account_type_id==undefined]) {
+        //         //     expensepaymentObject[element.account_type_id]=[];
+        //         // }
 
 
+        //         expensepaymentObject.push(element)
+        //     }
 
-        });
+
+
+        // });
+
+        // expensepaymentObject.forEach(element => {
+        //     if (element.account_type_id == 24) {
+    
+        //         operatingexpensepayment.push(element)
+        //     }
+        //     if (element.account_type_id == 25) {
+        //         costofgoodsexpensepayment.push(element)
+        //     }
+           
+        // });
+
+
 
         transactionData.forEach(element => {
-            if (element.type == 'Income') {
+            if (element.type =='Income') {
                 incomes.push(element)
             }
-            if (element.type == 'Expense') {
+            if (element.type =='Expense') {
                 expense.push(element)
             }
         });
 
 
 
-        billDetailsdata.forEach(item => {
-            item.account_id = item.expense_category;
-        });
+        // billDetailsdata.forEach(item => {
+        //     item.account_id = item.expense_category;
+        // });
         // accountdata.forEach(item1 => {
         //     billDetailsdata.forEach(item2 => {
 
@@ -105,54 +123,136 @@ module.exports = {
         // });
 
 
-        console.log('cost', paymentQuery)
+        //console.log('cost', paymentQuery)
 
 
-        if (billDetailsdata.length > 0) {
-            var billdetails =
-                _(billDetailsdata)
-                    .groupBy('account_id')
-                    .map((objs, key) => ({
-                        'account_id': key,
-                        'account_type_id': _.get(objs[0], 'account_type_id'),
-                        'account_type_name': accountObject[_.get(objs[0], 'account_type_id')],
-                        'account_id_name': accountNameObject[key],
-                        'total': _.sumBy(objs, function (day) {
+        // if (billDetailsdata.length > 0) {
+        //     var billdetails =
+        //         _(billDetailsdata)
+        //             .groupBy('account_id')
+        //             .map((objs, key) => ({
+        //                 'account_id': key,
+        //                 'account_type_id': _.get(objs[0], 'account_type_id'),
+        //                 'account_type_name': accountObject[_.get(objs[0], 'account_type_id')],
+        //                 'account_id_name': accountNameObject[key],
+        //                 'total': _.sumBy(objs, function (day) {
 
-                            return day.debit - day.credit;
+        //                     return day.debit - day.credit;
 
-                        })
-                    }))
-                    .value();
-
-
-
-            billdetails.forEach(element => {
-
-                if (billObject[element.account_type_id] == undefined) {
-
-                    billObject[element.account_type_id] = [];
-                }
-                billObject[element.account_type_id].push(element)
+        //                 })
+        //             }))
+        //             .value();
 
 
-            });
 
-        }
+        //     billdetails.forEach(element => {
+
+        //         if (billObject[element.account_type_id] == undefined) {
+
+        //             billObject[element.account_type_id] = [];
+        //         }
+        //         billObject[element.account_type_id].push(element)
 
 
+        //     });
+
+        // }
+
+
+
+        // expense.forEach(element => {
+
+        //     if (expenseObject[element.account_type_id] == undefined) {
+
+        //         expenseObject[element.account_type_id] = [];
+        //     }
+        //     expenseObject[element.account_type_id].push(element)
+
+
+
+        // });
+
+
+
+        
 
         expense.forEach(element => {
 
-            if (expenseObject[element.account_type_id] == undefined) {
+                if (element.account_type_id == 24) {
+    
+                    operatingexpensetransaction.push(element)
+                }
+                if (element.account_type_id == 25) {
+                    costofgoodsexpense.push(element)
+                }
+               
+    
+    
+            });
 
-                expenseObject[element.account_type_id] = [];
-            }
-            expenseObject[element.account_type_id].push(element)
 
+         
+            
 
-        });
+             
+            // var costoofgoodspaymentdetails = _(costofgoodsexpensepayment)
+            // .groupBy('account_id')
+            // .map((objs, key) => ({
+            //     'account_id': key,
+            //     'account_type_id': _.get(objs[0], 'account_type_id'),
+            //     'account_type_name': accountObject[_.get(objs[0], 'account_type_id')] ? accountObject[_.get(objs[0], 'account_type_id')] : '',
+            //     'account_id_name': accountNameObject[key] ? accountNameObject[key] : '',
+            //     'total': _.sumBy(objs, function (day) {
 
+            //         return day.debit - day.credit;
+
+            //     })
+            // }))
+            // .value();
+
+            // var operationexpensepaymentdetails = _(operatingexpensepayment)
+            // .groupBy('account_id')
+            // .map((objs, key) => ({
+            //     'account_id': key,
+            //     'account_type_id': _.get(objs[0], 'account_type_id'),
+            //     'account_type_name': accountObject[_.get(objs[0], 'account_type_id')] ? accountObject[_.get(objs[0], 'account_type_id')] : '',
+            //     'account_id_name': accountNameObject[key] ? accountNameObject[key] : '',
+            //     'total': _.sumBy(objs, function (day ,n) {
+
+            //         return day.debit - day.credit;
+
+            //     })
+            // }))
+            // .value();
+            var costoofgoodsdetails = _(costofgoodsexpense)
+            .groupBy('account_id')
+            .map((objs, key) => ({
+                'account_id': key,
+                'account_type_id': _.get(objs[0], 'account_type_id'),
+                'account_type_name': accountObject[_.get(objs[0], 'account_type_id')] ? accountObject[_.get(objs[0], 'account_type_id')] : '',
+                'account_id_name': accountNameObject[key] ? accountNameObject[key] : '',
+                'total': _.sumBy(objs, function (day) {
+
+                    return day.debit - day.credit;
+
+                })
+            }))
+            .value();
+
+            var operationexpensedetails = _(operatingexpensetransaction)
+            .groupBy('account_id')
+            .map((objs, key) => ({
+                'account_id': key,
+                'account_type_id': _.get(objs[0], 'account_type_id'),
+                'account_type_name': accountObject[_.get(objs[0], 'account_type_id')] ? accountObject[_.get(objs[0], 'account_type_id')] : '',
+                'account_id_name': accountNameObject[key] ? accountNameObject[key] : '',
+                'total': _.sumBy(objs, function (day) {
+
+                    return day.debit - day.credit;
+
+                })
+            }))
+            .value();
         var transactiondetails = _(incomes)
             .groupBy('account_id')
             .map((objs, key) => ({
@@ -168,38 +268,42 @@ module.exports = {
             }))
             .value();
 
-        if (paymentData.length > 0) {
-            var paymentdetails =
-                _(incomepaymentObject)
-                    .groupBy('account_id')
-                    .map((objs, key) => ({
-                        'account_id': key,
-                        'account_type_id': _.get(objs[0], 'account_type_id'),
-                        'account_type_name': accountObject[_.get(objs[0], 'account_type_id')] ? accountObject[_.get(objs[0], 'account_type_id')] : '',
-                        'account_id_name': accountNameObject[key] ? accountNameObject[key] : '',
-                        'total': _.sumBy(objs, function (day) {
+        // if (paymentData.length > 0) {
+        //     paymentdetails =
+        //         _(incomepaymentObject)
+        //             .groupBy('account_id')
+        //             .map((objs, key) => ({
+        //                 'account_id': key,
+        //                 'account_type_id': _.get(objs[0], 'account_type_id'),
+        //                 'account_type_name': accountObject[_.get(objs[0], 'account_type_id')] ? accountObject[_.get(objs[0], 'account_type_id')] : '',
+        //                 'account_id_name': accountNameObject[key] ? accountNameObject[key] : '',
+        //                 'total': _.sumBy(objs, function (day) {
 
-                            return day.credit - day.debit;
+        //                     return day.credit - day.debit;
 
-                        })
-                    }))
-                    .value();
-        }
+        //                 })
+        //             }))
+        //             .value();
+        // }
 
 
         let incomearray = [];
         let Costofgoodsarray = [];
         let operatingexpensearray = []
-        incomearray.push(...paymentdetails,...transactiondetails);
-        var carray = billDetailsdata.length == 0 ? '' : billObject[24];
-        var oarray = billDetailsdata.length == 0 ? '' : billObject[25];
-        var cexpensearray = expense.length > 0 ? expenseObject[25] : '';
-        var oexpensearray = expense.length > 0 ? expenseObject[25] : '';
 
-        var cparray= paymentData.length > 0 ? expensepaymentObject[25] : '';
-        var oparray=paymentData.length > 0 ? expensepaymentObject[24] : '';
-        Costofgoodsarray.push(...carray,...cexpensearray,...cparray);
-        operatingexpensearray.push(...oarray,...oexpensearray,...oparray);
+         
+        let income2=transactionData.length > 0?transactiondetails: '';
+      console.log( 'type',typeof(paymentdetails))
+        incomearray.push(...income2);
+        // var carray = billDetailsdata.length == 0 ? '' : billObject[24];
+        // var oarray = billDetailsdata.length == 0 ? '' : billObject[25];
+        var cexpensearray = costoofgoodsdetails.length > 0 ? costoofgoodsdetails : '';
+        var oexpensearray = operationexpensedetails.length > 0 ? operationexpensedetails : '';
+
+        // var cparray= paymentData.length > 0  &&  costofgoodsexpensepayment.length  > 0? costoofgoodspaymentdetails : '';
+        // var oparray=paymentData.length > 0 &&  operationexpensepaymentdetails.length  > 0 ? operationexpensepaymentdetails : '';
+        Costofgoodsarray.push(...cexpensearray);
+        operatingexpensearray.push(...oexpensearray);
         var income = {
             header: 'Income', totalvalue: _.sumBy(incomearray, 'total'),
             values: incomearray
@@ -213,9 +317,12 @@ module.exports = {
             values: Costofgoodsarray
         }
         finalResponse.push(income, operatingexpense, Costofgoods);
+       
         var grossprofit = (income.totalvalue - Costofgoods.totalvalue);
+        var grossprofitpercentage=Math.round((grossprofit/income.totalvalue) * 100 ) + '%'
         var netprofit = (grossprofit - operatingexpense.totalvalue)
-        res.json({ status: 1, message: 'Profit and loss report list', paymentData,transactiondetails, incomes, grossprofit, netprofit, finalResponse, transactionData, billDetailsdata })
+        var netprofitpercentage=Math.round((netprofit/income.totalvalue) * 100) + '%'
+        res.json({ status: 1, message: 'Profit and loss report list', netprofitpercentage,grossprofitpercentage, grossprofit, netprofit, finalResponse })
 
 
 
