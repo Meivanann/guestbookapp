@@ -29,6 +29,7 @@ module.exports = {
     },
 
     editCreditNote: async(req,res) => {
+        let today=moment().format() 
         let credit_id = req.body.creditid;
         let shippercode=req.body.shippercode;
         let creditdetails=req.body.credit_details;
@@ -42,13 +43,14 @@ module.exports = {
             "status"            : "Unpaid",
             "payment_due_date"  : payment_due_date
         }
-        let query = "select * from credit_note as c inner join credit_note_details as cd on cd.credit_note_id=c.id where c.id="+credit_id+"";
+        
+        let query = "select * from credit_note as c  where c.id="+credit_id+"";
         let data=await commonFunction.getQueryResults(query);
  if (data.length > 0) {
 
-
+console.log('credit')
     let credit_note_query = "update  credit_note SET  ? where id="+credit_id+""
-    connection.query(credit_note_query, credit_note_data, function (crerr, crres, fields) {
+    connection.query(credit_note_query, credit_note_data, async function (crerr, crres, fields) {
         if (crerr) {
             console.log(crerr)
         }else{
@@ -57,11 +59,12 @@ module.exports = {
             console.log("Credit note added successfully");
 
             // adding the rows in credit note details table
+            console.log("Credit successfully",creditdetails);
             Object.keys(creditdetails).forEach(function(key) {
-                var row = data[key];
-                console.log(row);
-row.shipper_code=shippercode;
-row.credit_note_id=credit_note_id
+                var row = creditdetails[key];
+               
+row.shipper_code=shippercode!=undefined?shippercode:''
+row.credit_note_id=credit_id
                 
 
             //     let credit_detail_query = "INSERT INTO credit_note_details SET ?"
@@ -72,14 +75,27 @@ row.credit_note_id=credit_note_id
             //             console.log("Credit note details added successflly");
             //         }
             //     });
+           
              });
-             let credits = creditdetails.map((m) => Object.values(m))
 
-            let credit_note_query = "update  credit_note_details SET  amount='?',description='?',credit_note_id ='?',shipper_code='?' where credit_note_id="+credit_id+""
-            connection.query(credit_note_query, credits, function (crerr, crres, fields) {
-                if (crerr) {
-                    console.log(crerr)
-                }else{
+             console.log('ssssssskksl')
+             let credits = creditdetails.map((m) => Object.values(m))
+for (let index = 0;index < creditdetails.length;index++) {
+    const element = creditdetails[index];
+console.log(element)
+    let credit_note_query = "update  credit_note_details SET  amount='"+element.amount+"',description='"+element.description+"',credit_note_id ='"+element.credit_note_id+"',shipper_code='"+element.shipper_code+"' where credit_note_id="+credit_id+""
+    let credit_notedata=await commonFunction.getQueryResults(credit_note_query)
+    
+}
+            
+            
+           
+           
+             // connection.query(credit_note_query, [credits,'ss'], function (crerr, crres, fields) {
+            //     if (crerr) {
+            //         console.log(crerr)
+            //     }else{
+           
                     var inv_acc_data = {
                         "shipper_code" : shippercode,
                         "type"         : "Credit",
@@ -87,8 +103,8 @@ row.credit_note_id=credit_note_id
                         "updated_on"   :  today,
                         "description"  :  "Credit note"
                     }
-                    let acc_state_query = "update  shipper_acc_statements SET ? where shipper_code="+shippercode+" and type='Credit'and amount="+amount+" order by  id desc "
-                    connection.query(acc_state_query, inv_acc_data, function (lgerr, lgres, fields) {
+                    let acc_state_query = "update  shipper_acc_statements SET ? where shipper_code='"+shippercode+"' and type='Credit'and amount="+totalamount+" order by  id desc "
+                    connection.query(acc_state_query, inv_acc_data, async function (lgerr, lgres, fields) {
                         if (lgerr) {
                             console.log(lgerr)
                         }else{
@@ -104,8 +120,8 @@ row.credit_note_id=credit_note_id
                             console.log(err);
                         }else{
                             shipper_details = shipper_rows[0];
-                            acc_bal = parseFloat(shipper_details.acc_bal) + parseFloat(total_amount);
-                
+                            acc_bal = shipper_details!=undefined && totalamount > 0?parseFloat(shipper_details.acc_bal) + parseFloat(totalamount):'';
+                console.log
                             // updating the shipper account
                             let shipper_acc_update = "UPDATE shipping SET ? where shipper_code = ?";
                             var shipper_acc_update_data = {
@@ -120,8 +136,8 @@ row.credit_note_id=credit_note_id
                                     console.log("Shipping updated Successfully")
                 
                                     res.json({
-                                        status:true,
-                                        message:'Credit Note generated sucessfully'
+                                        status:1,
+                                        message:'Update Credit Note generated sucessfully'
                                     })
                                 }
                             });
@@ -129,8 +145,8 @@ row.credit_note_id=credit_note_id
                     })
 
 
-            }
-        });
+           // }
+        
 
             
         }

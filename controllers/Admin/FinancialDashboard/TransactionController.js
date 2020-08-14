@@ -3,7 +3,7 @@ var connection = require('../../../config');
 
 module.exports = {
     getAllTransactions: (req,res) => {
-        let query = "SELECT * FROM account_statements order by created_on desc;"
+        let query = "SELECT * FROM account_statements  where from_id= 12  order by created_on desc;"
         let total_amount = 0;
         connection.query(query, (err,rows) => {
             if(err){
@@ -46,7 +46,8 @@ module.exports = {
             "type"         : "Expense",
             "amount"       :  req.body.amount,
             "created_on"   :  req.body.today_date,
-            "description"  :  req.body.description
+            "description"  :  req.body.description,
+            "from_id": 12
         }
 
         let acc_state_query = "INSERT INTO account_statements SET ?"
@@ -72,7 +73,8 @@ module.exports = {
             "type"         : "Income",
             "amount"       :  req.body.amount,
             "created_on"   :  req.body.today_date,
-            "description"  :  req.body.description
+            "description"  :  req.body.description,
+            "from_id": 12
         }
 
         let acc_state_query = "INSERT INTO account_statements SET ?"

@@ -43,6 +43,11 @@ module.exports = {
         let operatingexpensepayment=[]
         var paymentdetails;
 
+var condition=''
+        if(report_type==2)
+        {
+            condition=" and a.ispayment=1"
+        }
         var finalResponse = [];
         let accounttypeQuery = "Select *,at.id as accountypeid,at.name as accounttypename,a.id as accountid,a.account_name as accountname from accounts as a left join account_types as at on at.id=a.account_type_id ";
 
@@ -63,7 +68,7 @@ module.exports = {
         // let billDetailsQuery = "Select * from bill as b inner join  bill_details as bd on b.id=bd.bill_id inner join accounts as ac on ac.id=bd.expense_category where b.bill_date >= '" + start_date + "' AND b.bill_date  <= '" + end_date + "' and b.isdelete = 0 ";
         // let billDetailsdata = await commonFunction.getQueryResults(billDetailsQuery);
 
-        let transactionQuery = " Select *,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account  where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "' group by a.id ";
+        let transactionQuery = " Select *,ad.type as accountype,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  and a.from_id NOT IN (6,7,8,9,10,11) " + condition + " group by a.id ";
         let transactionData = await commonFunction.getQueryResults(transactionQuery);
         // paymentData.forEach(element => {
 
@@ -102,10 +107,10 @@ module.exports = {
 
 
         transactionData.forEach(element => {
-            if (element.type =='Income') {
+            if (element.accountype =='Income') {
                 incomes.push(element)
             }
-            if (element.type =='Expense') {
+            if (element.accountype =='Expenses') {
                 expense.push(element)
             }
         });
@@ -319,10 +324,10 @@ module.exports = {
         finalResponse.push(income, operatingexpense, Costofgoods);
        
         var grossprofit = (income.totalvalue - Costofgoods.totalvalue);
-        var grossprofitpercentage=Math.round((grossprofit/income.totalvalue) * 100 ) + '%'
+        var grossprofitpercentage=grossprofit!=undefined&&grossprofit!=0?Math.round((grossprofit/income.totalvalue) * 100 ) + '%':0 + '%'
         var netprofit = (grossprofit - operatingexpense.totalvalue)
-        var netprofitpercentage=Math.round((netprofit/income.totalvalue) * 100) + '%'
-        res.json({ status: 1, message: 'Profit and loss report list', netprofitpercentage,grossprofitpercentage, grossprofit, netprofit, finalResponse })
+        var netprofitpercentage=netprofit!=undefined&&netprofit!=0?Math.round((netprofit/income.totalvalue) * 100) + '%':0 + '%'
+        res.json({ status: 1, message: 'Profit and loss report list',transactionData, netprofitpercentage,grossprofitpercentage, grossprofit, netprofit, finalResponse })
 
 
 
