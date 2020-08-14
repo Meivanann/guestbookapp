@@ -3,7 +3,7 @@ var connection = require('../../../config');
 
 module.exports = {
     getAllTransactions: (req,res) => {
-        let query = "SELECT * FROM account_statements  where from_id= 12  order by created_on desc;"
+        let query = "SELECT * FROM account_statements where ispayment=1  order by created_on desc;"
         let total_amount = 0;
         connection.query(query, (err,rows) => {
             if(err){
