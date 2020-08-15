@@ -1,6 +1,7 @@
 var connection = require('../../../config');
 const { parse } = require('handlebars');
 let commonFunction=require('../../commonFunction');
+var moment=require('moment');
 
 module.exports = {
     index: (req,res) => {
