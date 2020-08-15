@@ -489,15 +489,16 @@ module.exports = {
                                     types:'Bill payment',
                                     "created_on": today,
                                     ispayment:1,
-                                    from_id:5
+                                    from_id:5,
+                                    payment_method:payment_method
 
                                 }
 
                                 // for account of  payment amount come under credit form bill but account payable account amount come under the debit for bill payment
-                                var accountpayable={type:'Expense',account:21,amount:amount_paid,description:'bill from bill payment',debit:amount_paid,credit:0,bill_no:bill_id,types:'Bill payment',created_on:today,ispayment:1,from_id:5}
+                                var accountpayable={type:'Expense',account:21,amount:amount_paid,description:'bill from bill payment',debit:amount_paid,credit:0,bill_no:bill_id,types:'Bill payment',created_on:today,ispayment:1,from_id:5,payment_method:payment_method}
                         var array=[accountpayable,o_acc_data]
                         let accountdetailsbill = array.map((m) => Object.values(m))
-                        let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,bill_no,types,created_on,ispayment,from_id) values ? "
+                        let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,bill_no,types,created_on,ispayment,from_id,payment_method) values ? "
                         connection.query(acc_query, [accountdetailsbill], function (err, data) {
                             if (err) {
                                 console.log(err)

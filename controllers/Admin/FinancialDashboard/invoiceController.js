@@ -986,14 +986,15 @@ module.exports = {
                                     "created_on": today,
                                     "created_on"   :  today,
                                     ispayment:1,
-                                    from_id:4  //4-invoice payment
+                                    from_id:4,  //4-invoice payment
+                                    payment_method:payment_method
                                 }
    // for account of  payment amount come under debit from invoice but account reciveable account amount come under the credit for invoice payment
-                                var accountrecivable={type:'Income',account:22,amount:amount_paid,description:'invoice payment from invoice',debit:0,credit:amount_paid,invoice_no:invoice_no,types:'invoice payment',created_on:today,ispayment:1,from_id:4}
+                                var accountrecivable={type:'Income',account:22,amount:amount_paid,description:'invoice payment from invoice',debit:0,credit:amount_paid,invoice_no:invoice_no,types:'invoice payment',created_on:today,ispayment:1,from_id:4,payment_method:payment_method}
                                 var array=[accountrecivable,o_acc_data]
                                 let accountdetailsinvoice = array.map((m) => Object.values(m))
 
-                                let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,invoice_number,types,created_on,ispayment,from_id) values ? "
+                                let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,invoice_number,types,created_on,ispayment,from_id,payment_method) values ? "
                         connection.query(acc_query, [accountdetailsinvoice], function (err, data) {
                             if (err) {
                                 console.log(err)
