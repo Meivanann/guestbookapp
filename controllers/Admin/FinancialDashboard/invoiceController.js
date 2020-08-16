@@ -563,7 +563,9 @@ module.exports = {
                             "pdf_name"          : "test",
                             "payment_due_date"  : payment_due,
                             "consignment_start_date" : start_date,
-                            "consignment_end_date"  : end_date
+                            "consignment_end_date"  : end_date,
+                            debit:total_amount,
+                            credit:0
                         };
 
                         let invoice_query = "INSERT INTO invoice SET ?"
@@ -892,7 +894,10 @@ module.exports = {
             'invoice_id':invoice_no
         }   
 
-        // updating the invoice table and recording the payment
+var accountobject={payment_type:payment_method,account:22,amount:amount_paid,type:1,debit:0,credit:amount_paid,'invoice_id':invoice_no}
+let payment=[]
+payment.push(paymentObject,accountobject)
+// updating the invoice table and recording the payment
         connection.query("select * from invoice where invoice_no = ?",invoice_no, function (error, invoice_rows, fields) {
             if (error) {
                 console.log(error);
@@ -923,8 +928,10 @@ module.exports = {
                         console.log(error);
                     }else{
 
-                        var paymentQuery="insert payments SET ? "
-                        connection.query(paymentQuery,paymentObject, function (err, datas) {
+                        
+                        let paymentvalues= payment.map((m) => Object.values(m))
+                        var paymentQuery = "insert payments(payment_type,account,amount,type,debit,credit,invoice_id) ? "
+                        connection.query(paymentQuery,[paymentvalues], function (err, datas) {
                             if (error) {
                                 console.log(error);
                             }else{

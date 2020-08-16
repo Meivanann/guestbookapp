@@ -289,7 +289,9 @@ module.exports = {
             "bill_date": today,
             "amount": total_amount,
             "status": "Unpaid",
-            "payment_due_date": req.body.payment_due_date
+            "payment_due_date": req.body.payment_due_date,
+            debit:0,
+            credit:total_amount
         }
         let bill_query = "INSERT INTO bill SET ?"
         connection.query(bill_query, billdata, function (billerr, billres, fields) {
@@ -312,7 +314,9 @@ module.exports = {
                         "description": row.description,
                         "oty": row.qty,
                         "price": row.price,
-                        "total_amount": row.total_amount
+                        "total_amount": row.total_amount,
+                        debit:total_amount,
+                        credit:0
                     }
 
                     let bill_detail_query = "INSERT INTO bill_details SET ?"
@@ -406,13 +410,17 @@ module.exports = {
             'payment_type': payment_method,
             'account': 1,
             'amount': amount_paid,
-            'type': 2,      //invoice
+            'type': 2,      //bill
             'debit': 0,
             'credit': amount_paid,
             'bill_id': bill_id
         }
+        var accountobject={payment_type:payment_method,account:21,amount:amount_paid,type:2,debit:amount_paid,credit:0,'bill_id': bill_id}
 
 
+
+        let payment=[]
+    payment.push(paymentObject,accountobject)
         // Fetching and updating the credit note table
         connection.query("select * from bill where id = ?", bill_id, function (error, results, fields) {
             if (error) {
@@ -444,9 +452,9 @@ module.exports = {
                     } else {
 
 
-
-                        var paymentQuery = "insert payments SET ? "
-                        connection.query(paymentQuery, paymentObject, function (err, datas) {
+                        let paymentvalues= payment.map((m) => Object.values(m))
+                        var paymentQuery = "insert payments(payment_type,account,amount,type,debit,credit,bill_id) ? "
+                        connection.query(paymentQuery, [paymentvalues], function (err, datas) {
                             if (error) {
                                 console.log(error);
                             } else {
