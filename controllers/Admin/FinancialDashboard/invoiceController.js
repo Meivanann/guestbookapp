@@ -930,7 +930,7 @@ payment.push(paymentObject,accountobject)
 
                         
                         let paymentvalues= payment.map((m) => Object.values(m))
-                        var paymentQuery = "insert payments(payment_type,account,amount,type,debit,credit,invoice_id) ? "
+                        var paymentQuery = "insert payments(payment_type,account,amount,type,debit,credit,invoice_id)values ? "
                         connection.query(paymentQuery,[paymentvalues], function (err, datas) {
                             if (error) {
                                 console.log(error);
