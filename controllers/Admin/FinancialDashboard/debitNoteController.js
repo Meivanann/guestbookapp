@@ -1,8 +1,142 @@
 var connection = require('../../../config');
 const { parse } = require('handlebars');
 let commonFunction=require('../../commonFunction');
-
+var moment=require('moment');
 module.exports = {
+    
+    editDebitNote: async(req,res) => {
+        let today=moment().format() 
+        let debit_id = req.body.debitid;
+        let shippercode=req.body.shippercode;
+        let creditdetails=req.body.credit_details;
+        let totalamount=req.body.totalamount;
+        let payment_due_date=req.body.payment_due_date
+        let acc_bal = 0
+        var credit_note_data = {
+            "shipper_code"      : shippercode,
+            "debit_date"       : today,
+            "amount"            : totalamount,
+            "status"            : "Unpaid",
+            "payment_due_date"  : payment_due_date
+        }
+        
+        let query = "select * from debit_note as c  where c.id="+debit_id+"";
+        let data=await commonFunction.getQueryResults(query);
+ if (data.length > 0) {
+
+console.log('credit')
+    let credit_note_query = "update  debit_note SET  ? where id="+debit_id+""
+    connection.query(credit_note_query, credit_note_data, async function (crerr, crres, fields) {
+        if (crerr) {
+            console.log(crerr)
+        }else{
+           // console.log(crres.insertId);
+            //credit_note_id = crres.insertId;
+            console.log("Credit note added successfully");
+
+            // adding the rows in credit note details table
+            console.log("Credit successfully",creditdetails);
+            Object.keys(creditdetails).forEach(function(key) {
+                var row = creditdetails[key];
+               
+row.shipper_code=shippercode!=undefined?shippercode:''
+row.debit_note_id=debit_id
+                
+
+            //     let credit_detail_query = "INSERT INTO credit_note_details SET ?"
+            //     connection.query(credit_detail_query, credit_detail_data, function (crderr, crdres, fields) {
+            //         if (crderr) {
+            //             console.log(crderr)
+            //         }else{
+            //             console.log("Credit note details added successflly");
+            //         }
+            //     });
+           
+             });
+
+             console.log('ssssssskksl',creditdetails)
+             let credits = creditdetails.map((m) => Object.values(m))
+for (let index = 0;index < creditdetails.length;index++) {
+    const element = creditdetails[index];
+console.log(element)
+    let credit_note_query = "update  debit_note_details SET  amount='"+element.amount+"',description='"+element.description+"',debit_note_id ='"+element.debit_note_id+"',shipper_code='"+element.shipper_code+"' where debit_note_id="+debit_id+""
+    let credit_notedata=await commonFunction.getQueryResults(credit_note_query)
+    
+}
+            
+            
+           
+           
+             // connection.query(credit_note_query, [credits,'ss'], function (crerr, crres, fields) {
+            //     if (crerr) {
+            //         console.log(crerr)
+            //     }else{
+           
+                    var inv_acc_data = {
+                        "shipper_code" : shippercode,
+                        "type"         : "Credit",
+                        "amount"       :  totalamount,
+                        "updated_on"   :  today,
+                        "description"  :  "Credit note"
+                    }
+                    let acc_state_query = "update  shipper_acc_statements SET ? where shipper_code='"+shippercode+"' and type='Credit'and amount="+totalamount+" order by  id desc "
+                    connection.query(acc_state_query, inv_acc_data, async function (lgerr, lgres, fields) {
+                        if (lgerr) {
+                            console.log(lgerr)
+                        }else{
+                            console.log(lgres.insertId);
+                            console.log(" Update Shipping account statement  added successfully");
+                        }
+                    });
+                
+                    // affecting the shipper account ovberall amount
+                    let shipper_query = "select * from shipping where shipper_code = ?"
+                    connection.query(shipper_query, shippercode, (err,shipper_rows) => {
+                        if(err){
+                            console.log(err);
+                        }else{
+                            shipper_details = shipper_rows[0];
+                            acc_bal = shipper_details!=undefined && totalamount > 0?parseFloat(shipper_details.acc_bal) + parseFloat(totalamount):'';
+                console.log
+                            // updating the shipper account
+                            let shipper_acc_update = "UPDATE shipping SET ? where shipper_code = ?";
+                            var shipper_acc_update_data = {
+                                "acc_bal"   :   acc_bal
+                            }
+                            let data111 = [shipper_acc_update_data ,shippercode];
+                
+                            connection.query(shipper_acc_update,data111, function (error, results, fields) {
+                                if (error) {
+                                    console.log(error);
+                                }else{
+                                    console.log("Shipping updated Successfully")
+                
+                                    res.json({
+                                        status:1,
+                                        message:'Update Debit Note generated sucessfully'
+                                    })
+                                }
+                            });
+                        }
+                    })
+
+
+           // }
+        
+
+            
+        }
+    });
+
+    
+     
+ }
+        
+
+      
+    },
+
+
     deletedebitNote: async(req,res) => {
         let debit_id = req.body.debitid;
          

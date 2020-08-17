@@ -274,7 +274,6 @@ module.exports = {
             }
         })
     },
-
     createBill: (req, res) => {
         var today = new Date();
         let vendor_id = req.body.vendor_id;
@@ -282,7 +281,7 @@ module.exports = {
         let data = JSON.parse(req.body.items);
         let acc_bal = 0, bill_id;
 
-        console.log(req.body);
+        console.log('sss',data);
 
         // adding row in credit note table
         var billdata = {
@@ -290,7 +289,9 @@ module.exports = {
             "bill_date": today,
             "amount": total_amount,
             "status": "Unpaid",
-            "payment_due_date": req.body.payment_due_date
+            "payment_due_date": req.body.payment_due_date,
+            debit:0,
+            credit:total_amount
         }
         let bill_query = "INSERT INTO bill SET ?"
         connection.query(bill_query, billdata, function (billerr, billres, fields) {
@@ -313,7 +314,9 @@ module.exports = {
                         "description": row.description,
                         "oty": row.qty,
                         "price": row.price,
-                        "total_amount": row.total_amount
+                        "total_amount": row.total_amount,
+                        debit:total_amount,
+                        credit:0
                     }
 
                     let bill_detail_query = "INSERT INTO bill_details SET ?"
@@ -352,6 +355,36 @@ module.exports = {
                     } else {
                         console.log("Vendor data updated Successfully")
 
+                        let newarray=[]
+
+                        data.forEach(element => {
+                            newarray.push({
+                                type:'Expense',
+                                account:element.expense_category,
+                                amount:element.total_amount,
+                                description:'bill details from create bill',
+                                debit:total_amount,
+                                credit:0,
+                                bill_no:bill_id,
+                                types:'Bill details',
+                                created_on:today,
+                                from_id:3
+                            })
+                        });
+
+                       //var Expenseobject={type:'Expense',account:20,amount:total_amount,description:'invoice from create invoice',debit:0,credit:total_amount,invoice_number:invoice_number,types:'Invoice'}
+                        var accountpayable={type:'Expense',account:21,amount:total_amount,description:'bill from create bill',debit:0,credit:total_amount,bill_no:bill_id,types:'Bill',created_on:today,from_id:2}
+                        var array=[accountpayable,...newarray]
+                        let accountdetailsbill = array.map((m) => Object.values(m))
+                        let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,bill_no,types,created_on,from_id) values ? "
+                        connection.query(acc_query, [accountdetailsbill], function (err, data) {
+                            if (err) {
+                                console.log(err)
+                            }else{
+                                console.log("account statement  added successfully");
+                            }
+                        });
+
                         res.json({
                             status: true,
                             message: 'Bill generated sucessfully'
@@ -377,13 +410,17 @@ module.exports = {
             'payment_type': payment_method,
             'account': 1,
             'amount': amount_paid,
-            'type': 2,      //invoice
+            'type': 2,      //bill
             'debit': 0,
             'credit': amount_paid,
             'bill_id': bill_id
         }
+        var accountobject={payment_type:payment_method,account:21,amount:amount_paid,type:2,debit:amount_paid,credit:0,'bill_id': bill_id}
 
 
+
+        let payment=[]
+    payment.push(paymentObject,accountobject)
         // Fetching and updating the credit note table
         connection.query("select * from bill where id = ?", bill_id, function (error, results, fields) {
             if (error) {
@@ -415,9 +452,9 @@ module.exports = {
                     } else {
 
 
-
-                        var paymentQuery = "insert payments SET ? "
-                        connection.query(paymentQuery, paymentObject, function (err, datas) {
+                        let paymentvalues= payment.map((m) => Object.values(m))
+                        var paymentQuery = "insert payments(payment_type,account,amount,type,debit,credit,bill_id)values ? "
+                        connection.query(paymentQuery, [paymentvalues], function (err, datas) {
                             if (error) {
                                 console.log(error);
                             } else {
@@ -444,21 +481,47 @@ module.exports = {
                                         });
 
                                     }
-                                }); var o_acc_data = {
-                                    "type": "Expense",
-                                    "description": "Payment for bil " + bill_id,
-                                    "amount": amount_paid,
-                                    "account": req.body.account,
-                                    "created_on": today
-                                }
-                                let o_acc_state_query = "INSERT INTO account_statements SET ?"
-                                connection.query(o_acc_state_query, o_acc_data, function (lgerr, lgres, fields) {
-                                    if (lgerr) {
-                                        console.log(lgerr)
-                                    } else {
-                                        console.log(" account statement  added successfully");
-                                    }
                                 });
+                                
+                                var o_acc_data = {
+                                    "type": "Expense",
+                                   
+                                    "account": 1,
+                                    "amount": amount_paid,
+                                    "description": "Payment for bil " + bill_id,
+                                    "debit": 0,
+                                    "credit": req.body.amount_paid,
+                                   
+                                    
+                                    bill_no:bill_id,
+                                    types:'Bill payment',
+                                    "created_on": today,
+                                    ispayment:1,
+                                    from_id:5,
+                                    payment_method:payment_method
+
+                                }
+
+                                // for account of  payment amount come under credit form bill but account payable account amount come under the debit for bill payment
+                                var accountpayable={type:'Expense',account:21,amount:amount_paid,description:'bill from bill payment',debit:amount_paid,credit:0,bill_no:bill_id,types:'Bill payment',created_on:today,ispayment:1,from_id:5,payment_method:payment_method}
+                        var array=[accountpayable,o_acc_data]
+                        let accountdetailsbill = array.map((m) => Object.values(m))
+                        let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,bill_no,types,created_on,ispayment,from_id,payment_method) values ? "
+                        connection.query(acc_query, [accountdetailsbill], function (err, data) {
+                            if (err) {
+                                console.log(err)
+                            }else{
+                                console.log("account statement  added successfully");
+                            }
+                        });
+                                // let o_acc_state_query = "INSERT INTO account_statements SET ?"
+                                // connection.query(o_acc_state_query, o_acc_data, function (lgerr, lgres, fields) {
+                                //     if (lgerr) {
+                                //         console.log(lgerr)
+                                //     } else {
+                                //         console.log(" account statement  added successfully");
+                                //     }
+                                // });
 
 
                                 console.log(results);
@@ -485,6 +548,221 @@ module.exports = {
             }
         });
     },
+
+    //14augbackup
+    // createBill: (req, res) => {
+    //     var today = new Date();
+    //     let vendor_id = req.body.vendor_id;
+    //     let total_amount = req.body.amount;
+    //     let data = JSON.parse(req.body.items);
+    //     let acc_bal = 0, bill_id;
+
+    //     console.log(req.body);
+
+    //     // adding row in credit note table
+    //     var billdata = {
+    //         "vendor_id": vendor_id,
+    //         "bill_date": today,
+    //         "amount": total_amount,
+    //         "status": "Unpaid",
+    //         "payment_due_date": req.body.payment_due_date
+    //     }
+    //     let bill_query = "INSERT INTO bill SET ?"
+    //     connection.query(bill_query, billdata, function (billerr, billres, fields) {
+    //         if (billerr) {
+    //             console.log(billerr)
+    //         } else {
+    //             console.log(billres.insertId);
+    //             bill_id = billres.insertId;
+    //             console.log("Bill  added successfully");
+
+    //             // adding the rows in credit note details table
+    //             Object.keys(data).forEach(function (key) {
+    //                 var row = data[key];
+    //                 console.log(row);
+
+    //                 var bill_detail_data = {
+    //                     "bill_id": bill_id,
+    //                     "item_name": row.name,
+    //                     "expense_category": row.expense_category,
+    //                     "description": row.description,
+    //                     "oty": row.qty,
+    //                     "price": row.price,
+    //                     "total_amount": row.total_amount
+    //                 }
+
+    //                 let bill_detail_query = "INSERT INTO bill_details SET ?"
+    //                 connection.query(bill_detail_query, bill_detail_data, function (billderr, billdres, fields) {
+    //                     if (billderr) {
+    //                         console.log(billderr)
+    //                     } else {
+    //                         console.log("Bill details added successflly");
+    //                     }
+    //                 });
+    //             });
+
+
+    //         }
+    //     });
+
+    //     // affecting the shipper account ovberall amount
+    //     let vendor_query = "select * from vendors where id = ?"
+    //     connection.query(vendor_query, vendor_id, (err, vendor_rows) => {
+    //         if (err) {
+    //             console.log(err);
+    //         } else {
+    //             vendor_details = vendor_rows[0];
+    //             acc_bal = parseFloat(vendor_details.acc_bal) + parseFloat(total_amount);
+
+    //             // updating the shipper account
+    //             let vendor_acc_update = "UPDATE vendors SET ? where id = ?";
+    //             var vendor_acc_update_data = {
+    //                 "acc_bal": acc_bal
+    //             }
+    //             let data111 = [vendor_acc_update_data, vendor_id];
+
+    //             connection.query(vendor_acc_update, data111, function (error, results, fields) {
+    //                 if (error) {
+    //                     console.log(error);
+    //                 } else {
+    //                     console.log("Vendor data updated Successfully")
+
+    //                     res.json({
+    //                         status: true,
+    //                         message: 'Bill generated sucessfully'
+    //                     })
+    //                 }
+    //             });
+    //         }
+    //     })
+
+    // },
+
+
+    //14augbackup
+
+    // recordPayment: (req, res) => {
+    //     console.log(req.body);
+    //     let today = new Date();
+    //     let bill_id = req.body.id;
+    //     let amount_paid = req.body.amount_paid;
+    //     let payment_method = req.body.payment_method;
+    //     let total_amount = req.body.total_amount;
+    //     let vendor_id = req.body.vendor_id;
+    //     let acc_bal = 0, amt = 0;
+    //     let paymentObject = {
+
+    //         'payment_type': payment_method,
+    //         'account': 1,
+    //         'amount': amount_paid,
+    //         'type': 2,      //invoice
+    //         'debit': 0,
+    //         'credit': amount_paid,
+    //         'bill_id': bill_id
+    //     }
+
+
+    //     // Fetching and updating the credit note table
+    //     connection.query("select * from bill where id = ?", bill_id, function (error, results, fields) {
+    //         if (error) {
+    //             console.log(error);
+    //         } else {
+    //             amt = parseFloat(results[0].amount) - parseFloat(results[0].amount_paid);
+    //             if (amt === parseFloat(amount_paid)) {
+    //                 var bill_data = {
+    //                     "amount_paid": parseFloat(results[0].amount_paid) + parseFloat(amount_paid),
+    //                     "payment_method": payment_method,
+    //                     "paid_on": today,
+    //                     "status": "Paid"
+    //                 }
+    //             } else {
+    //                 var bill_data = {
+    //                     "amount_paid": parseFloat(results[0].amount_paid) + parseFloat(amount_paid),
+    //                     "payment_method": payment_method,
+    //                     "paid_on": today,
+    //                     "status": "Partially Paid"
+    //                 }
+    //             }
+
+    //             let query = "UPDATE bill SET ? where id = ?";
+    //             let data1 = [bill_data, bill_id];
+
+    //             connection.query(query, data1, function (uperr, upress, fields) {
+    //                 if (uperr) {
+    //                     console.log(uperr);
+    //                 } else {
+
+
+
+    //                     var paymentQuery = "insert payments SET ? "
+    //                     connection.query(paymentQuery, paymentObject, function (err, datas) {
+    //                         if (error) {
+    //                             console.log(error);
+    //                         } else {
+
+    //                             // updating the vendor account
+    //                             let vendor_query = "select * from vendors where id = ?"
+    //                             connection.query(vendor_query, vendor_id, (vendor_err, vendor_rows) => {
+    //                                 if (vendor_err) {
+    //                                     console.log(vendor_err);
+    //                                 } else {
+    //                                     acc_bal = parseFloat(vendor_rows[0].acc_bal) - parseFloat(amount_paid);
+    //                                     let vendor_acc_update = "UPDATE vendors SET ? where id = ?";
+    //                                     var vendor_acc_update_data = {
+    //                                         "acc_bal": acc_bal
+    //                                     }
+    //                                     let data111 = [vendor_acc_update_data, vendor_id];
+
+    //                                     connection.query(vendor_acc_update, data111, function (error, results, fields) {
+    //                                         if (error) {
+    //                                             console.log(error);
+    //                                         } else {
+    //                                             console.log("Vendor updated Successfully")
+    //                                         }
+    //                                     });
+
+    //                                 }
+    //                             }); var o_acc_data = {
+    //                                 "type": "Expense",
+    //                                 "description": "Payment for bil " + bill_id,
+    //                                 "amount": amount_paid,
+    //                                 "account": req.body.account,
+    //                                 "created_on": today
+    //                             }
+    //                             let o_acc_state_query = "INSERT INTO account_statements SET ?"
+    //                             connection.query(o_acc_state_query, o_acc_data, function (lgerr, lgres, fields) {
+    //                                 if (lgerr) {
+    //                                     console.log(lgerr)
+    //                                 } else {
+    //                                     console.log(" account statement  added successfully");
+    //                                 }
+    //                             });
+
+
+    //                             console.log(results);
+    //                             //creating a log
+    //                             var log_data = {
+    //                                 "status": " has recorded the payment for bill no " + bill_id,
+    //                                 "user_id": req.params.id
+    //                             }
+    //                             connection.query('INSERT INTO log SET ?', log_data, function (lgerr, lgres, fields) {
+    //                                 if (lgerr) {
+    //                                     console.log(lgerr)
+    //                                 } else {
+    //                                     console.log("log added successfully");
+    //                                     res.json({
+    //                                         status: true,
+    //                                         message: 'bill Updated sucessfully'
+    //                                     })
+    //                                 }
+    //                             });
+    //                         }
+    //                     });
+    //                 }
+    //             })
+    //         }
+    //     });
+    // },
 
     getAllVendorProducts: (req, res) => {
         let query = "SELECT * FROM vendors_products_services;"

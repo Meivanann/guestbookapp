@@ -493,7 +493,7 @@ module.exports = {
             }
         })
     },
-    
+
     generateInvoice: (req,res) =>{
         let today = new Date();
         let total_amount = 0, sub_amount = 0, tax_amount = 0, shipper_details, shipper_acc_details, acc_bal = 0;
@@ -563,7 +563,9 @@ module.exports = {
                             "pdf_name"          : "test",
                             "payment_due_date"  : payment_due,
                             "consignment_start_date" : start_date,
-                            "consignment_end_date"  : end_date
+                            "consignment_end_date"  : end_date,
+                            debit:total_amount,
+                            credit:0
                         };
 
                         let invoice_query = "INSERT INTO invoice SET ?"
@@ -605,6 +607,21 @@ module.exports = {
                                     }
                                 });
 
+                                var incomeobject={type:'Income',account:20,amount:total_amount,description:'invoice from create invoice',debit:0,credit:total_amount,invoice_number:invoice_number,types:'Invoice',created_on:today,from_id:1}
+                                var accountReacivable={type:'Income',account:22,amount:total_amount,description:'invoice from create invoice',debit:total_amount,credit:0,invoice_number:invoice_number,types:'Invoice',created_on:today,from_id:1}
+                                var array=[incomeobject,accountReacivable]
+                                let accountdetailsinvoice = array.map((m) => Object.values(m))
+                                let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,invoice_number,types,created_on,from_id) values ? "
+                                connection.query(acc_query, [accountdetailsinvoice], function (err, data) {
+                                    if (err) {
+                                        console.log(err)
+                                    }else{
+                                        console.log("account statement  added successfully");
+                                    }
+                                });
+
+
+
                                 res.json({
                                     status:true,
                                     message:'Invoice generated sucessfully',
@@ -618,6 +635,132 @@ module.exports = {
             }
         })
     },
+    //14augbackup
+    
+    // generateInvoice: (req,res) =>{
+    //     let today = new Date();
+    //     let total_amount = 0, sub_amount = 0, tax_amount = 0, shipper_details, shipper_acc_details, acc_bal = 0;
+    //     let start_date = req.body.start_date;
+    //     let end_date = req.body.end_date;
+    //     let shipper_code = req.body.shipper_code;
+    //     let payment_due =req.body.payment_due;
+    //     let invoice_number;
+    //     let invoice_date = req.body.invoice_date;
+
+    //     let query = "SELECT * FROM consignment as c  left join out_for_delivery as o  on o.cn_no=c.cn_no   where (o.datetime between ? and ? ) and c.status = 'Close' and ( c.shipper_code=? or c.receiver_code = ?) and c.is_billed = 0 and c.is_approved = 1;"
+    //     let data = [start_date, end_date, shipper_code, shipper_code];
+
+    //     connection.query(query, data, (err,rows) => {
+    //         if(err){
+    //             console.log(err);
+    //         } else if (rows.length == 0 ){
+    //             console.log(rows);
+    //             res.json({
+    //                 status: 2,
+    //                 message:"No Results Found"
+    //             })
+    //         }else{
+    //             Object.keys(rows).forEach(function(key) {
+    //                 var row = rows[key];
+    //                 if((row.bill_to === 'shipper' && row.shipper_code === shipper_code) || (row.bill_to === 'receiver' && row.receiver_code === shipper_code)){
+                            
+    //                     sub_amount = sub_amount + parseFloat(row.sub_amount);
+    //                     tax_amount = tax_amount + parseFloat(row.tax_amount);
+
+    //                     var consignment_update_datas = {
+    //                         "is_billed"   :   1
+    //                     }
+    //                     let consignment_update_data = [consignment_update_datas ,row.cn_no];
+
+    //                     connection.query("UPDATE consignment SET ? where cn_no = ?",consignment_update_data, function (error, results, fields) {
+    //                         if (error) {
+    //                             console.log(error);
+    //                         }else{
+    //                             console.log("condignment updated Successfully")
+    //                         }
+    //                     });
+    //                 }
+    //             });
+
+    //             total_amount = sub_amount + tax_amount;
+
+    //             // getting the shipper details
+    //             let shipper_query = "select * from shipping where shipper_code = ?"
+    //             connection.query(shipper_query, shipper_code, (err,shipper_rows) => {
+    //                 if(err){
+    //                     console.log(err);
+    //                 }else{
+    //                     shipper_details = shipper_rows[0];
+
+    //                     acc_bal = parseFloat(shipper_details.acc_bal) + parseFloat(total_amount); 
+    //                        // creating an invoice record
+    //                     var invoice_data = {
+    //                         // "invoice_no"        : invoice_number,
+    //                         "invoice_date"      : invoice_date,
+    //                         "shipper_code"      : shipper_code,
+    //                         "shipper_name"      : shipper_details.shipper_name,
+    //                         "inv_sub_amount"    : sub_amount,
+    //                         "inv_tax_amount"    : tax_amount,
+    //                         "inv_total_amount"  : total_amount,
+    //                         "status"            : "Unpaid",
+    //                         "pdf_name"          : "test",
+    //                         "payment_due_date"  : payment_due,
+    //                         "consignment_start_date" : start_date,
+    //                         "consignment_end_date"  : end_date
+    //                     };
+
+    //                     let invoice_query = "INSERT INTO invoice SET ?"
+
+    //                     connection.query(invoice_query,invoice_data, function (error, results, fields) {
+    //                         if (error) {
+    //                             console.log(error);
+    //                         }else{
+    //                             invoice_number = results.insertId;
+    //                             let shipper_acc_update = "UPDATE shipping SET ? where shipper_code = ?";
+    //                             var shipper_acc_update_data = {
+    //                                 "acc_bal"   :   acc_bal
+    //                             }
+    //                             let data111 = [shipper_acc_update_data ,shipper_code];
+
+    //                             connection.query(shipper_acc_update,data111, function (error, results, fields) {
+    //                                 if (error) {
+    //                                     console.log(error);
+    //                                 }else{
+    //                                     console.log("Shipping updated Successfully")
+    //                                 }
+    //                             });
+
+    //                             // inserting  Account of Statements
+    //                             var inv_acc_data = {
+    //                                 "shipper_code" : shipper_code,
+    //                                 "type"         : "Invoice",
+    //                                 "invoice_no"   :  invoice_number,
+    //                                 "description"  :  payment_due,
+    //                                 "amount"       :  total_amount,
+    //                                 "created_on"   :  today 
+    //                             }
+    //                             let acc_state_query = "INSERT INTO shipper_acc_statements SET ?"
+    //                             connection.query(acc_state_query, inv_acc_data, function (lgerr, lgres, fields) {
+    //                                 if (lgerr) {
+    //                                     console.log(lgerr)
+    //                                 }else{
+    //                                     console.log("Shippin account statement  added successfully");
+    //                                 }
+    //                             });
+
+    //                             res.json({
+    //                                 status:true,
+    //                                 message:'Invoice generated sucessfully',
+    //                                 invoice_number: invoice_number
+    //                             })
+    //                         }
+    //                     });                
+    //                 }
+    //             });
+
+    //         }
+    //     })
+    // },
 
     deleteInvoice: (req,res) => {
         let invoice_no = req.body.invoice_no;
@@ -729,6 +872,7 @@ module.exports = {
             }
         });
     },
+
     recordPayment: (req,res) => {
         let invoice_no = req.body.invoice_no;
         let today = new Date();
@@ -736,10 +880,24 @@ module.exports = {
         let payment_method = req.body.payment_method;
         let total_amount = req.body.total_amount;
         let shipper_code = req.body.shipper_code;
+        let account=req.body.account
         let acc_bal = 0, amt = 0;
         console.log("record pay,emnt");
+        let paymentObject= {
 
-        // updating the invoice table and recording the payment
+            'payment_type':payment_method,
+            'account':account,
+            'amount':amount_paid,
+            'type':1,      //invoice
+            'debit':amount_paid,
+            'credit':0,
+            'invoice_id':invoice_no
+        }   
+
+var accountobject={payment_type:payment_method,account:22,amount:amount_paid,type:1,debit:0,credit:amount_paid,'invoice_id':invoice_no}
+let payment=[]
+payment.push(paymentObject,accountobject)
+// updating the invoice table and recording the payment
         connection.query("select * from invoice where invoice_no = ?",invoice_no, function (error, invoice_rows, fields) {
             if (error) {
                 console.log(error);
@@ -769,90 +927,256 @@ module.exports = {
                     if (error) {
                         console.log(error);
                     }else{
-                        
-                        let shipper_query = "select * from shipping where shipper_code = ?"
-                        connection.query(shipper_query, shipper_code, (err,shipper_rows) => {
-                            if(err){
-                                console.log(err);
-                            }else{
-                                acc_bal = parseFloat(shipper_rows[0].acc_bal) - parseFloat(amount_paid); 
-                                let shipper_acc_update = "UPDATE shipping SET ? where shipper_code = ?";
-                                var shipper_acc_update_data = {
-                                    "acc_bal"   :   acc_bal
-                                }
-                                let data111 = [shipper_acc_update_data ,shipper_code];
 
-                                connection.query(shipper_acc_update,data111, function (error, results, fields) {
-                                    if (error) {
-                                        console.log(error);
+                        
+                        let paymentvalues= payment.map((m) => Object.values(m))
+                        var paymentQuery = "insert payments(payment_type,account,amount,type,debit,credit,invoice_id)values ? "
+                        connection.query(paymentQuery,[paymentvalues], function (err, datas) {
+                            if (error) {
+                                console.log(error);
+                            }else{
+
+                                let shipper_query = "select * from shipping where shipper_code = ?"
+                                connection.query(shipper_query, shipper_code, (err,shipper_rows) => {
+                                    if(err){
+                                        console.log(err);
                                     }else{
-                                        console.log("Shipping updated Successfully")
+                                        acc_bal = parseFloat(shipper_rows[0].acc_bal) - parseFloat(amount_paid); 
+                                        let shipper_acc_update = "UPDATE shipping SET ? where shipper_code = ?";
+                                        var shipper_acc_update_data = {
+                                            "acc_bal"   :   acc_bal
+                                        }
+                                        let data111 = [shipper_acc_update_data ,shipper_code];
+        
+                                        connection.query(shipper_acc_update,data111, function (error, results, fields) {
+                                            if (error) {
+                                                console.log(error);
+                                            }else{
+                                                console.log("Shipping updated Successfully")
+                                            }
+                                        });
+        
                                     }
                                 });
+        
+                                // inserting  Account of Statements
+                                var inv_acc_data = {
+                                    "shipper_code" : shipper_code,
+                                    "type"         : "Payment",
+                                    "invoice_no"   :  invoice_no,
+                                    "description"  :  "Payment for invoice " + invoice_no,
+                                    "amount"       :  amount_paid,
+                                    "created_on"   :  today 
+                                }
+                                
+                                let acc_state_query = "INSERT INTO shipper_acc_statements SET ?"
+                                connection.query(acc_state_query, inv_acc_data, function (lgerr, lgres, fields) {
+                                    if (lgerr) {
+                                        console.log(lgerr)
+                                    }else{
+                                        console.log("Shippin account statement  added successfully");
+                                    }
+                                });
+                                // inserting transaction details 
+        
+                                var o_acc_data = {
+                                    "type"         : "Income",
+                                    "account"      :  req.body.account,
+                                    "amount"       :  amount_paid,
+                                    "description"  :  "Payment for invoice " + invoice_no,
+                                   
+                                    
+                                    "debit"      : amount_paid,
+                                    "credit"      :  0,
+                                    invoice_no:invoice_no,
+                                    types:'invoice payment',
+                                    "created_on": today,
+                                    "created_on"   :  today,
+                                    ispayment:1,
+                                    from_id:4,  //4-invoice payment
+                                    payment_method:payment_method
+                                }
+   // for account of  payment amount come under debit from invoice but account reciveable account amount come under the credit for invoice payment
+                                var accountrecivable={type:'Income',account:22,amount:amount_paid,description:'invoice payment from invoice',debit:0,credit:amount_paid,invoice_no:invoice_no,types:'invoice payment',created_on:today,ispayment:1,from_id:4,payment_method:payment_method}
+                                var array=[accountrecivable,o_acc_data]
+                                let accountdetailsinvoice = array.map((m) => Object.values(m))
 
-                            }
-                        });
-
-                        // inserting  Account of Statements
-                        var inv_acc_data = {
-                            "shipper_code" : shipper_code,
-                            "type"         : "Payment",
-                            "invoice_no"   :  invoice_no,
-                            "description"  :  "Payment for invoice " + invoice_no,
-                            "amount"       :  amount_paid,
-                            "created_on"   :  today 
-                        }
-                        
-                        let acc_state_query = "INSERT INTO shipper_acc_statements SET ?"
-                        connection.query(acc_state_query, inv_acc_data, function (lgerr, lgres, fields) {
-                            if (lgerr) {
-                                console.log(lgerr)
+                                let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,invoice_number,types,created_on,ispayment,from_id,payment_method) values ? "
+                        connection.query(acc_query, [accountdetailsinvoice], function (err, data) {
+                            if (err) {
+                                console.log(err)
                             }else{
-                                console.log("Shippin account statement  added successfully");
+                                console.log("account statement  added successfully");
                             }
                         });
-                        // inserting transaction details 
+                                // let o_acc_state_query = "INSERT INTO account_statements SET ?"
+                                // connection.query(o_acc_state_query, o_acc_data, function (lgerr, lgres, fields) {
+                                //     if (lgerr) {
+                                //         console.log(lgerr)
+                                //     }else{
+                                //         console.log("Shippin account statement  added successfully");
+                                //     }
+                                // });
+        
+        
+                                console.log(results);
+                                //creating a log
+                                var log_data = {
+                                    "user_id" : req.params.id,
+                                    "status": " has recorded the payment for invoice no "+ invoice_no
+                                }
+                                connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
+                                    if (lgerr) {
+                                    console.log(lgerr)
+                                    }else{
+                                        console.log("log added successfully");
 
-                        var o_acc_data = {
-                            "type"         : "Income",
-                            "description"  :  "Payment for invoice " + invoice_no,
-                            "amount"       :  amount_paid,
-                            "account"      :  req.body.account,
-                            "created_on"   :  today 
-                        }
-                        let o_acc_state_query = "INSERT INTO account_statements SET ?"
-                        connection.query(o_acc_state_query, o_acc_data, function (lgerr, lgres, fields) {
-                            if (lgerr) {
-                                console.log(lgerr)
-                            }else{
-                                console.log("Shippin account statement  added successfully");
+
+                                        res.json({
+                                            status:true,
+                                            message:'Invoice Updated sucessfully'
+                                        })
+                                    }
+                                });
                             }
-                        });
 
-
-                        console.log(results);
-                        //creating a log
-                        var log_data = {
-                            "user_id" : req.params.id,
-                            "status": " has recorded the payment for invoice no "+ invoice_no
-                        }
-                        connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
-                            if (lgerr) {
-                            console.log(lgerr)
-                            }else{
-                                console.log("log added successfully");
-                            }
-                        });
-
-                        res.json({
-                            status:true,
-                            message:'Invoice Updated sucessfully'
                         })
+                        
+                        
+
+
+                       
                     }
                 });
             }
         });
     },
+
+    //14augbackup
+    // recordPayment: (req,res) => {
+    //     let invoice_no = req.body.invoice_no;
+    //     let today = new Date();
+    //     let amount_paid = req.body.amount_paid;
+    //     let payment_method = req.body.payment_method;
+    //     let total_amount = req.body.total_amount;
+    //     let shipper_code = req.body.shipper_code;
+    //     let acc_bal = 0, amt = 0;
+    //     console.log("record pay,emnt");
+
+    //     // updating the invoice table and recording the payment
+    //     connection.query("select * from invoice where invoice_no = ?",invoice_no, function (error, invoice_rows, fields) {
+    //         if (error) {
+    //             console.log(error);
+    //         }else{
+    //             amt =  parseFloat(invoice_rows[0].inv_total_amount) -  parseFloat(invoice_rows[0].amount_paid);
+    //             if(amt === parseFloat(amount_paid) )
+    //             {
+    //                 var invoice_data = {
+    //                     "amount_paid"       :   parseFloat(invoice_rows[0].amount_paid) + parseFloat(amount_paid),
+    //                     "payment_method"    :   payment_method,
+    //                     "paid_on"           :   req.body.paid_on,
+    //                     "status"            :   "Paid"
+    //                 }
+    //             }else{
+    //                 var invoice_data = {
+    //                     "amount_paid"       :   parseFloat(invoice_rows[0].amount_paid) + parseFloat(amount_paid),
+    //                     "payment_method"    :   payment_method,
+    //                     "paid_on"           :   req.body.paid_on,
+    //                     "status"            :   "Partially Paid"
+    //                 }
+    //             }
+            
+    //             let query = "UPDATE invoice SET ? where invoice_no = ?";
+    //             let data1 = [invoice_data ,invoice_no];
+
+    //             connection.query(query,data1, function (error, results, fields) {
+    //                 if (error) {
+    //                     console.log(error);
+    //                 }else{
+                        
+    //                     let shipper_query = "select * from shipping where shipper_code = ?"
+    //                     connection.query(shipper_query, shipper_code, (err,shipper_rows) => {
+    //                         if(err){
+    //                             console.log(err);
+    //                         }else{
+    //                             acc_bal = parseFloat(shipper_rows[0].acc_bal) - parseFloat(amount_paid); 
+    //                             let shipper_acc_update = "UPDATE shipping SET ? where shipper_code = ?";
+    //                             var shipper_acc_update_data = {
+    //                                 "acc_bal"   :   acc_bal
+    //                             }
+    //                             let data111 = [shipper_acc_update_data ,shipper_code];
+
+    //                             connection.query(shipper_acc_update,data111, function (error, results, fields) {
+    //                                 if (error) {
+    //                                     console.log(error);
+    //                                 }else{
+    //                                     console.log("Shipping updated Successfully")
+    //                                 }
+    //                             });
+
+    //                         }
+    //                     });
+
+    //                     // inserting  Account of Statements
+    //                     var inv_acc_data = {
+    //                         "shipper_code" : shipper_code,
+    //                         "type"         : "Payment",
+    //                         "invoice_no"   :  invoice_no,
+    //                         "description"  :  "Payment for invoice " + invoice_no,
+    //                         "amount"       :  amount_paid,
+    //                         "created_on"   :  today 
+    //                     }
+                        
+    //                     let acc_state_query = "INSERT INTO shipper_acc_statements SET ?"
+    //                     connection.query(acc_state_query, inv_acc_data, function (lgerr, lgres, fields) {
+    //                         if (lgerr) {
+    //                             console.log(lgerr)
+    //                         }else{
+    //                             console.log("Shippin account statement  added successfully");
+    //                         }
+    //                     });
+    //                     // inserting transaction details 
+
+    //                     var o_acc_data = {
+    //                         "type"         : "Income",
+    //                         "description"  :  "Payment for invoice " + invoice_no,
+    //                         "amount"       :  amount_paid,
+    //                         "account"      :  req.body.account,
+    //                         "created_on"   :  today 
+    //                     }
+    //                     let o_acc_state_query = "INSERT INTO account_statements SET ?"
+    //                     connection.query(o_acc_state_query, o_acc_data, function (lgerr, lgres, fields) {
+    //                         if (lgerr) {
+    //                             console.log(lgerr)
+    //                         }else{
+    //                             console.log("Shippin account statement  added successfully");
+    //                         }
+    //                     });
+
+
+    //                     console.log(results);
+    //                     //creating a log
+    //                     var log_data = {
+    //                         "user_id" : req.params.id,
+    //                         "status": " has recorded the payment for invoice no "+ invoice_no
+    //                     }
+    //                     connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
+    //                         if (lgerr) {
+    //                         console.log(lgerr)
+    //                         }else{
+    //                             console.log("log added successfully");
+    //                         }
+    //                     });
+
+    //                     res.json({
+    //                         status:true,
+    //                         message:'Invoice Updated sucessfully'
+    //                     })
+    //                 }
+    //             });
+    //         }
+    //     });
+    // },
 
     consignmentPreviewInvoice: (req,res) =>{
         let total_amount = 0, sub_amount = 0, tax_amount = 0, shipper_details;
