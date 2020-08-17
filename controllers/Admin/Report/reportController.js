@@ -13,7 +13,8 @@ module.exports = {
         if(paymentaccountData.length > 0 )
         {
 
-            res.json({status:1,message:'payment account list',paymentaccountData})
+            let data=paymentaccountData
+            res.json({status:1,message:'payment account list',data})
             
         }
         else
