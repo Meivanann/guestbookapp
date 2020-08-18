@@ -607,8 +607,8 @@ module.exports = {
                                     }
                                 });
 
-                                var incomeobject={type:'Income',account:20,amount:total_amount,description:'invoice from create invoice',debit:0,credit:total_amount,invoice_number:invoice_number,types:'Invoice',created_on:today,from_id:1}
-                                var accountReacivable={type:'Income',account:22,amount:total_amount,description:'invoice from create invoice',debit:total_amount,credit:0,invoice_number:invoice_number,types:'Invoice',created_on:today,from_id:1}
+                                var incomeobject={type:'Income',account:20,amount:total_amount,description:'invoice from create invoice',debit:0,credit:total_amount,invoice_number:invoice_number,types:'Invoice',created_on:invoice_date,from_id:1}
+                                var accountReacivable={type:'Income',account:22,amount:total_amount,description:'invoice from create invoice',debit:total_amount,credit:0,invoice_number:invoice_number,types:'Invoice',created_on:invoice_date,from_id:1}
                                 var array=[incomeobject,accountReacivable]
                                 let accountdetailsinvoice = array.map((m) => Object.values(m))
                                 let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,invoice_number,types,created_on,from_id) values ? "
@@ -875,7 +875,7 @@ module.exports = {
 
     recordPayment: (req,res) => {
         let invoice_no = req.body.invoice_no;
-        let today = new Date();
+        let today = moment().format('YYYY-MM-DD');
         let amount_paid = req.body.amount_paid;
         let payment_method = req.body.payment_method;
         let total_amount = req.body.total_amount;
@@ -891,10 +891,11 @@ module.exports = {
             'type':1,      //invoice
             'debit':amount_paid,
             'credit':0,
-            'invoice_id':invoice_no
+            'invoice_id':invoice_no,
+            paymentdate:today
         }   
 
-var accountobject={payment_type:payment_method,account:22,amount:amount_paid,type:1,debit:0,credit:amount_paid,'invoice_id':invoice_no}
+var accountobject={payment_type:payment_method,account:22,amount:amount_paid,type:1,debit:0,credit:amount_paid,'invoice_id':invoice_no, paymentdate:today}
 let payment=[]
 payment.push(paymentObject,accountobject)
 // updating the invoice table and recording the payment
@@ -930,7 +931,7 @@ payment.push(paymentObject,accountobject)
 
                         
                         let paymentvalues= payment.map((m) => Object.values(m))
-                        var paymentQuery = "insert payments(payment_type,account,amount,type,debit,credit,invoice_id)values ? "
+                        var paymentQuery = "insert payments(payment_type,account,amount,type,debit,credit,invoice_id,paymentdate)values ? "
                         connection.query(paymentQuery,[paymentvalues], function (err, datas) {
                             if (error) {
                                 console.log(error);
