@@ -174,7 +174,7 @@ module.exports = app => {
     app.post('/api/:id/createdebitnote', debitNoteController.store);
     app.post('/api/:id/debitnote/recordpayment', debitNoteController.recordPayment);
     app.post('/api/deletedebitnote', debitNoteController.deletedebitNote);
-    app.post('/api/deletedebitnote', debitNoteController.deletedebitNote);
+    app.post('/api/editdebitnote', debitNoteController.editDebitNote);
     // Acoount-Statement
     app.post('/api/:id/getaccountstatement', accStatementController.getAccountStatement);
 
