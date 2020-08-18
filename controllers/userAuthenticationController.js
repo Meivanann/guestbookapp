@@ -24,10 +24,12 @@ module.exports = {
     // console.log(users);
     connection.query('INSERT INTO users SET ?',users, function (error, results, fields) {
       if (error) {
+        console.log(error)
         res.json({
             status:false,
-            message:'there are some error with query'
-        })
+            message:'there are some error with query',
+            error:error
+          })
       }else{
           res.json({
             status:true,
