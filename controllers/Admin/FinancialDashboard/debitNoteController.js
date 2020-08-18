@@ -76,7 +76,7 @@ console.log(element)
                         "shipper_code" : shippercode,
                         "type"         : "Credit",
                         "amount"       :  totalamount,
-                        "updated_on"   :  today,
+                        "update_on"   :  today,
                         "description"  :  "Credit note"
                     }
                     let acc_state_query = "update  shipper_acc_statements SET ? where shipper_code='"+shippercode+"' and type='Credit'and amount="+totalamount+" order by  id desc "
