@@ -55,23 +55,32 @@ module.exports = {
         })
        
     },
-
     getInvoices: (req,res) => {
         console.log(req.params.id);
         let start_date = req.body.start_date;
         let end_date = req.body.end_date;
         let shipper_code = req.body.shipper_code;
         let query, data;
+         let search=req.body.search;
 
         console.log(start_date);
-        if(start_date != "" && end_date != "")
+        if(start_date != "" &&  start_date != undefined && end_date != ""&& end_date != undefined)
         {
-            console.log("1");
-            query = "SELECT * FROM invoice where (invoice_date between ? and ?) and shipper_code = ?;"
-            data = [start_date, end_date, shipper_code];
+            console.log("date")
+            console.log("1iisl");
+            query = "SELECT * FROM invoice where (invoice_date between ? and ?);"
+            data = [start_date, end_date];
         }
+        if(search != "" &&  search != undefined && search != ""&& search != undefined)
+        {
+            console.log("date")
+            console.log("1iisl");
+            query = "SELECT * FROM invoice where invoice_no in(?)"
+            data = [search];
+        }
+
         else{
-            console.log("2");
+            console.log("2iksll;");
             query = "SELECT * FROM invoice where shipper_code = ?;"
             data = [shipper_code];
         }
@@ -95,6 +104,47 @@ module.exports = {
         })
        
     },
+
+    //backup19Aug
+    // getInvoices: (req,res) => {
+    //     console.log(req.params.id);
+    //     let start_date = req.body.start_date;
+    //     let end_date = req.body.end_date;
+    //     let shipper_code = req.body.shipper_code;
+    //     let query, data;
+
+    //     console.log(start_date);
+    //     if(start_date != "" && end_date != "")
+    //     {
+    //         console.log("1");
+    //         query = "SELECT * FROM invoice where (invoice_date between ? and ?) and shipper_code = ?;"
+    //         data = [start_date, end_date, shipper_code];
+    //     }
+    //     else{
+    //         console.log("2");
+    //         query = "SELECT * FROM invoice where shipper_code = ?;"
+    //         data = [shipper_code];
+    //     }
+        
+    //    connection.query(query,data, (err,rows) => {
+    //         if(err){
+    //             console.log(err);
+    //         } else if (rows.length == 0 ){
+    //             res.json({
+    //                 status: 2,
+    //                 message:"No Results Found"
+    //             })
+    //         } else {
+    //             console.log("results found");
+    //             res.json({
+    //                 status: 1,
+    //                 data:rows
+    //             })
+    //         }
+            
+    //     })
+       
+    // },
 
 
     // manifestdriverprint: async (req, res) => {
