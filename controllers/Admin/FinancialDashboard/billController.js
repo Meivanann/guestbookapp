@@ -1,6 +1,6 @@
 var connection = require('../../../config');
 
-
+const commonFunction = require('../../commonFunction');
 module.exports = {
     getAllVendors: (req, res) => {
         let query = "SELECT * FROM vendors;"
