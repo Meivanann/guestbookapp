@@ -1,6 +1,6 @@
 var connection = require('../../../config');
 
-const commonFunction = require('../../commonFunction');
+
 module.exports = {
     getAllVendors: (req, res) => {
         let query = "SELECT * FROM vendors;"
@@ -209,8 +209,6 @@ module.exports = {
                     if (err) {
                         console.log(err);
                     } else {
-                        let deleteBillquery="DELETE FROM account_statements  where bill_no='"+bill_id+"'";
-                        let deletedata=await commonFunction.getQueryResults(deleteBillquery)
                         res.json({
                             status: 1,
                             data: "delete  bill successfully",
@@ -279,7 +277,6 @@ module.exports = {
     createBill: (req, res) => {
         var today = new Date();
         let vendor_id = req.body.vendor_id;
-        let bill_date=req.body.bill_date;
         let total_amount = req.body.amount;
         let data = JSON.parse(req.body.items);
         let acc_bal = 0, bill_id;
@@ -289,7 +286,7 @@ module.exports = {
         // adding row in credit note table
         var billdata = {
             "vendor_id": vendor_id,
-            "bill_date": bill_date,
+            "bill_date": today,
             "amount": total_amount,
             "status": "Unpaid",
             "payment_due_date": req.body.payment_due_date,
@@ -370,13 +367,13 @@ module.exports = {
                                 credit:0,
                                 bill_no:bill_id,
                                 types:'Bill details',
-                                created_on:bill_date,
+                                created_on:today,
                                 from_id:3
                             })
                         });
 
                        //var Expenseobject={type:'Expense',account:20,amount:total_amount,description:'invoice from create invoice',debit:0,credit:total_amount,invoice_number:invoice_number,types:'Invoice'}
-                        var accountpayable={type:'Expense',account:21,amount:total_amount,description:'bill from create bill',debit:0,credit:total_amount,bill_no:bill_id,types:'Bill',created_on:bill_date,from_id:2}
+                        var accountpayable={type:'Expense',account:21,amount:total_amount,description:'bill from create bill',debit:0,credit:total_amount,bill_no:bill_id,types:'Bill',created_on:today,from_id:2}
                         var array=[accountpayable,...newarray]
                         let accountdetailsbill = array.map((m) => Object.values(m))
                         let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,bill_no,types,created_on,from_id) values ? "
@@ -416,10 +413,9 @@ module.exports = {
             'type': 2,      //bill
             'debit': 0,
             'credit': amount_paid,
-            'bill_id': bill_id,
-            paymentdate:today
+            'bill_id': bill_id
         }
-        var accountobject={payment_type:payment_method,account:21,amount:amount_paid,type:2,debit:amount_paid,credit:0,'bill_id': bill_id,paymentdate:today}
+        var accountobject={payment_type:payment_method,account:21,amount:amount_paid,type:2,debit:amount_paid,credit:0,'bill_id': bill_id}
 
 
 
@@ -457,7 +453,7 @@ module.exports = {
 
 
                         let paymentvalues= payment.map((m) => Object.values(m))
-                        var paymentQuery = "insert payments(payment_type,account,amount,type,debit,credit,bill_id,paymentdate)values ? "
+                        var paymentQuery = "insert payments(payment_type,account,amount,type,debit,credit,bill_id)values ? "
                         connection.query(paymentQuery, [paymentvalues], function (err, datas) {
                             if (error) {
                                 console.log(error);
