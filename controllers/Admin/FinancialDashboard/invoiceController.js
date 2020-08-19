@@ -79,7 +79,8 @@ module.exports = {
             data = [search];
         }
 
-        else{
+        if(shipper_code != "" &&  shipper_code != undefined && shipper_code != ""&& shipper_code != undefined)
+        {
             console.log("2iksll;");
             query = "SELECT * FROM invoice where shipper_code = ?;"
             data = [shipper_code];
