@@ -3,7 +3,7 @@ const pdfInvoice = require('pdf-invoice');
 // const PDFDocument = require("pdfkit");
 // const fs = require("fs");
 const fs = require('fs')
-
+const commonFunction = require('../../commonFunction');
 
 module.exports = {
     getAllInvoices: (req,res) => {
@@ -861,6 +861,10 @@ module.exports = {
                     if(errr){
                        console.log(errr);
                     } else {
+
+
+                        let deleteBillquery="delete from account_statements  where invoice_number="+invoice_no+"";
+                        let deletedata=await commonFunction.getQueryResults(deleteBillquery)
                         console.log("Invoice deleted successfully")
                     }
                 });

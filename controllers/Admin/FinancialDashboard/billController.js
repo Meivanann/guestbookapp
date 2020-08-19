@@ -209,6 +209,8 @@ module.exports = {
                     if (err) {
                         console.log(err);
                     } else {
+                        let deleteBillquery="DELETE FROM account_statements  where bill_no='"+bill_id+"'";
+                        let deletedata=await commonFunction.getQueryResults(deleteBillquery)
                         res.json({
                             status: 1,
                             data: "delete  bill successfully",
