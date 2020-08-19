@@ -140,8 +140,7 @@ module.exports = {
           
                       res.json({
                           status:false,
-                          message:'there are some error with query',
-                          error:error
+                          message:'there are some error with query'
                       })
                     }else{
                         res.json({
