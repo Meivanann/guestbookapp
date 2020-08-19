@@ -504,8 +504,8 @@ module.exports = {
         let invoice_number;
         let invoice_date = req.body.invoice_date;
 
-        let query = "SELECT * FROM consignment as c  left join out_for_delivery as o  on o.cn_no=c.cn_no   where (o.datetime between ? and ? ) and c.status = 'Close' and ( c.shipper_code=? or c.receiver_code = ?) and c.is_billed = 0 and c.is_approved = 1;"
-        let data = [start_date, end_date, shipper_code, shipper_code];
+        let query = "SELECT * FROM consignment as c  left join out_for_delivery as o  on o.cn_no=c.cn_no   where (DATE_FORMAT(o.datetime,'%Y-%m-%d') >= DATE('"+start_date+"') and DATE_FORMAT(o.datetime,'%Y-%m-%d') <= DATE('"+end_date+"') )  and c.status = 'Close' and ( c.shipper_code=? or c.receiver_code = ?) and c.is_billed = 0 and c.is_approved = 1;"
+        let data = [shipper_code, shipper_code];
 
         connection.query(query, data, (err,rows) => {
             if(err){
