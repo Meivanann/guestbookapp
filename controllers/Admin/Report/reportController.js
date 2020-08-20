@@ -521,7 +521,7 @@ var condition=''
             'account_id_name': accountNameObject[key] ? accountNameObject[key] : '',
             'total': _.sumBy(objs, function (day) {
 
-                return day.debit - day.credit;
+                return day.credit - day.debit;
 
             })
         }))
@@ -535,7 +535,7 @@ var condition=''
             'account_id_name': accountNameObject[key] ? accountNameObject[key] : '',
             'total': _.sumBy(objs, function (day) {
 
-                return day.debit - day.credit;
+                return day.credit - day.debit;;
 
             })
         }))
