@@ -406,6 +406,7 @@ module.exports = {
         let today = new Date();
         let bill_id = req.body.id;
         let amount_paid = req.body.amount_paid;
+        let account=req.body.account;
         let payment_method = req.body.payment_method;
         let total_amount = req.body.total_amount;
         let vendor_id = req.body.vendor_id;
@@ -413,7 +414,7 @@ module.exports = {
         let paymentObject = {
 
             'payment_type': payment_method,
-            'account': 1,
+            'account': account,
             'amount': amount_paid,
             'type': 2,      //bill
             'debit': 0,
@@ -492,7 +493,7 @@ module.exports = {
                                 var o_acc_data = {
                                     "type": "Expense",
                                    
-                                    "account": 1,
+                                    "account": account,
                                     "amount": amount_paid,
                                     "description": "Payment for bil " + bill_id,
                                     "debit": 0,

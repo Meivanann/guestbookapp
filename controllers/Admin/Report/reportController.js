@@ -4,12 +4,13 @@ var _ = require('lodash')
 module.exports = {
 
 
+   
     getpaymentaccount: async (req, res) => {
          
-        var paymentaccountQuery="SELECT *,a.id as account_id,a.account_name as account_name  FROM accounts as a inner join account_types as ac on ac.id=a.account_type_id where ac.id =1 group by ac.id";
+        var paymentaccountQuery="SELECT *,a.id as account_id,a.account_name as account_name  FROM accounts as a inner join account_types as ac on ac.id=a.account_type_id where a.account_type_id=1 group by a.id";
         var paymentaccountData=await commonFunction.getQueryResults(paymentaccountQuery);
 
-
+console.log(paymentaccountQuery) 
         if(paymentaccountData.length > 0 )
         {
 
@@ -362,6 +363,11 @@ var condition=''
         let equalityObject={};
         var assetsObject={}
         var finalResponse = [];
+        var condition=''
+        if(report_type==2)
+        {
+            condition=" and a.ispayment=1"
+        }
         let accounttypeQuery = "Select *,at.id as accountypeid,at.name as accounttypename,a.id as accountid,a.account_name as accountname from accounts as a left join account_types as at on at.id=a.account_type_id ";
 
         let accountdata = await commonFunction.getQueryResults(accounttypeQuery);
@@ -381,7 +387,7 @@ var condition=''
         // let billDetailsQuery = "Select * from bill as b inner join  bill_details as bd on b.id=bd.bill_id inner join accounts as ac on ac.id=bd.expense_category where b.bill_date >= '" + start_date + "' AND b.bill_date  <= '" + end_date + "' and b.isdelete = 0 ";
         // let billDetailsdata = await commonFunction.getQueryResults(billDetailsQuery);
 
-        let transactionQuery = " Select *,ad.type as accountype ,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "' group by a.id ";
+        let transactionQuery = " Select *,ad.type as accountype ,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  and a.from_id NOT IN (6,7,8,9,10,11) " + condition + " group by a.id ";
         let transactionData = await commonFunction.getQueryResults(transactionQuery);
         // paymentData.forEach(element => {
 
@@ -694,7 +700,7 @@ var currentlibiatydetails=_(expense)
                 'account_id_name': accountNameObject[key] ? accountNameObject[key] : '',
                 'total': _.sumBy(objs, function (day) {
 
-                    return day.credit - day.debit;
+                    return day.debit - day.credit;
 
                 })
             }))
@@ -782,31 +788,39 @@ var currentlibiatydetails=_(expense)
             header: 'long term liablities', totalvalue: _.sumBy(longtermlibalitiesvalues, 'total'),
             values: longtermlibalitiesvalues
         }
-        equalityObject={
-            header: 'Equality', totalvalue: _.sumBy(longtermlibalitiesvalues, 'total'),
-            values: [equalityretainedetail,equalitybusinessdetail]
-        }
+        // equalityObject={
+        //     header: 'Equality', totalvalue: _.sumBy(longtermlibalitiesvalues, 'total'),
+        //     values: [equalityretainedetail,equalitybusinessdetail]
+        // }
 
-        liabality={ header: 'Liabilities & Credit Cards', totalvalue: _.sumBy(currentlibalityarray, 'total'),
+        
+
+        var totalassetvalue = income.totalvalue + othercurrentassetss.totalvalue + longttermassetsObject.totalvalue
+        var totallibalityvalue = currentlibality.totalvalue+longtermlibality.totalvalue
+        var equalitytotalvalue = equalitybusinessdetail.totalvalue + equalityretainedetail.totalvalue
+        var cashhandvalue=income.totalvalue!=undefined?income.totalvalue:0;
+        var toberecivedtotal=othercurrentassetss.totalvalue!=undefined?othercurrentassetss.totalvalue:0
+        var topaidout=currentlibality.totalvalue!=undefined?currentlibality.totalvalue:0
+
+
+        var sumofvalues=(cashhandvalue + toberecivedtotal)-topaidout
+       console.log('libvalue',currentlibality.totalvalue);
+        assetsObject={header: 'Assets', totalvalue: totalassetvalue,
+       values: [income,othercurrentassetss,longttermassetsObject]}
+        liabality={ header: 'Liabilities & Credit Cards', totalvalue:totallibalityvalue ,
        
         values: [currentlibality,longtermlibality]}
-
-        var totalassetvalue=income.totalvalue + othercurrentassetss.totalvalue + longttermassetsObject.totalvalue
-       equalityObject={header: 'Equality', totalvalue: totalassetvalue,
+        
+        equalityObject={header: 'Equality', totalvalue: equalitytotalvalue,
        
        values: [equalitybusinessdetail,equalityretainedetail]}
-        assetsObject={header: 'Assets', totalvalue: totalassetvalue,
-       
-        values: [income,othercurrentassetss,longttermassetsObject]}
-        
-        
         finalResponse.push(assetsObject,liabality,equalityObject);
        
         // var grossprofit = (income.totalvalue - Costofgoods.totalvalue);
         // var grossprofitpercentage=Math.round((grossprofit/income.totalvalue) * 100 ) + '%'
         // var netprofit = (grossprofit - operatingexpense.totalvalue)
         // var netprofitpercentage=Math.round((netprofit/income.totalvalue) * 100) + '%'
-        res.json({ status: 1, message: 'Balance sheet report list',othercurrentassetvalues,transactionData,  finalResponse })
+        res.json({ status: 1, message: 'Balance sheet report list',sumofvalues,cashhandvalue,toberecivedtotal,topaidout,othercurrentassetvalues,transactionData,  finalResponse })
 
 
 
