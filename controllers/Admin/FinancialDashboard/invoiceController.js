@@ -3,7 +3,8 @@ const pdfInvoice = require('pdf-invoice');
 // const PDFDocument = require("pdfkit");
 // const fs = require("fs");
 const fs = require('fs')
-
+const commonFunction = require('../../commonFunction');
+//const { async } = require('q');
 
 module.exports = {
     getAllInvoices: (req,res) => {
@@ -55,23 +56,33 @@ module.exports = {
         })
        
     },
-
     getInvoices: (req,res) => {
         console.log(req.params.id);
         let start_date = req.body.start_date;
         let end_date = req.body.end_date;
         let shipper_code = req.body.shipper_code;
         let query, data;
+         let search=req.body.search;
 
         console.log(start_date);
-        if(start_date != "" && end_date != "")
+        if(start_date != "" &&  start_date != undefined && end_date != ""&& end_date != undefined)
         {
-            console.log("1");
-            query = "SELECT * FROM invoice where (invoice_date between ? and ?) and shipper_code = ?;"
-            data = [start_date, end_date, shipper_code];
+            console.log("date")
+            console.log("1iisl");
+            query = "SELECT * FROM invoice where (invoice_date between ? and ?);"
+            data = [start_date, end_date];
         }
-        else{
-            console.log("2");
+        if(search != "" &&  search != undefined && search != ""&& search != undefined)
+        {
+            console.log("date")
+            console.log("1iisl");
+            query = "SELECT * FROM invoice where invoice_no in(?)"
+            data = [search];
+        }
+
+        if(shipper_code != "" &&  shipper_code != undefined && shipper_code != ""&& shipper_code != undefined)
+        {
+            console.log("2iksll;");
             query = "SELECT * FROM invoice where shipper_code = ?;"
             data = [shipper_code];
         }
@@ -95,6 +106,47 @@ module.exports = {
         })
        
     },
+
+    //backup19Aug
+    // getInvoices: (req,res) => {
+    //     console.log(req.params.id);
+    //     let start_date = req.body.start_date;
+    //     let end_date = req.body.end_date;
+    //     let shipper_code = req.body.shipper_code;
+    //     let query, data;
+
+    //     console.log(start_date);
+    //     if(start_date != "" && end_date != "")
+    //     {
+    //         console.log("1");
+    //         query = "SELECT * FROM invoice where (invoice_date between ? and ?) and shipper_code = ?;"
+    //         data = [start_date, end_date, shipper_code];
+    //     }
+    //     else{
+    //         console.log("2");
+    //         query = "SELECT * FROM invoice where shipper_code = ?;"
+    //         data = [shipper_code];
+    //     }
+        
+    //    connection.query(query,data, (err,rows) => {
+    //         if(err){
+    //             console.log(err);
+    //         } else if (rows.length == 0 ){
+    //             res.json({
+    //                 status: 2,
+    //                 message:"No Results Found"
+    //             })
+    //         } else {
+    //             console.log("results found");
+    //             res.json({
+    //                 status: 1,
+    //                 data:rows
+    //             })
+    //         }
+            
+    //     })
+       
+    // },
 
 
     // manifestdriverprint: async (req, res) => {
@@ -504,8 +556,8 @@ module.exports = {
         let invoice_number;
         let invoice_date = req.body.invoice_date;
 
-        let query = "SELECT * FROM consignment as c  left join out_for_delivery as o  on o.cn_no=c.cn_no   where (o.datetime between ? and ? ) and c.status = 'Close' and ( c.shipper_code=? or c.receiver_code = ?) and c.is_billed = 0 and c.is_approved = 1;"
-        let data = [start_date, end_date, shipper_code, shipper_code];
+        let query = "SELECT * FROM consignment as c  left join out_for_delivery as o  on o.cn_no=c.cn_no   where (DATE_FORMAT(o.datetime,'%Y-%m-%d') >= DATE('"+start_date+"') and DATE_FORMAT(o.datetime,'%Y-%m-%d') <= DATE('"+end_date+"') )  and c.status = 'Close' and ( c.shipper_code=? or c.receiver_code = ?) and c.is_billed = 0 and c.is_approved = 1;"
+        let data = [shipper_code, shipper_code];
 
         connection.query(query, data, (err,rows) => {
             if(err){
@@ -607,8 +659,8 @@ module.exports = {
                                     }
                                 });
 
-                                var incomeobject={type:'Income',account:20,amount:total_amount,description:'invoice from create invoice',debit:0,credit:total_amount,invoice_number:invoice_number,types:'Invoice',created_on:today,from_id:1}
-                                var accountReacivable={type:'Income',account:22,amount:total_amount,description:'invoice from create invoice',debit:total_amount,credit:0,invoice_number:invoice_number,types:'Invoice',created_on:today,from_id:1}
+                                var incomeobject={type:'Income',account:20,amount:total_amount,description:'invoice from create invoice',debit:0,credit:total_amount,invoice_number:invoice_number,types:'Invoice',created_on:invoice_date,from_id:1}
+                                var accountReacivable={type:'Income',account:22,amount:total_amount,description:'invoice from create invoice',debit:total_amount,credit:0,invoice_number:invoice_number,types:'Invoice',created_on:invoice_date,from_id:1}
                                 var array=[incomeobject,accountReacivable]
                                 let accountdetailsinvoice = array.map((m) => Object.values(m))
                                 let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,invoice_number,types,created_on,from_id) values ? "
@@ -764,7 +816,7 @@ module.exports = {
 
     deleteInvoice: (req,res) => {
         let invoice_no = req.body.invoice_no;
-        connection.query("select * from invoice where invoice_no = ? ", invoice_no, (invoice_err,invoice_rows) => {
+        connection.query("select * from invoice where invoice_no = ? ", invoice_no, async(invoice_err,invoice_rows) => {
             if(invoice_err){
                 console.log(invoice_err);
             } else if (invoice_rows.length == 0 ){
@@ -794,7 +846,7 @@ module.exports = {
                     let consignment_query = "SELECT * FROM consignment where (cn_datetime between ? and ? ) and status = 'Close' and ( shipper_code=? or receiver_code = ?) and is_billed = 1 and is_approved = 1;"
                     let consignment_data = [invoice_row.consignment_start_date, invoice_row.consignment_end_date, invoice_row.shipper_code, invoice_row.shipper_code];
             
-                    connection.query(consignment_query, consignment_data, (consignment_err,consignment_rows) => {
+                    connection.query(consignment_query, consignment_data, async(consignment_err,consignment_rows) => {
                         if(consignment_err){
                             console.log(consignment_err);
                         } else if (consignment_rows.length == 0 ){
@@ -822,7 +874,7 @@ module.exports = {
                     });
                 }
                 let shipper_query = "select * from shipping where shipper_code = ?"
-                connection.query(shipper_query, invoice_row.shipper_code, (err,shipper_rows) => {
+                connection.query(shipper_query, invoice_row.shipper_code, async(err,shipper_rows) => {
                     if(err){
                         console.log(err);
                     }else{
@@ -837,7 +889,7 @@ module.exports = {
                         }
                         let data111 = [shipper_acc_update_data ,invoice_row.shipper_code];
 
-                        connection.query(shipper_acc_update,data111, function (error, results, fields) {
+                        connection.query(shipper_acc_update,data111, async function (error, results, fields) {
                             if (error) {
                                 console.log(error);
                             }else{
@@ -848,7 +900,7 @@ module.exports = {
                 });
 
                 let delete_query = "delete from shipper_acc_statements where invoice_no = ? and type ='Invoice';"
-                connection.query(delete_query, invoice_no, (errr,rows) => {
+                connection.query(delete_query, invoice_no, async(errr,rows) => {
                     if(errr){
                        console.log(errr);
                     } else {
@@ -857,10 +909,14 @@ module.exports = {
                 });
 
                 let delete_query1 = "delete from invoice where invoice_no = ?;"
-                connection.query(delete_query1, invoice_no, (errr,rows) => {
+                connection.query(delete_query1, invoice_no, async(errr,rows) => {
                     if(errr){
                        console.log(errr);
                     } else {
+
+
+                        let deleteBillquery="delete from account_statements  where invoice_number="+invoice_no+"";
+                        let deletedata=await commonFunction.getQueryResults(deleteBillquery)
                         console.log("Invoice deleted successfully")
                     }
                 });
@@ -875,7 +931,7 @@ module.exports = {
 
     recordPayment: (req,res) => {
         let invoice_no = req.body.invoice_no;
-        let today = new Date();
+        let today = moment().format('YYYY-MM-DD');
         let amount_paid = req.body.amount_paid;
         let payment_method = req.body.payment_method;
         let total_amount = req.body.total_amount;
@@ -891,10 +947,11 @@ module.exports = {
             'type':1,      //invoice
             'debit':amount_paid,
             'credit':0,
-            'invoice_id':invoice_no
+            'invoice_id':invoice_no,
+            paymentdate:today
         }   
 
-var accountobject={payment_type:payment_method,account:22,amount:amount_paid,type:1,debit:0,credit:amount_paid,'invoice_id':invoice_no}
+var accountobject={payment_type:payment_method,account:22,amount:amount_paid,type:1,debit:0,credit:amount_paid,'invoice_id':invoice_no, paymentdate:today}
 let payment=[]
 payment.push(paymentObject,accountobject)
 // updating the invoice table and recording the payment
@@ -930,7 +987,7 @@ payment.push(paymentObject,accountobject)
 
                         
                         let paymentvalues= payment.map((m) => Object.values(m))
-                        var paymentQuery = "insert payments(payment_type,account,amount,type,debit,credit,invoice_id)values ? "
+                        var paymentQuery = "insert payments(payment_type,account,amount,type,debit,credit,invoice_id,paymentdate)values ? "
                         connection.query(paymentQuery,[paymentvalues], function (err, datas) {
                             if (error) {
                                 console.log(error);
