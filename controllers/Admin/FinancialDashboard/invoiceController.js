@@ -577,7 +577,7 @@ module.exports = {
                         tax_amount = tax_amount + parseFloat(row.tax_amount);
 
                         var consignment_update_datas = {
-                            "is_billed"   :   1
+                            "is_billed"   : 1
                         }
                         let consignment_update_data = [consignment_update_datas ,row.cn_no];
 
