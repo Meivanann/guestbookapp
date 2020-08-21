@@ -1,7 +1,10 @@
 var Cryptr = require('cryptr');
 var express=require("express");
 var connection = require('../config');
-
+var fileUpload = require('express-fileupload');
+var multer = require('multer');
+var moment=require('moment')
+var COMMONURL=require('../common.json')
 cryptr = new Cryptr('myTotalySecretKey');
  
 
@@ -60,11 +63,14 @@ module.exports = {
             if(password==decryptedString){
               if(results[0].active === 1){
                 req.session.userId = results[0].id;
+                let imagesfolder=results[0].imageurl
+                var filePath = COMMONURL.SERVERURL+ ':' + COMMONURL.SERVERPORT + '/'+imagesfolder;
                 res.json({
                     id:results[0].id,
                     position:results[0].position,
                     name:results[0].firstname + ' ' + results[0].lastname, 
                     status:true,
+                    filePath,
                     message:'successfully authenticated'
                 })
               }else{
@@ -90,6 +96,69 @@ module.exports = {
       }
     });
   },
+
+
+  userupload: (req,res) => {
+ 
+    console.log('ree',req.body) 
+    if (!req.files || Object.keys(req.files).length === 0) {
+      return res.status(400).send('No files were uploaded.');
+    }
+    else
+    {
+      let login_id=req.body.login_id      
+    let sampleFile = req.files.avatar;
+
+    let today=moment().valueOf()
+    var checkingQuery="select * from users where id ="+login_id+"";
+      connection.query(checkingQuery,function (err,data) {
+        
+        if(err)
+        {
+          console.log(err)
+        }
+        else
+        {
+          if (data.length > 0) {
+
+            let username=data[0].username;
+             // Use the mv() method to place the file somewhere on your server
+            sampleFile.mv("./uploads/users/"+today+'-'+username+".jpg", function(err,data) {
+              if (err)
+                return res.status(500).send(err);
+               // var filePath = COMMONURL.localurl+ ':' + COMMONURL.SERVERPORT + '/users/' +today+'-'+username+'.jpg'
+                var path='/users/' +today+'-'+username+'.jpg'
+                var updateQuery="update users set imageurl='"+path+"' where id="+login_id+"";
+                connection.query(updateQuery,function(err,rows)
+                {
+                  if(err)
+                  {
+                    console.log(err)
+                  }
+                  else
+                  {
+                var filePath = COMMONURL.SERVERURL+ ':' + COMMONURL.SERVERPORT + '/users/' +today+'-'+username+'.jpg';
+          res.json({message:'File uploaded!',filePath,path});
+
+        }
+            })
+            });
+            
+          }
+        }
+
+      })
+   
+   
+ 
+  }  
+    
+ 
+
+},
+
+
+
 
   setPassword: (req,res) => {
     var today = new Date();

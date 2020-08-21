@@ -95,7 +95,7 @@ module.exports = app => {
 
     //tracking
     app.post('/api/:id/tracking', trackingController.index);
-
+    app.post('/uploaduserimage', userAuthenticationController.userupload);
     //outforDelivery
     app.get('/api/:id/outfordelivery', outforDelivery.index);
     app.get('/api/:id/outfordeliverycompleted', outforDelivery.ofdCompleted);
