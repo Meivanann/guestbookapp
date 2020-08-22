@@ -315,6 +315,40 @@ console.log(element)
                             console.log(crderr)
                         }else{
                             console.log("Debit note details added successflly");
+
+
+                            let newarray=[]
+
+                            data.forEach(element => {
+                                newarray.push({
+                                    type:'Income',
+                                    account:20,
+                                    amount:element.amount,
+                                    description:' debit details from create credit note',
+                                    debit:0,
+                                    credit:total_amount,
+                                    debit_no:debit_note_id,
+                                    types:'debit details',
+                                    created_on:today,
+                                    from_id:10
+                                })
+                            });
+                            //var incomeobject={type:'Income',account:20,amount:total_amount,description:'credit note from credit note',debit:total_amount,credit:0,credit_no:credit_note_id,types:'Credit',created_on:today,from_id:6}
+                            //var accountReacivable={type:'Income',account:22,amount:total_amount,description:'credit note from credit note',debit:0,credit:total_amount,credit_no:credit_note_id,types:'Credit',created_on:today,from_id:6}
+                           // var array=[incomeobject,accountReacivable]
+                             
+                            //var incomeobject={type:'Income',account:20,amount:total_amount,description:'debit note from debit note',debit:0,credit:total_amount,debit_no:debit_note_id,types:'Debit',created_on:today,from_id:9}
+                            var accountReacivable={type:'Income',account:22,amount:total_amount,description:'debit note from debit note',debit:total_amount,credit:0,debit_no:debit_note_id,types:'Debit',created_on:today,from_id:9}
+                            var array=[...newarray,accountReacivable]
+                            let accountdetailsinvoice = array.map((m) => Object.values(m))
+                            let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,debit_no,types,created_on,from_id) values ? "
+                            connection.query(acc_query, [accountdetailsinvoice], function (err, data) {
+                                if (err) {
+                                    console.log(err)
+                                }else{
+                                    console.log("account statement  added successfully");
+                                }
+                            });
                         }
                     });
                 });

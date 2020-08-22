@@ -312,6 +312,34 @@ console.log(query)
                         if (crderr) {
                             console.log(crderr)
                         }else{
+                            let newarray=[]
+
+                            data.forEach(element => {
+                                newarray.push({
+                                    type:'Income',
+                                    account:20,
+                                    amount:element.amount,
+                                    description:' credit details from create credit note',
+                                    debit:total_amount,
+                                    credit:0,
+                                    credit_no:credit_note_id,
+                                    types:'Credit details',
+                                    created_on:today,
+                                    from_id:7
+                                })
+                            });
+                            //var incomeobject={type:'Income',account:20,amount:total_amount,description:'credit note from credit note',debit:total_amount,credit:0,credit_no:credit_note_id,types:'Credit',created_on:today,from_id:6}
+                            var accountReacivable={type:'Income',account:22,amount:total_amount,description:'credit note from credit note',debit:0,credit:total_amount,credit_no:credit_note_id,types:'Credit',created_on:today,from_id:6}
+                            var array=[...newarray,accountReacivable]
+                            let accountdetailsinvoice = array.map((m) => Object.values(m))
+                            let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,credit_no,types,created_on,from_id) values ? "
+                            connection.query(acc_query, [accountdetailsinvoice], function (err, data) {
+                                if (err) {
+                                    console.log(err)
+                                }else{
+                                    console.log("account statement  added successfully");
+                                }
+                            });
                             console.log("Credit note details added successflly");
                         }
                     });
