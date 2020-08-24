@@ -177,7 +177,7 @@ module.exports = app => {
     app.post('/api/editdebitnote', debitNoteController.editDebitNote);
     // Acoount-Statement
     app.post('/api/:id/getaccountstatement', accStatementController.getAccountStatement);
-
+    app.post('/getimage', userAuthenticationController.getimageurl);
     // Expense
     app.get('/api/:id/getallvendors', billController.getAllVendors);
     app.get('/api/:id/deletevendor/:vendor_id', billController.destroyVendor);

@@ -9,6 +9,36 @@ cryptr = new Cryptr('myTotalySecretKey');
  
 
 module.exports = { 
+  getimageurl: (req,res) => {
+
+    // console.log("request");
+    console.log(req.body);
+    var login_id=req.body.login_id;
+     
+   
+    connection.query('SELECT * FROM users WHERE id = ?',[login_id], function (error, results, fields) {
+      if (error) {
+        console.log (error)
+          res.json({
+            status:false,
+            message:'there are some error with query'
+            })
+      }else{
+       
+         
+
+                let imagesfolder=results[0].imageurl
+                var filePath = COMMONURL.SERVERURL+ ':' + COMMONURL.SERVERPORT + '/'+imagesfolder;
+                
+                req.session.userId = results[0].id;
+                res.json({
+                     status:1,
+                    filePath,
+                    message:'image fetched successfully'
+                })
+              } 
+            })
+  },
   register: (req,res) => {
     var today = new Date();
     var encryptedString = cryptr.encrypt(req.body.password);
