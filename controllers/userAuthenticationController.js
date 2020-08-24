@@ -26,10 +26,12 @@ module.exports = {
       }else{
        
          
-
+       var filePath=''
                 let imagesfolder=results[0].imageurl
-                var filePath = COMMONURL.SERVERURL+ ':' + COMMONURL.SERVERPORT + '/'+imagesfolder;
-                
+                if(imagesfolder.length > 0)
+                {
+                  filePath= COMMONURL.SERVERURL+ ':' + COMMONURL.SERVERPORT + '/'+imagesfolder;
+              }
                 //req.session.userId = results[0].id;
                 res.json({
                      status:1,
