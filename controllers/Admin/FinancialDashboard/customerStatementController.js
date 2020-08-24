@@ -52,7 +52,7 @@ module.exports = {
                     } else {
                         Object.keys(rows).forEach(function(key) {
                             var row = rows[key];
-                            if(row.type === 'Invoice'  || row.type === 'debit'){
+                            if(row.type === 'Invoice'  || row.type === 'Debit'){
                                 opening_bal = opening_bal + parseFloat(row.amount);
                             }else{
                                 opening_bal = opening_bal - parseFloat(row.amount);
@@ -75,7 +75,7 @@ module.exports = {
                                 Object.keys(shipping_rows).forEach(function(key) {
                                     // console.log(row);
                                     var row = shipping_rows[key];
-                                    if(row.type === 'Invoice'  || row.type === 'debit'){
+                                    if(row.type === 'Invoice'  || row.type === 'Debit'){
                                         closing_bal = parseFloat(closing_bal) + parseFloat(row.amount);
                                     }else{
                                         closing_bal = parseFloat(closing_bal) - parseFloat(row.amount);
