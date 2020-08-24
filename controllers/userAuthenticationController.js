@@ -30,7 +30,7 @@ module.exports = {
                 let imagesfolder=results[0].imageurl
                 var filePath = COMMONURL.SERVERURL+ ':' + COMMONURL.SERVERPORT + '/'+imagesfolder;
                 
-                req.session.userId = results[0].id;
+                //req.session.userId = results[0].id;
                 res.json({
                      status:1,
                     filePath,
