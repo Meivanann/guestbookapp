@@ -1,7 +1,82 @@
 var connection = require('../../../config');
-
+let commonFunction=require('../../commonFunction');
 
 module.exports = {
+
+    Edittransaction: (req,res) => {
+        var today = new Date();
+let transaction_id=req.body.transaction_id
+         // inserting  Account of Statements
+         var acc_data = {
+           // "account"       : req.body.account,
+            
+            "amount"       :  req.body.amount,
+            "created_on"   :  today,
+            "description"  :  req.body.description,
+            
+           // ispayment: 1,
+            credit:req.body.amount,
+            debit:0,
+             
+             
+        }
+
+        let acc_state_query = "update account_statements SET ? where id=" + transaction_id + ""
+        connection.query(acc_state_query, acc_data, function (lgerr, lgres, fields) {
+            if (lgerr) {
+                console.log(lgerr)
+            }else{
+                console.log("Income statement  added successfully");
+                res.json({
+                    status:1,
+                    message:'Update  statement  sucessfully'
+                })
+            }
+        });
+    },
+
+    deleteTransaction: async(req,res) => {
+        var today = new Date();
+
+        let transaction_id=req.body.transaction_id
+         // inserting  Account of Statements
+         let query = "DELETE account_statements FROM account_statements WHERE id=" + transaction_id + "";
+         let data=await commonFunction.getQueryResults(query);
+
+         
+                console.log("Income statement  added successfully");
+                res.json({
+                    status:true,
+                    message:'Income  statement add3ed sucessfully'
+                })
+            }, 
+
+
+            getTransactiondetails: async(req,res) => {
+                var today = new Date();
+        
+                let transaction_id=req.body.transaction_id
+                 // inserting  Account of Statements
+                 let query = "select *  FROM account_statements WHERE id=" + transaction_id + "";
+                 let data=await commonFunction.getQueryResults(query);
+        
+                 
+                        if (data.length > 0 ) {
+                            res.json({
+                                status:1,
+                                message:'Transaction list successfully '
+                            })
+                        }
+                        else
+                        {
+
+                            res.json({
+                                status:0,
+                                message:'No records found'
+                            })
+                        }
+                        
+                    } ,
     getAllTransactions: (req,res) => {
         let query = "SELECT * FROM account_statements  where ispayment=1  and account NOT IN(21,22) order by created_on desc;"
         let total_amount = 0;

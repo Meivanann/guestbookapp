@@ -278,6 +278,7 @@ module.exports = {
             }
         })
     },
+
     createBill: (req, res) => {
         var today = new Date();
         let vendor_id = req.body.vendor_id;
@@ -306,7 +307,7 @@ module.exports = {
                 console.log(billres.insertId);
                 bill_id = billres.insertId;
                 console.log("Bill  added successfully");
-
+let newobject={ }
                 // adding the rows in credit note details table
                 Object.keys(data).forEach(function (key) {
                     var row = data[key];
@@ -324,12 +325,33 @@ module.exports = {
                         credit:0
                     }
 
+                    
                     let bill_detail_query = "INSERT INTO bill_details SET ?"
                     connection.query(bill_detail_query, bill_detail_data, function (billderr, billdres, fields) {
                         if (billderr) {
                             console.log(billderr)
                         } else {
                             console.log("Bill details added successflly");
+                            
+                           newobject={
+                            type:'Expense',
+                            account:row.expense_category,
+                            amount:row.total_amount,
+                            description:'bill details from create bill',
+                            debit:row.total_amount,
+                            credit:0,
+                            bill_no:bill_id,
+                            types:'Bill details',
+                            created_on:bill_date,
+                            from_id:3,
+                            bill_detail_id:billdres.insertId
+                            
+                        }
+                            let account_statementsquery="insert  into account_statements set ? ";
+                            connection.query(account_statementsquery, newobject, function (err, data) {
+                            console.log(err)
+
+                            })
                         }
                     });
                 });
@@ -360,26 +382,26 @@ module.exports = {
                     } else {
                         console.log("Vendor data updated Successfully")
 
-                        let newarray=[]
+                        // let newarray=[]
 
-                        data.forEach(element => {
-                            newarray.push({
-                                type:'Expense',
-                                account:element.expense_category,
-                                amount:element.total_amount,
-                                description:'bill details from create bill',
-                                debit:total_amount,
-                                credit:0,
-                                bill_no:bill_id,
-                                types:'Bill details',
-                                created_on:bill_date,
-                                from_id:3
-                            })
-                        });
+                        // data.forEach(element => {
+                        //     newarray.push({
+                        //         type:'Expense',
+                        //         account:element.expense_category,
+                        //         amount:element.total_amount,
+                        //         description:'bill details from create bill',
+                        //         debit:total_amount,
+                        //         credit:0,
+                        //         bill_no:bill_id,
+                        //         types:'Bill details',
+                        //         created_on:bill_date,
+                        //         from_id:3
+                        //     })
+                        // });
 
                        //var Expenseobject={type:'Expense',account:20,amount:total_amount,description:'invoice from create invoice',debit:0,credit:total_amount,invoice_number:invoice_number,types:'Invoice'}
                         var accountpayable={type:'Expense',account:21,amount:total_amount,description:'bill from create bill',debit:0,credit:total_amount,bill_no:bill_id,types:'Bill',created_on:bill_date,from_id:2}
-                        var array=[accountpayable,...newarray]
+                        var array=[accountpayable]
                         let accountdetailsbill = array.map((m) => Object.values(m))
                         let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,bill_no,types,created_on,from_id) values ? "
                         connection.query(acc_query, [accountdetailsbill], function (err, data) {
@@ -400,6 +422,129 @@ module.exports = {
         })
 
     },
+    //24AUGBACKUP
+    // createBill: (req, res) => {
+    //     var today = new Date();
+    //     let vendor_id = req.body.vendor_id;
+    //     let bill_date=req.body.bill_date;
+    //     let total_amount = req.body.amount;
+    //     let data = JSON.parse(req.body.items);
+    //     let acc_bal = 0, bill_id;
+
+    //     console.log('sss',data);
+
+    //     // adding row in credit note table
+    //     var billdata = {
+    //         "vendor_id": vendor_id,
+    //         "bill_date": bill_date,
+    //         "amount": total_amount,
+    //         "status": "Unpaid",
+    //         "payment_due_date": req.body.payment_due_date,
+    //         debit:0,
+    //         credit:total_amount
+    //     }
+    //     let bill_query = "INSERT INTO bill SET ?"
+    //     connection.query(bill_query, billdata, function (billerr, billres, fields) {
+    //         if (billerr) {
+    //             console.log(billerr)
+    //         } else {
+    //             console.log(billres.insertId);
+    //             bill_id = billres.insertId;
+    //             console.log("Bill  added successfully");
+
+    //             // adding the rows in credit note details table
+    //             Object.keys(data).forEach(function (key) {
+    //                 var row = data[key];
+    //                 console.log(row);
+
+    //                 var bill_detail_data = {
+    //                     "bill_id": bill_id,
+    //                     "item_name": row.name,
+    //                     "expense_category": row.expense_category,
+    //                     "description": row.description,
+    //                     "oty": row.qty,
+    //                     "price": row.price,
+    //                     "total_amount": row.total_amount,
+    //                     debit:total_amount,
+    //                     credit:0
+    //                 }
+
+    //                 let bill_detail_query = "INSERT INTO bill_details SET ?"
+    //                 connection.query(bill_detail_query, bill_detail_data, function (billderr, billdres, fields) {
+    //                     if (billderr) {
+    //                         console.log(billderr)
+    //                     } else {
+    //                         console.log("Bill details added successflly");
+    //                     }
+    //                 });
+    //             });
+
+
+    //         }
+    //     });
+
+    //     // affecting the shipper account ovberall amount
+    //     let vendor_query = "select * from vendors where id = ?"
+    //     connection.query(vendor_query, vendor_id, (err, vendor_rows) => {
+    //         if (err) {
+    //             console.log(err);
+    //         } else {
+    //             vendor_details = vendor_rows[0];
+    //             acc_bal = parseFloat(vendor_details.acc_bal) + parseFloat(total_amount);
+
+    //             // updating the shipper account
+    //             let vendor_acc_update = "UPDATE vendors SET ? where id = ?";
+    //             var vendor_acc_update_data = {
+    //                 "acc_bal": acc_bal
+    //             }
+    //             let data111 = [vendor_acc_update_data, vendor_id];
+
+    //             connection.query(vendor_acc_update, data111, function (error, results, fields) {
+    //                 if (error) {
+    //                     console.log(error);
+    //                 } else {
+    //                     console.log("Vendor data updated Successfully")
+
+    //                     let newarray=[]
+
+    //                     data.forEach(element => {
+    //                         newarray.push({
+    //                             type:'Expense',
+    //                             account:element.expense_category,
+    //                             amount:element.total_amount,
+    //                             description:'bill details from create bill',
+    //                             debit:total_amount,
+    //                             credit:0,
+    //                             bill_no:bill_id,
+    //                             types:'Bill details',
+    //                             created_on:bill_date,
+    //                             from_id:3
+    //                         })
+    //                     });
+
+    //                    //var Expenseobject={type:'Expense',account:20,amount:total_amount,description:'invoice from create invoice',debit:0,credit:total_amount,invoice_number:invoice_number,types:'Invoice'}
+    //                     var accountpayable={type:'Expense',account:21,amount:total_amount,description:'bill from create bill',debit:0,credit:total_amount,bill_no:bill_id,types:'Bill',created_on:bill_date,from_id:2}
+    //                     var array=[accountpayable,...newarray]
+    //                     let accountdetailsbill = array.map((m) => Object.values(m))
+    //                     let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,bill_no,types,created_on,from_id) values ? "
+    //                     connection.query(acc_query, [accountdetailsbill], function (err, data) {
+    //                         if (err) {
+    //                             console.log(err)
+    //                         }else{
+    //                             console.log("account statement  added successfully");
+    //                         }
+    //                     });
+
+    //                     res.json({
+    //                         status: true,
+    //                         message: 'Bill generated sucessfully'
+    //                     })
+    //                 }
+    //             });
+    //         }
+    //     })
+
+    // },
 
     recordPayment: (req, res) => {
         console.log(req.body);

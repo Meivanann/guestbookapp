@@ -65,6 +65,7 @@ module.exports = {
                 req.session.userId = results[0].id;
                 let imagesfolder=results[0].imageurl
                 var filePath = COMMONURL.SERVERURL+ ':' + COMMONURL.SERVERPORT + '/'+imagesfolder;
+                // var filePath = COMMONURL.SERVERURL+ ':' + COMMONURL.SERVERPORT + '/'+imagesfolder;
                 res.json({
                     id:results[0].id,
                     position:results[0].position,

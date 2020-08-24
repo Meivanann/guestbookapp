@@ -206,7 +206,9 @@ module.exports = app => {
     app.get('/api/:id/getalltransactions', transactionController.getAllTransactions);
     app.post('/api/:id/postexpense', transactionController.PostNewExpense);
     app.post('/api/:id/postincome', transactionController.PostNewIncome);
-
+    app.post('/api/gettransactiondetails', transactionController.getTransactiondetails);
+    app.post('/api/deletetransaction', transactionController.deleteTransaction);
+    app.post('/api/edittransaction', transactionController.Edittransaction);
     // charts of accounts
     app.get('/api/:id/getallaccounttypes', chartAccountController.getAllAccountTypes);
     app.get('/api/:id/getallaccounts', chartAccountController.getAllAccounts);
