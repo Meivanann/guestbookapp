@@ -33,7 +33,7 @@ module.exports = {
         let credit_id = req.body.creditid;
         let shippercode=req.body.shippercode;
         let creditdetails=req.body.credit_details;
-        let totalamount=req.body.totalamount;
+        let totalamount=Math.abs(req.body.totalamount);
         let payment_due_date=req.body.payment_due_date
         let acc_bal = 0
         var credit_note_data = {
@@ -143,9 +143,9 @@ console.log(element)
                                 newarray={
                                     type:'Income',
                                     account:20,
-                                    amount:element.amount,
+                                    amount:Math.abs(element.amount),
                                     description:' credit details from create credit note',
-                                    debit:element.amount,
+                                    debit:Math.abs(element.amount),
                                     credit:0,
                                     credit_no:credit_id,
                                     types:'Credit details',
@@ -448,7 +448,7 @@ let querys = "DELETE from  account_statements   WHERE account_statements.credit_
     store: (req,res) => {
         var today = new Date();
         let shipper_code = req.body.shipper_code;
-        let total_amount = req.body.amount;
+        let total_amount = Math.abs(req.body.amount);
         let data = JSON.parse(req.body.items);
         let acc_bal = 0, credit_note_id;
 
@@ -516,9 +516,9 @@ let querys = "DELETE from  account_statements   WHERE account_statements.credit_
                             newObject={
                                 type:'Income',
                                 account:20,
-                                amount:row.amount,
+                                amount:Math.abs(row.amount),
                                 description:' credit details from create credit note',
-                                debit:row.amount,
+                                debit:Math.abs(row.amount),
                                 credit:0,
                                 credit_no:credit_note_id,
                                 types:'Credit details',
