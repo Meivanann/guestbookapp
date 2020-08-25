@@ -950,11 +950,25 @@ module.exports = {
             'credit':0,
             'invoice_id':invoice_no,
             paymentdate:today
+        }  
+        
+
+        let salesbjectpayment= {
+
+            'payment_type':payment_method,
+            'account':20,
+            'amount':amount_paid,
+            'type':1,      //invoice
+            'debit':0,
+            'credit':amount_paid,
+            'invoice_id':invoice_no,
+            paymentdate:today
         }   
+        
 
 var accountobject={payment_type:payment_method,account:22,amount:amount_paid,type:1,debit:0,credit:amount_paid,'invoice_id':invoice_no, paymentdate:today}
 let payment=[]
-payment.push(paymentObject,accountobject)
+payment.push(paymentObject,accountobject,salesbjectpayment)
 // updating the invoice table and recording the payment
         connection.query("select * from invoice where invoice_no = ?",invoice_no, function (error, invoice_rows, fields) {
             if (error) {
@@ -1052,14 +1066,16 @@ payment.push(paymentObject,accountobject)
                                     "created_on"   :  today,
                                     ispayment:1,
                                     from_id:4,  //4-invoice payment
-                                    payment_method:payment_method
+                                    payment_method:payment_method,
+                                    is_profit:0
                                 }
    // for account of  payment amount come under debit from invoice but account reciveable account amount come under the credit for invoice payment
-                                var accountrecivable={type:'Income',account:22,amount:amount_paid,description:'invoice payment from invoice',debit:0,credit:amount_paid,invoice_no:invoice_no,types:'invoice payment',created_on:today,ispayment:1,from_id:4,payment_method:payment_method}
-                                var array=[accountrecivable,o_acc_data]
+                                var accountrecivable={type:'Income',account:22,amount:amount_paid,description:'invoice payment from invoice',debit:0,credit:amount_paid,invoice_no:invoice_no,types:'invoice payment',created_on:today,ispayment:1,from_id:4,payment_method:payment_method,is_profit:0}
+                                var salesobject={type:'Income',account:20,amount:amount_paid,description:"invoice "+invoice_no+" payment from invoice",debit:0,credit:amount_paid,invoice_no:invoice_no,types:'invoice payment',created_on:today,ispayment:1,from_id:4,payment_method:payment_method,is_profit:1}
+                                var array=[accountrecivable,o_acc_data,salesobject]
                                 let accountdetailsinvoice = array.map((m) => Object.values(m))
 
-                                let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,invoice_number,types,created_on,ispayment,from_id,payment_method) values ? "
+                                let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,invoice_number,types,created_on,ispayment,from_id,payment_method,is_profit) values ? "
                         connection.query(acc_query, [accountdetailsinvoice], function (err, data) {
                             if (err) {
                                 console.log(err)

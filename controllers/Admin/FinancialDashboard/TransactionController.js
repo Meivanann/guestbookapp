@@ -78,7 +78,7 @@ let transaction_id=req.body.transaction_id
                         
                     } ,
     getAllTransactions: (req,res) => {
-        let query = "SELECT * FROM account_statements  where ispayment=1  and account NOT IN(21,22) order by created_on desc;"
+        let query = "SELECT * FROM account_statements  where ispayment=1  and account NOT IN(21,22) and  is_profit=0 order by created_on desc;"
         let total_amount = 0;
         connection.query(query,(err,rows) => {
             if(err){
