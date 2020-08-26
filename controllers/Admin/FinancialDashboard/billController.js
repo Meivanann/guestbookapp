@@ -611,7 +611,7 @@ let newobject={ }
                             "oty": row.oty,
                             "price": row.price,
                             "total_amount": row.total_amount,
-                            debit:total_amount,
+                            debit:row.total_amount,
                             credit:0
                         }
     
@@ -664,7 +664,7 @@ let newobject={ }
                             "oty": row.oty,
                             "price": row.price,
                             "total_amount": row.total_amount,
-                            debit:total_amount,
+                            debit:row.total_amount,
                             credit:0
                         }
     
