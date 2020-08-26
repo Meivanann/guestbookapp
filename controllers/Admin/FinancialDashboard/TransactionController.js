@@ -78,7 +78,15 @@ let transaction_id=req.body.transaction_id
                         
                     } ,
     getAllTransactions: (req,res) => {
-        let query = "SELECT * FROM account_statements  where ispayment=1  and account NOT IN(21,22) and  is_profit=0 order by created_on desc;"
+        let search=req.body.search
+        let condition=''
+        if(search!=undefined)
+        {
+            condition="and account='"+search+"'"
+        }
+        ///users/1598410859774-admin.jpg
+        let query = "SELECT * FROM account_statements  where ispayment=1 and account NOT IN(21,22) and is_profit=0  "+condition+" order by created_on desc "
+        //let query = "SELECT * FROM account_statements  where ispayment=1  and account NOT IN(21,22) and  is_profit=0 order by created_on desc;"
         let total_amount = 0;
         connection.query(query,(err,rows) => {
             if(err){
@@ -108,6 +116,67 @@ let transaction_id=req.body.transaction_id
                     status: 1,
                     data:rows,
                     total_amount: total_amount
+                })
+            }
+        })
+    },
+
+    gettransactionaccounts: (req,res) => {
+         
+        let condition=''
+        
+        let query = "SELECT * FROM accounts  where account_type_id  IN(1,2)"
+        let total_amount = 0;
+        connection.query(query,(err,rows) => {
+            if(err){
+                console.log(err)
+                res.json({
+                    status:false,
+                    message: 'there are some error with query'
+                })
+            } else if (rows.length == 0 ){
+                res.json({
+                    status: -1,
+                    message:' No results found'
+                })
+            } else {
+
+               
+
+                res.json({
+                    status: 1,
+                    data:rows,
+                     
+                })
+            }
+        })
+    },
+    gettransactionaccounts: (req,res) => {
+         
+        let condition=''
+        
+        let query = "SELECT * FROM accounts  where account_type_id  IN(1,2)"
+        let total_amount = 0;
+        connection.query(query,(err,rows) => {
+            if(err){
+                console.log(err)
+                res.json({
+                    status:false,
+                    message: 'there are some error with query'
+                })
+            } else if (rows.length == 0 ){
+                res.json({
+                    status: -1,
+                    message:' No results found'
+                })
+            } else {
+
+               
+
+                res.json({
+                    status: 1,
+                    data:rows,
+                     
                 })
             }
         })

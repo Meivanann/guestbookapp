@@ -203,7 +203,7 @@ module.exports = app => {
     app.get('/api/paymentaccountlist', reportController.getpaymentaccount);
     app.post('/api/balancesheet', reportController.BalanceSheetreport);
     // transaction
-    app.get('/api/:id/getalltransactions', transactionController.getAllTransactions);
+    app.post('/api/:id/getalltransactions', transactionController.getAllTransactions);
     app.post('/api/:id/postexpense', transactionController.PostNewExpense);
     app.post('/api/:id/postincome', transactionController.PostNewIncome);
     app.post('/api/gettransactiondetails', transactionController.getTransactiondetails);
@@ -215,7 +215,7 @@ module.exports = app => {
     app.get('/api/:id/getaccounts/:category', chartAccountController.getAccounts);
     app.post('/api/:id/createaccount', chartAccountController.postNewAccount);
     app.post('/api/editaccount', chartAccountController.editAccount);
-
+    app.get('/api/getaccounttransaction', transactionController.gettransactionaccounts);
     // client routes starts here
     
     // new consignment routes3

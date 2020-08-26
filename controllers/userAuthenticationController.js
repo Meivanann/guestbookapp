@@ -171,7 +171,7 @@ module.exports = {
                   else
                   {
                 var filePath = COMMONURL.SERVERURL+ ':' + COMMONURL.SERVERPORT + '/users/' +today+'-'+username+'.jpg';
-          res.json({message:'File uploaded!',filePath,path});
+          res.json({status:1,message:'File uploaded!',filePath,path});
 
         }
             })
