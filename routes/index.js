@@ -54,7 +54,7 @@ module.exports = app => {
     app.post('/register', userAuthenticationController.register);
     app.post('/login', userAuthenticationController.login);
     app.post('/api/:id/setpassword', userAuthenticationController.setPassword);
-
+    app.post('/api/editbill', billController.editBill);
     //dashboard routes
     app.get('/api/:id/operationaldashboard', operationalDashboardController.index);
     app.get('/api/:id/getpodbill', operationalDashboardController.getPodBill);

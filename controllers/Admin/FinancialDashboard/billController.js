@@ -1,6 +1,7 @@
 var connection = require('../../../config');
 
 const commonFunction = require('../../commonFunction');
+var _=require('lodash')
 //const { async } = require('q');
 module.exports = {
     getAllVendors: (req, res) => {
@@ -223,14 +224,14 @@ module.exports = {
             }
         })
     },
-
     getBillDetails: (req, res) => {
         let vendor_id = req.params.vendor_id;
         let bill_id = req.params.bill_id;
-        let query = "select * from bill where id = ? and b.isdelete=0"
+        let query = "select * from bill as b where b.id = ? and b.isdelete=0"
 
         connection.query(query, bill_id, (err, rows) => {
             if (err) {
+                console.log(err)
                 res.json({
                     status: false,
                     message: 'there are some error with query'
@@ -252,7 +253,7 @@ module.exports = {
             } else {
 
                 // fetching credit note details
-                let bill_detail_query = "select * from bill_details where bill_id = ? and b.isdelete=0"
+                let bill_detail_query = "select * from bill_details as b where b.bill_id = ? and b.isdelete=0"
                 connection.query(bill_detail_query, bill_id, (err, bill_detail_rows) => {
                     if (err) {
                         console.log(err);
@@ -545,6 +546,235 @@ let newobject={ }
     //     })
 
     // },
+    editBill: async(req, res) => {
+        var today = new Date();
+        let billid = req.body.billid;
+        let bill_date=req.body.bill_date;
+        let total_amount = req.body.amount;
+        let data = req.body.items;
+        let acc_bal = 0, bill_id;
+        let deleteid=req.body.deleteids
+        let newbills=_.filter(data, function(e){ 
+            if(e.id==0)
+            {
+                return e
+            }
+         });
+
+         let updatebills=_.filter(data, function(e){ 
+            if(e.id!=0)
+            {
+                return e
+            }
+         });
+
+
+        var selectQuery="select * from bill where id="+billid+""
+         var selectdata=await commonFunction.getQueryResults(selectQuery);
+        console.log('sss',data);
+
+        let vendor_id=selectdata[0].vendor_id;
+        // adding row in credit note table
+        var billdata = {
+             
+            "bill_date": bill_date,
+            "amount": total_amount,
+            "status": "Unpaid",
+            "payment_due_date": req.body.payment_due_date,
+            debit:0,
+            credit:total_amount
+        }
+        let bill_query = "update bill SET ? where id="+billid+""
+        connection.query(bill_query, billdata, function (billerr, billres, fields) {
+            if (billerr) {
+                console.log(billerr)
+            } else {
+                console.log(billres.insertId);
+                 
+                console.log("Bill  added successfully");
+
+                // adding billsdetails
+                if(newbills.length > 0 )
+                {
+
+                    let newobject={ }
+                    // adding the rows in credit note details table
+                    Object.keys(newbills).forEach(function (key) {
+                        var row = data[key];
+                        console.log(row);
+    
+                        var bill_detail_data = {
+                            "bill_id": billid,
+                            "item_name": row.item_name,
+                            "expense_category": row.expense_category,
+                            "description": row.description,
+                            "oty": row.oty,
+                            "price": row.price,
+                            "total_amount": row.total_amount,
+                            debit:total_amount,
+                            credit:0
+                        }
+    
+                        
+                        let bill_detail_query = "INSERT INTO bill_details SET ?"
+                        connection.query(bill_detail_query, bill_detail_data, function (billderr, billdres, fields) {
+                            if (billderr) {
+                                console.log(billderr)
+                            } else {
+                                console.log("Bill details added successflly");
+                                
+                               newobject={
+                                type:'Expense',
+                                account:row.expense_category,
+                                amount:row.total_amount,
+                                description:'bill details from create bill',
+                                debit:row.total_amount,
+                                credit:0,
+                                bill_no:billid,
+                                types:'Bill details',
+                                created_on:bill_date,
+                                from_id:3,
+                                bill_detail_id:billdres.insertId
+                                
+                            }
+                                let account_statementsquery="insert  into account_statements set ? ";
+                                connection.query(account_statementsquery, newobject, function (err, data) {
+                                console.log(err)
+    
+                                })
+                            }
+                        });
+                    });
+                }
+                //updating bills details
+                if(updatebills.length > 0 )
+                {
+
+                    let newobject={ }
+                    // adding the rows in credit note details table
+                    Object.keys(updatebills).forEach(function (key) {
+                        var row = data[key];
+                        console.log(row);
+    
+                        var bill_detail_data = {
+                            "bill_id": billid,
+                            "item_name": row.item_name,
+                            "expense_category": row.expense_category,
+                            "description": row.description,
+                            "oty": row.oty,
+                            "price": row.price,
+                            "total_amount": row.total_amount,
+                            debit:total_amount,
+                            credit:0
+                        }
+    
+                        
+                        let bill_detail_query = "update  bill_details SET ? where id="+row.id+""
+                        connection.query(bill_detail_query, bill_detail_data, function (billderr, billdres, fields) {
+                            if (billderr) {
+                                console.log(billderr)
+                            } else {
+                                console.log("Bill details updated successflly");
+                                
+                               newobject={
+                                type:'Expense',
+                                account:row.expense_category,
+                                amount:row.total_amount,
+                                description:'bill details from create bill',
+                                debit:row.total_amount,
+                                credit:0,
+                                bill_no:billid,
+                                types:'Bill details',
+                                created_on:bill_date,
+                                from_id:3,
+                                bill_detail_id:row.id
+                                
+                            }
+                                let account_statementsquery="update  account_statements set ?  where bill_detail_id="+row.id+"";
+                                connection.query(account_statementsquery, newobject, function (err, data) {
+                                console.log(err)
+    
+                                })
+                            }
+                        });
+                    });
+                }
+
+
+
+            }
+        });
+
+        if (req.body.deleteids.length >0) {
+        
+            var deletebilldetails="update bill_details as bd set isdelete=1 where id in ("+deleteid+")";
+            var deletebilldata=await commonFunction.getQueryResults(deletebilldetails);
+            var deleteaccountstatment="delete from account_statements  where bill_detail_id in ("+deleteid+")";
+            var deleteaccountstatmentdata=await commonFunction.getQueryResults(deleteaccountstatment);
+        }
+
+        // affecting the shipper account ovberall amount
+        let vendor_query = "select * from vendors where id = ?"
+        connection.query(vendor_query, vendor_id, (err, vendor_rows) => {
+            if (err) {
+                console.log(err);
+            } else {
+                vendor_details = vendor_rows[0];
+                acc_bal = parseFloat(vendor_details.acc_bal) + parseFloat(total_amount);
+
+                // updating the shipper account
+                let vendor_acc_update = "UPDATE vendors SET ? where id = ?";
+                var vendor_acc_update_data = {
+                    "acc_bal": acc_bal
+                }
+                let data111 = [vendor_acc_update_data, vendor_id];
+
+                connection.query(vendor_acc_update, data111, function (error, results, fields) {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        console.log("Vendor data updated Successfully")
+
+                        // let newarray=[]
+
+                        // data.forEach(element => {
+                        //     newarray.push({
+                        //         type:'Expense',
+                        //         account:element.expense_category,
+                        //         amount:element.total_amount,
+                        //         description:'bill details from create bill',
+                        //         debit:total_amount,
+                        //         credit:0,
+                        //         bill_no:bill_id,
+                        //         types:'Bill details',
+                        //         created_on:bill_date,
+                        //         from_id:3
+                        //     })
+                        // });
+
+                       //var Expenseobject={type:'Expense',account:20,amount:total_amount,description:'invoice from create invoice',debit:0,credit:total_amount,invoice_number:invoice_number,types:'Invoice'}
+                        var accountpayable={type:'Expense',account:21,amount:total_amount,description:'bill from create bill',debit:0,credit:total_amount,bill_no:bill_id,types:'Bill',created_on:bill_date,from_id:2}
+                        var array=[accountpayable]
+                        let accountdetailsbill = array.map((m) => Object.values(m))
+                        let acc_query = "update  account_statements set ?  where id="+billid+""
+                        connection.query(acc_query, accountpayable, function (err, data) {
+                            if (err) {
+                                console.log(err)
+                            }else{
+                                console.log("account statement  added successfully");
+                            }
+                        });
+
+                        res.json({
+                            status: 1,
+                            message: 'update bill sucessfully'
+                        })
+                    }
+                });
+            }
+        })
+
+    },
 
     recordPayment: (req, res) => {
         console.log(req.body);
