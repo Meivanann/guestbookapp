@@ -552,19 +552,24 @@ let newobject={ }
         let bill_date=req.body.bill_date;
         let total_amount = req.body.amount;
         let data = req.body.items;
+
+        console.log(req.body.items)
         let acc_bal = 0, bill_id;
         let deleteid=req.body.deleteids
-        let newbills=_.filter(data, function(e){ 
+        let newbills=[] 
+        let updatebills=[]
+        let newbillsss=_.filter(data, function(e){ 
             if(e.id==0)
             {
-                return e
+                newbills.push(e)
             }
          });
+         console.log('sales',newbills)
 
-         let updatebills=_.filter(data, function(e){ 
+         let updatebillsss=_.filter(data, function(e){ 
             if(e.id!=0)
             {
-                return e
+                updatebills.push(e)
             }
          });
 
@@ -598,10 +603,13 @@ let newobject={ }
                 {
 
                     let newobject={ }
+
+                    console.log('hsk',newbills)
                     // adding the rows in credit note details table
                     Object.keys(newbills).forEach(function (key) {
-                        var row = data[key];
+                        var row = newbills[key];
                         console.log(row);
+                        console.log('element',row)
     
                         var bill_detail_data = {
                             "bill_id": billid,
@@ -653,7 +661,7 @@ let newobject={ }
                     let newobject={ }
                     // adding the rows in credit note details table
                     Object.keys(updatebills).forEach(function (key) {
-                        var row = data[key];
+                        var row = updatebills[key];
                         console.log(row);
     
                         var bill_detail_data = {
