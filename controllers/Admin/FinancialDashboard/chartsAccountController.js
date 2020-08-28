@@ -78,14 +78,15 @@ module.exports = {
         var today = new Date();
         let account_type_id = req.body.account_type_id;
         let account_name = req.body.account_name;
-
+        let descripation=req.body.descripation
         console.log(req.body);
          // inserting  Account of Statements
 
          var account_data = {
             "account_type_id"       : account_type_id,
             "account_name"          : account_name,
-            "created_on"            :  today
+            "created_on"            :  today,
+            description:descripation
         }
 
         let acc__query = "INSERT INTO accounts SET ?"
@@ -110,7 +111,7 @@ module.exports = {
         let account_id=req.body.account_id;
         let account_type_id = req.body.account_type_id;
         let account_name = req.body.account_name;
-
+        let descripation=req.body.descripation
         console.log(req.body);
          // inserting  Account of Statements
 
@@ -120,7 +121,7 @@ module.exports = {
         //     "created_on"            :  today
         // }
 
-        let acc__query = "update  accounts  SET account_name='"+account_name+"' where id="+account_id+" and account_type_id="+account_type_id+""
+        let acc__query = "update  accounts  SET account_name='"+account_name+"',description='"+descripation+"' where id="+account_id+" and account_type_id="+account_type_id+""
         let acc__data=await commonFunction.getQueryResults(acc__query);
 
         console.log(acc__data)

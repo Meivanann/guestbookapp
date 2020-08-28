@@ -19,7 +19,9 @@ module.exports = {
             "debit_date"       : today,
             "amount"            : totalamount,
             "status"            : "Unpaid",
-            "payment_due_date"  : payment_due_date
+            "payment_due_date"  : payment_due_date,
+            "debit"            : 0,
+            "credit"            : totalamount, //account reiveable
         }
         
         let query = "select * from debit_note as c  where c.id="+debit_id+"";
@@ -43,6 +45,7 @@ console.log('credit')
                
 row.shipper_code=shippercode!=undefined?shippercode:''
 row.debit_note_id=debit_id
+
                 
 
             //     let credit_detail_query = "INSERT INTO credit_note_details SET ?"
@@ -56,12 +59,13 @@ row.debit_note_id=debit_id
            
              });
 
+
              console.log('ssssssskksl',creditdetails)
              let credits = creditdetails.map((m) => Object.values(m))
 for (let index = 0;index < creditdetails.length;index++) {
     const element = creditdetails[index];
 
-    let credit_note_query = "update  debit_note_details SET  amount='"+element.amount+"',description='"+element.description+"',debit_note_id ='"+element.debit_note_id+"',shipper_code='"+element.shipper_code+"' where id="+element.id+""
+    let credit_note_query = "update  debit_note_details SET  amount='"+element.amount+"',description='"+element.description+"',debit_note_id ='"+element.debit_note_id+"',shipper_code='"+element.shipper_code+"',debit='"+element.amount+"',credit=0 where id="+element.id+""   //sales entery
     let credit_notedata=await commonFunction.getQueryResults(credit_note_query)
     
     console.log('hksl',credit_note_query)
@@ -126,8 +130,8 @@ for (let index = 0;index < creditdetails.length;index++) {
                                             account:20,
                                             amount:element.amount,
                                             description:' debit details from create credit note',
-                                            debit:0,
-                                            credit:element.amount,
+                                            debit:element.amount,
+                                            credit:0,
                                             debit_no:debit_id,
                                             types:'debit details',
                                             created_on:today,
@@ -147,7 +151,7 @@ for (let index = 0;index < creditdetails.length;index++) {
                                    // var array=[incomeobject,accountReacivable]
                                      
                                     //var incomeobject={type:'Income',account:20,amount:total_amount,description:'debit note from debit note',debit:0,credit:total_amount,debit_no:debit_note_id,types:'Debit',created_on:today,from_id:9}
-                                    var accountReacivable={type:'Income',account:22,amount:totalamount,description:'debit note from debit note',debit:totalamount,credit:0,debit_no:debit_id,types:'Debit',created_on:today,from_id:9}
+                                    var accountReacivable={type:'Income',account:22,amount:totalamount,description:'debit note from debit note',debit:0,credit:totalamount,debit_no:debit_id,types:'Debit',created_on:today,from_id:9}
                                     // var array=[...newarray,accountReacivable]
                                     // let accountdetailsinvoice = array.map((m) => Object.values(m))
                                     let acc_query = "update account_statements as c set ? where debit_no="+debit_id +" and from_id=9"
@@ -337,7 +341,9 @@ for (let index = 0;index < creditdetails.length;index++) {
             "debit_date"       : today,
             "amount"            : total_amount,
             "status"            : "Unpaid",
-            "payment_due_date"  : req.body.payment_due_date
+            "payment_due_date"  : req.body.payment_due_date,
+            "debit"            : 0,
+            "credit"            : total_amount
         }
         let debit_note_query = "INSERT INTO debit_note SET ?"
         connection.query(debit_note_query, debit_note_data, function (crerr, crres, fields) {
@@ -357,7 +363,9 @@ for (let index = 0;index < creditdetails.length;index++) {
                         "debit_note_id"    :   debit_note_id,
                         "shipper_code"      :   shipper_code,
                         "amount"            :   row.amount,
-                        "description"       :   row.description
+                        "description"       :   row.description,
+                        "debit"            : total_amount,
+                        "credit"            : 0
                     }
 
                     let debit_detail_query = "INSERT INTO debit_note_details SET ?"
@@ -378,8 +386,8 @@ newObject={
                                     account:20,
                                     amount:row.amount,
                                     description:' debit details from create credit note',
-                                    debit:0,
-                                    credit:row.amount,
+                                    debit:row.amount,
+                                    credit:0,
                                     debit_no:debit_note_id,
                                     types:'debit details',
                                     created_on:today,
@@ -415,7 +423,7 @@ newObject={
                     });
                 });
 
-                var accountReacivable={type:'Income',account:22,amount:total_amount,description:'debit note from debit note',debit:total_amount,credit:0,debit_no:debit_note_id,types:'Debit',created_on:today,from_id:9}
+                var accountReacivable={type:'Income',account:22,amount:total_amount,description:'debit note from debit note',debit:0,credit:total_amount,debit_no:debit_note_id,types:'Debit',created_on:today,from_id:9}
                 var array=[accountReacivable]
                 let accountdetailsinvoice = array.map((m) => Object.values(m))
                 let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,debit_no,types,created_on,from_id) values ? "
@@ -550,6 +558,44 @@ newObject={
                     }
                 });
 
+                let paymentObject= {
+
+                    'payment_type':payment_method,
+                    'account':22,
+                    'amount':amount_paid,
+                    'type':4,      //credit
+                    'debit':amount_paid,
+                    'credit':0,
+                    'debit_no':debit_note_id,
+                    paymentdate:today
+                }   
+        
+                let salesbjectpayment= {
+        
+                    'payment_type':payment_method,
+                    'account':20,
+                    'amount':amount_paid,
+                    'type':4,      //invoice
+                    'debit':0,
+                    'credit':amount_paid,
+                    'debit_no':debit_note_id,
+                    paymentdate:today
+                } 
+        
+                let payment=[]
+        payment.push(paymentObject,salesbjectpayment)
+        
+        let paymentvalues= payment.map((m) => Object.values(m))
+                let acc_payment_query = "INSERT INTO  payments(payment_type,account,amount,type,debit,credit,debit_no,paymentdate)values ?"
+            connection.query(acc_payment_query, [paymentvalues], function (lgerr, lgres, fields) {
+                if (lgerr) {
+                    console.log(lgerr)
+                }else{
+                    console.log(lgres.insertId);
+                    console.log("paymentaccount added successfully");
+                }
+            });
+
                   // inserting  Account of Statements
                   var inv_acc_data = {
                     "shipper_code" : shipper_code,
@@ -571,19 +617,49 @@ newObject={
                 });
 
                 
-                var o_acc_data = {
+                var salesobject = {
                     "type"         : "Income",
                     "description"  :  "Payment for debit note " + debit_note_id,
                     "amount"       :  amount_paid,
-                    "account"      :  req.body.account,
-                    "created_on"   :  today 
+                    "account"      :  20,
+                    "created_on"   :  today,
+                    "debit"   :  0, 
+                    "credit"   :  amount_paid,
+                    ispayment:1,
+                    debit_no:debit_note_id,
+                    payment_method:  payment_method,
+                    from_id:11	
                 }
+
+                var accountrecviable = {
+                    "type"         : "Income",
+                    "description"  :  "Payment for debit note " + debit_note_id,
+                    "amount"       :  amount_paid,
+                    "account"      :  22,
+                    "created_on"   :  today,
+                    "debit"   :  amount_paid, 
+                    "credit"   : 0 ,
+                    ispayment:1,
+                    debit_no:debit_note_id,
+                    payment_method:  payment_method,
+                    from_id:11	
+                }
+
+
                 let o_acc_state_query = "INSERT INTO account_statements SET ?"
-                connection.query(o_acc_state_query, o_acc_data, function (lgerr, lgres, fields) {
+                connection.query(o_acc_state_query, accountrecviable, function (lgerr, lgres, fields) {
                     if (lgerr) {
                         console.log(lgerr)
                     }else{
                         console.log("Shippin account statement  added successfully");
+                        let state_query = "INSERT INTO account_statements SET ?"
+                connection.query(state_query, salesobject, function (err, data) {
+                    if (err) {
+                        console.log(err)
+                    }else{
+                        console.log("account statement  added successfully");
+                    }
+                });
                     }
                 });
 

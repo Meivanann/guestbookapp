@@ -33,7 +33,7 @@ module.exports = {
         let credit_id = req.body.creditid;
         let shippercode=req.body.shippercode;
         let creditdetails=req.body.credit_details;
-        let totalamount=Math.abs(req.body.totalamount);
+        let totalamount=req.body.totalamount;
         let payment_due_date=req.body.payment_due_date
         let acc_bal = 0
         var credit_note_data = {
@@ -41,7 +41,10 @@ module.exports = {
             "credit_date"       : today,
             "amount"            : totalamount,
             "status"            : "Unpaid",
-            "payment_due_date"  : payment_due_date
+            "payment_due_date"  : payment_due_date,
+            debit: totalamount, //this debit amount for account recivable
+            credit:0
+
         }
         
         let query = "select * from credit_note as c  where c.id="+credit_id+"";
@@ -83,7 +86,8 @@ row.credit_note_id=credit_id
 for (let index = 0;index < creditdetails.length;index++) {
     const element = creditdetails[index];
 console.log(element)
-    let credit_note_query = "update  credit_note_details SET  amount='"+element.amount+"',description='"+element.description+"',credit_note_id ='"+element.credit_note_id+"',shipper_code='"+element.shipper_code+"' where id="+element.id+""
+ 
+    let credit_note_query = "update  credit_note_details SET  amount='"+element.amount+"',description='"+element.description+"',credit_note_id ='"+element.credit_note_id+"',shipper_code='"+element.shipper_code+"',debit=0,credit='"+element.amount+"' where id="+element.id+"" //sales
     let credit_notedata=await commonFunction.getQueryResults(credit_note_query)
     
 }
@@ -145,8 +149,8 @@ console.log(element)
                                     account:20,
                                     amount:Math.abs(element.amount),
                                     description:' credit details from create credit note',
-                                    debit:Math.abs(element.amount),
-                                    credit:0,
+                                    debit:0,
+                                    credit:Math.abs(element.amount),
                                     credit_no:credit_id,
                                     types:'Credit details',
                                     created_on:today,
@@ -161,7 +165,7 @@ console.log(element)
                             });
 
                             //var incomeobject={type:'Income',account:20,amount:total_amount,description:'credit note from credit note',debit:total_amount,credit:0,credit_no:credit_note_id,types:'Credit',created_on:today,from_id:6}
-                            var accountReacivable={type:'Income',account:22,amount:totalamount,description:'credit note from credit note',debit:0,credit:totalamount,credit_no:credit_id,types:'Credit',created_on:today,from_id:6}
+                            var accountReacivable={type:'Income',account:22,amount:totalamount,description:'credit note from credit note',debit:totalamount,credit:0,credit_no:credit_id,types:'Credit',created_on:today,from_id:6}
                             // var array=[...newarray,accountReacivable]
                             // let accountdetailsinvoice = array.map((m) => Object.values(m))
                             let acc_query = "update account_statements as c set ? where credit_no="+credit_id +" and from_id=6 "
@@ -445,170 +449,7 @@ let querys = "DELETE from  account_statements   WHERE account_statements.credit_
         })
     },
 
-    store: (req,res) => {
-        var today = new Date();
-        let shipper_code = req.body.shipper_code;
-        let total_amount = Math.abs(req.body.amount);
-        let data = JSON.parse(req.body.items);
-        let acc_bal = 0, credit_note_id;
-
-        console.log(req.body);
-
-        // adding row in credit note table
-        var credit_note_data = {
-            "shipper_code"      : shipper_code,
-            "credit_date"       : today,
-            "amount"            : total_amount,
-            "status"            : "Unpaid",
-            "payment_due_date"  : req.body.payment_due_date
-        }
-        let credit_note_query = "INSERT INTO credit_note SET ?"
-        connection.query(credit_note_query, credit_note_data, function (crerr, crres, fields) {
-            if (crerr) {
-                console.log(crerr)
-            }else{
-                console.log(crres.insertId);
-                credit_note_id = crres.insertId;
-                console.log("Credit note added successfully");
-
-                let newobject={}
-                // adding the rows in credit note details table
-                Object.keys(data).forEach(function(key) {
-                    var row = data[key];
-                    console.log(row);
-
-                    var credit_detail_data = {
-                        "credit_note_id"    :   credit_note_id,
-                        "shipper_code"      :   shipper_code,
-                        "amount"            :   row.amount,
-                        "description"       :   row.description
-                    }
-
-                    let credit_detail_query = "INSERT INTO credit_note_details SET ?"
-                    connection.query(credit_detail_query, credit_detail_data, function (crderr, crdres, fields) {
-                        if (crderr) {
-                            console.log(crderr)
-                        }else{
-                            console.log("Credit note details added successflly");
-
-
-                            //let newarray=[]
-
-                            // data.forEach(element => {
-                            //     newarray.push({
-                            //         type:'Income',
-                            //         account:20,
-                            //         amount:element.amount,
-                            //         description:' credit details from create credit note',
-                            //         debit:total_amount,
-                            //         credit:0,
-                            //         credit_no:credit_note_id,
-                            //         types:'Credit details',
-                            //         created_on:today,
-                            //         from_id:7
-                            //     })
-                            // });
-                          
-                            //var incomeobject={type:'Income',account:20,amount:total_amount,description:'credit note from credit note',debit:total_amount,credit:0,credit_no:credit_note_id,types:'Credit',created_on:today,from_id:6}
-                            
-                           
-
-                            newObject={
-                                type:'Income',
-                                account:20,
-                                amount:Math.abs(row.amount),
-                                description:' credit details from create credit note',
-                                debit:Math.abs(row.amount),
-                                credit:0,
-                                credit_no:credit_note_id,
-                                types:'Credit details',
-                                created_on:today,
-                                from_id:7,
-                                credit_detail_id:crdres.insertId
-                            }
-                          
-                            let account_statementsquery="insert into account_statements SET ?";
-                            connection.query(account_statementsquery,newObject, function (err, data) {
-                            console.log(err)
-
-                            })
-
-                        }
-                    });
-                });
-                var accountReacivable={type:'Income',account:22,amount:total_amount,description:'credit note from credit note',debit:0,credit:total_amount,credit_no:credit_note_id,types:'Credit',created_on:today,from_id:6}
-                var array=[accountReacivable]
-                let accountdetailsinvoice = array.map((m) => Object.values(m))
-                let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,credit_no,types,created_on,from_id) values ? "
-connection.query(acc_query, [accountdetailsinvoice], function (err, data) {
-if (err) {
-    console.log(err)
-}else{
-    console.log("account statement  added successfully");
-
-    var inv_acc_data = {
-        "shipper_code" : shipper_code,
-        "type"         : "Credit",
-        "amount"       :  total_amount,
-        "created_on"   :  today,
-        "description"  :  "Credit note",
-        credit_no :credit_note_id
-    }
-    let acc_state_query = "INSERT INTO shipper_acc_statements SET ?"
-    connection.query(acc_state_query, inv_acc_data, function (lgerr, lgres, fields) {
-        if (lgerr) {
-            console.log(lgerr)
-        }else{
-            console.log(lgres.insertId);
-            console.log("Shippin account statement  added successfully");
-        }
-    });
-}
-});
-                
-            }
-        });
-
-      
-
-         // inserting  Account of Statements
-        
-
-        // affecting the shipper account ovberall amount
-        let shipper_query = "select * from shipping where shipper_code = ?"
-        connection.query(shipper_query, shipper_code, (err,shipper_rows) => {
-            if(err){
-                console.log(err);
-            }else{
-                shipper_details = shipper_rows[0];
-                acc_bal = parseFloat(shipper_details.acc_bal) + parseFloat(total_amount);
-
-                // updating the shipper account
-                let shipper_acc_update = "UPDATE shipping SET ? where shipper_code = ?";
-                var shipper_acc_update_data = {
-                    "acc_bal"   :   acc_bal
-                }
-                let data111 = [shipper_acc_update_data ,shipper_code];
-
-                connection.query(shipper_acc_update,data111, function (error, results, fields) {
-                    if (error) {
-                        console.log(error);
-                    }else{
-                        console.log("Shipping updated Successfully")
-
-
-                        
-                       
-                        res.json({
-                            status:true,
-                            message:'Credit Note generated sucessfully'
-                        })
-                    }
-                });
-            }
-        })
-
-    },
+   
 
     //24augbackup
     // store: (req,res) => {
@@ -744,6 +585,176 @@ if (err) {
 
 
 
+    store: (req,res) => {
+        var today = new Date();
+        let shipper_code = req.body.shipper_code;
+        let total_amount = req.body.amount;
+        let data = JSON.parse(req.body.items);
+        let acc_bal = 0, credit_note_id;
+
+        console.log(req.body);
+
+        // adding row in credit note table
+        var credit_note_data = {
+            "shipper_code"      : shipper_code,
+            "credit_date"       : today,
+            "amount"            : total_amount,
+            "status"            : "Unpaid",
+            "payment_due_date"  : req.body.payment_due_date,
+            debit: total_amount, //this debit amount for account recivable
+            credit:0
+        }
+        let credit_note_query = "INSERT INTO credit_note SET ?"
+        connection.query(credit_note_query, credit_note_data, function (crerr, crres, fields) {
+            if (crerr) {
+                console.log(crerr)
+            }else{
+                console.log(crres.insertId);
+                credit_note_id = crres.insertId;
+                console.log("Credit note added successfully");
+
+                let newobject={}
+                // adding the rows in credit note details table
+                Object.keys(data).forEach(function(key) {
+                    var row = data[key];
+                    console.log(row);
+
+                    var credit_detail_data = {
+                        "credit_note_id"    :   credit_note_id,
+                        "shipper_code"      :   shipper_code,
+                        "amount"            :   Math.abs(row.amount),
+                        "description"       :   row.description,
+                        debit: 0,
+                        credit:Math.abs(row.amount) //this credit amount for sales
+                    }
+
+                    let credit_detail_query = "INSERT INTO credit_note_details SET ?"
+                    connection.query(credit_detail_query, credit_detail_data, function (crderr, crdres, fields) {
+                        if (crderr) {
+                            console.log(crderr)
+                        }else{
+                            console.log("Credit note details added successflly");
+
+
+                            //let newarray=[]
+
+                            // data.forEach(element => {
+                            //     newarray.push({
+                            //         type:'Income',
+                            //         account:20,
+                            //         amount:element.amount,
+                            //         description:' credit details from create credit note',
+                            //         debit:total_amount,
+                            //         credit:0,
+                            //         credit_no:credit_note_id,
+                            //         types:'Credit details',
+                            //         created_on:today,
+                            //         from_id:7
+                            //     })
+                            // });
+                          
+                            //var incomeobject={type:'Income',account:20,amount:total_amount,description:'credit note from credit note',debit:total_amount,credit:0,credit_no:credit_note_id,types:'Credit',created_on:today,from_id:6}
+                            
+                           
+
+                            newObject={
+                                type:'Income',
+                                account:20,
+                                amount:Math.abs(row.amount),
+                                description:' credit details from create credit note',
+                                debit:0,
+                                credit:Math.abs(row.amount),
+                                credit_no:credit_note_id,
+                                types:'Credit details',
+                                created_on:today,
+                                from_id:7,
+                                credit_detail_id:crdres.insertId
+                            }
+                          
+                            let account_statementsquery="insert into account_statements SET ?";
+                            connection.query(account_statementsquery,newObject, function (err, data) {
+                            console.log(err)
+
+                            })
+
+                        }
+                    });
+                });
+                var accountReacivable={type:'Income',account:22,amount:total_amount,description:'credit note from credit note',debit:total_amount,credit:0,credit_no:credit_note_id,types:'Credit',created_on:today,from_id:6}
+                var array=[accountReacivable]
+                let accountdetailsinvoice = array.map((m) => Object.values(m))
+                let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,credit_no,types,created_on,from_id) values ? "
+connection.query(acc_query, [accountdetailsinvoice], function (err, data) {
+if (err) {
+    console.log(err)
+}else{
+    console.log("account statement  added successfully");
+
+    var inv_acc_data = {
+        "shipper_code" : shipper_code,
+        "type"         : "Credit",
+        "amount"       :  total_amount,
+        "created_on"   :  today,
+        "description"  :  "Credit note",
+        credit_no :credit_note_id
+    }
+    let acc_state_query = "INSERT INTO shipper_acc_statements SET ?"
+    connection.query(acc_state_query, inv_acc_data, function (lgerr, lgres, fields) {
+        if (lgerr) {
+            console.log(lgerr)
+        }else{
+            console.log(lgres.insertId);
+            console.log("Shippin account statement  added successfully");
+        }
+    });
+}
+});
+                
+            }
+        });
+
+      
+        
+
+         // inserting  Account of Statements
+        
+
+        // affecting the shipper account ovberall amount
+        let shipper_query = "select * from shipping where shipper_code = ?"
+        connection.query(shipper_query, shipper_code, (err,shipper_rows) => {
+            if(err){
+                console.log(err);
+            }else{
+                shipper_details = shipper_rows[0];
+                acc_bal = parseFloat(shipper_details.acc_bal) + parseFloat(total_amount);
+
+                // updating the shipper account
+                let shipper_acc_update = "UPDATE shipping SET ? where shipper_code = ?";
+                var shipper_acc_update_data = {
+                    "acc_bal"   :   acc_bal
+                }
+                let data111 = [shipper_acc_update_data ,shipper_code];
+
+                connection.query(shipper_acc_update,data111, function (error, results, fields) {
+                    if (error) {
+                        console.log(error);
+                    }else{
+                        console.log("Shipping updated Successfully")
+
+
+                        
+                       
+                        res.json({
+                            status:true,
+                            message:'Credit Note generated sucessfully'
+                        })
+                    }
+                });
+            }
+        })
+
+    },
+
     recordPayment: (req,res) => {
         let today = new Date();
         let credit_note_id = req.body.id;
@@ -830,20 +841,87 @@ if (err) {
                     }
                 });
 
+
+                let paymentObject= {
+
+                    'payment_type':payment_method,
+                    'account':22,
+                    'amount':amount_paid,
+                    'type':3,      //credit
+                    'debit':0,
+                    'credit':amount_paid,
+                    'credit_no':credit_note_id,
+                    paymentdate:today
+                }   
+        
+                let salesbjectpayment= {
+        
+                    'payment_type':payment_method,
+                    'account':20,
+                    'amount':amount_paid,
+                    'type':3,      //invoice
+                    'debit':amount_paid,
+                    'credit':0,
+                    'credit_no':credit_note_id,
+                    paymentdate:today
+                } 
+        
+                let payment=[]
+        payment.push(paymentObject,salesbjectpayment)
+        
+        let paymentvalues= payment.map((m) => Object.values(m))
+                let acc_payment_query = "INSERT INTO  payments(payment_type,account,amount,type,debit,credit,credit_no,paymentdate)values ?"
+            connection.query(acc_payment_query, [paymentvalues], function (lgerr, lgres, fields) {
+                if (lgerr) {
+                    console.log(lgerr)
+                }else{
+                    console.log(lgres.insertId);
+                    console.log("paymentaccount added successfully");
+                }
+            });
                 
                 var o_acc_data = {
                     "type"         : "Income",
                     "description"  :  "Payment for credit note " + credit_note_id,
                     "amount"       :  amount_paid,
-                    "account"      :  req.body.account,
-                    "created_on"   :  today 
+                    "account"      :  20,
+                    "created_on"   :  today,
+                    "debit"   :  amount_paid, 
+                    "credit"   :  0 ,
+                    ispayment:1,
+                    credit_no:credit_note_id,
+                    payment_method:  payment_method	,
+                    from_id:8
                 }
+
+                var accountrecviable = {
+                    "type"         : "Income",
+                    "description"  :  "Payment for credit note " + credit_note_id,
+                    "amount"       :  amount_paid,
+                    "account"      :  22,
+                    "created_on"   :  today,
+                    "debit"   :  0, 
+                    "credit"   :  amount_paid,
+                    ispayment:1,
+                    credit_no:credit_note_id,
+                    payment_method:  payment_method,
+                    from_id:8		
+                }
+
                 let o_acc_state_query = "INSERT INTO account_statements SET ?"
                 connection.query(o_acc_state_query, o_acc_data, function (lgerr, lgres, fields) {
                     if (lgerr) {
                         console.log(lgerr)
                     }else{
                         console.log("Shippin account statement  added successfully");
+                        let state_query = "INSERT INTO account_statements SET ?"
+                connection.query(state_query, accountrecviable, function (err, data) {
+                    if (err) {
+                        console.log(err)
+                    }else{
+                        console.log("Shippin account statement  added successfully");
+                    }
+                });
                     }
                 });
 
@@ -869,7 +947,6 @@ if (err) {
             }
         });
     }
-
 //aug24backup
     // recordPayment: (req,res) => {
     //     let today = new Date();
