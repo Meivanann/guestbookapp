@@ -888,7 +888,7 @@ if (err) {
                     "created_on"   :  today,
                     "debit"   :  amount_paid, 
                     "credit"   :  0 ,
-                    ispayment:1,
+                    ispayment:0,
                     credit_no:credit_note_id,
                     payment_method:  payment_method	,
                     from_id:8
@@ -902,7 +902,7 @@ if (err) {
                     "created_on"   :  today,
                     "debit"   :  0, 
                     "credit"   :  amount_paid,
-                    ispayment:1,
+                    ispayment:0,
                     credit_no:credit_note_id,
                     payment_method:  payment_method,
                     from_id:8		
