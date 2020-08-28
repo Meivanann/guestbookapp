@@ -135,7 +135,8 @@ for (let index = 0;index < creditdetails.length;index++) {
                                             debit_no:debit_id,
                                             types:'debit details',
                                             created_on:today,
-                                            from_id:10
+                                            from_id:10,
+                                            shipper_code:shippercode
                                         }
 
                                         let updateQuery="update account_statements as c set ? where debit_detail_id="+element.id +""
@@ -151,7 +152,7 @@ for (let index = 0;index < creditdetails.length;index++) {
                                    // var array=[incomeobject,accountReacivable]
                                      
                                     //var incomeobject={type:'Income',account:20,amount:total_amount,description:'debit note from debit note',debit:0,credit:total_amount,debit_no:debit_note_id,types:'Debit',created_on:today,from_id:9}
-                                    var accountReacivable={type:'Income',account:22,amount:totalamount,description:'debit note from debit note',debit:0,credit:totalamount,debit_no:debit_id,types:'Debit',created_on:today,from_id:9}
+                                    var accountReacivable={type:'Income',account:22,amount:totalamount,description:'debit note from debit note',debit:0,credit:totalamount,debit_no:debit_id,types:'Debit',created_on:today,from_id:9,shipper_code:shippercode}
                                     // var array=[...newarray,accountReacivable]
                                     // let accountdetailsinvoice = array.map((m) => Object.values(m))
                                     let acc_query = "update account_statements as c set ? where debit_no="+debit_id +" and from_id=9"
@@ -392,7 +393,8 @@ newObject={
                                     types:'debit details',
                                     created_on:today,
                                     from_id:10,
-                                    debit_detail_id:crdres.insertId
+                                    debit_detail_id:crdres.insertId,
+                                    shipper_code:shipper_code
                                 }
                             
                             // data.forEach(element => {
@@ -423,10 +425,10 @@ newObject={
                     });
                 });
 
-                var accountReacivable={type:'Income',account:22,amount:total_amount,description:'debit note from debit note',debit:0,credit:total_amount,debit_no:debit_note_id,types:'Debit',created_on:today,from_id:9}
+                var accountReacivable={type:'Income',account:22,amount:total_amount,description:'debit note from debit note',debit:0,credit:total_amount,debit_no:debit_note_id,types:'Debit',created_on:today,from_id:9,shipper_code:shipper_code}
                 var array=[accountReacivable]
                 let accountdetailsinvoice = array.map((m) => Object.values(m))
-                let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,debit_no,types,created_on,from_id) values ? "
+                let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,debit_no,types,created_on,from_id,shipper_code) values ? "
                 connection.query(acc_query, [accountdetailsinvoice], function (err, data) {
                     if (err) {
                         console.log(err)
@@ -628,7 +630,8 @@ newObject={
                     ispayment:1,
                     debit_no:debit_note_id,
                     payment_method:  payment_method,
-                    from_id:11	
+                    from_id:11,
+                    types:'debit payment'
                 }
 
                 var accountrecviable = {
@@ -642,7 +645,8 @@ newObject={
                     ispayment:1,
                     debit_no:debit_note_id,
                     payment_method:  payment_method,
-                    from_id:11	
+                    from_id:11,
+                    types:'debit payment'	
                 }
 
 

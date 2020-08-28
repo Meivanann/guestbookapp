@@ -345,7 +345,8 @@ let newobject={ }
                             types:'Bill details',
                             created_on:bill_date,
                             from_id:3,
-                            bill_detail_id:billdres.insertId
+                            bill_detail_id:billdres.insertId,
+                            "vendor_id": vendor_id
                             
                         }
                             let account_statementsquery="insert  into account_statements set ? ";
@@ -401,7 +402,7 @@ let newobject={ }
                         // });
 
                        //var Expenseobject={type:'Expense',account:20,amount:total_amount,description:'invoice from create invoice',debit:0,credit:total_amount,invoice_number:invoice_number,types:'Invoice'}
-                        var accountpayable={type:'Expense',account:21,amount:total_amount,description:'bill from create bill',debit:0,credit:total_amount,bill_no:bill_id,types:'Bill',created_on:bill_date,from_id:2}
+                        var accountpayable={type:'Expense',account:21,amount:total_amount,description:'bill from create bill',debit:0,credit:total_amount,bill_no:bill_id,types:'Bill',created_on:bill_date,from_id:2,"vendor_id": vendor_id}
                         var array=[accountpayable]
                         let accountdetailsbill = array.map((m) => Object.values(m))
                         let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,bill_no,types,created_on,from_id) values ? "
@@ -642,7 +643,8 @@ let newobject={ }
                                 types:'Bill details',
                                 created_on:bill_date,
                                 from_id:3,
-                                bill_detail_id:billdres.insertId
+                                bill_detail_id:billdres.insertId,
+                                vendor_id:vendor_id
                                 
                             }
                                 let account_statementsquery="insert  into account_statements set ? ";
@@ -674,6 +676,7 @@ let newobject={ }
                             "total_amount": row.total_amount,
                             debit:row.total_amount,
                             credit:0
+                             
                         }
     
                         
@@ -695,7 +698,8 @@ let newobject={ }
                                 types:'Bill details',
                                 created_on:bill_date,
                                 from_id:3,
-                                bill_detail_id:row.id
+                                bill_detail_id:row.id,
+                                vendor_id:vendor_id
                                 
                             }
                                 let account_statementsquery="update  account_statements set ?  where bill_detail_id="+row.id+"";
@@ -761,7 +765,7 @@ let newobject={ }
                         // });
 
                        //var Expenseobject={type:'Expense',account:20,amount:total_amount,description:'invoice from create invoice',debit:0,credit:total_amount,invoice_number:invoice_number,types:'Invoice'}
-                        var accountpayable={type:'Expense',account:21,amount:total_amount,description:'bill from create bill',debit:0,credit:total_amount,bill_no:bill_id,types:'Bill',created_on:bill_date,from_id:2}
+                        var accountpayable={type:'Expense',account:21,amount:total_amount,description:'bill from create bill',debit:0,credit:total_amount,bill_no:bill_id,types:'Bill',created_on:bill_date,from_id:2,vendor_id:vendor_id}
                         var array=[accountpayable]
                         let accountdetailsbill = array.map((m) => Object.values(m))
                         let acc_query = "update  account_statements set ?  where id="+billid+""

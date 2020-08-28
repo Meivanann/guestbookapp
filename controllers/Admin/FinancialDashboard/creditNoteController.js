@@ -154,7 +154,8 @@ console.log(element)
                                     credit_no:credit_id,
                                     types:'Credit details',
                                     created_on:today,
-                                    from_id:7
+                                    from_id:7,
+                                    shipper_code:shippercode
                                 }
 
                                 let updateQuery="update account_statements as c set ? where credit_detail_id="+element.id +""
@@ -165,7 +166,7 @@ console.log(element)
                             });
 
                             //var incomeobject={type:'Income',account:20,amount:total_amount,description:'credit note from credit note',debit:total_amount,credit:0,credit_no:credit_note_id,types:'Credit',created_on:today,from_id:6}
-                            var accountReacivable={type:'Income',account:22,amount:totalamount,description:'credit note from credit note',debit:totalamount,credit:0,credit_no:credit_id,types:'Credit',created_on:today,from_id:6}
+                            var accountReacivable={type:'Income',account:22,amount:totalamount,description:'credit note from credit note',debit:totalamount,credit:0,credit_no:credit_id,types:'Credit',created_on:today,from_id:6,shipper_code:shippercode}
                             // var array=[...newarray,accountReacivable]
                             // let accountdetailsinvoice = array.map((m) => Object.values(m))
                             let acc_query = "update account_statements as c set ? where credit_no="+credit_id +" and from_id=6 "
@@ -668,7 +669,8 @@ let querys = "DELETE from  account_statements   WHERE account_statements.credit_
                                 types:'Credit details',
                                 created_on:today,
                                 from_id:7,
-                                credit_detail_id:crdres.insertId
+                                credit_detail_id:crdres.insertId,
+                                shipper_code:shipper_code
                             }
                           
                             let account_statementsquery="insert into account_statements SET ?";
@@ -680,10 +682,10 @@ let querys = "DELETE from  account_statements   WHERE account_statements.credit_
                         }
                     });
                 });
-                var accountReacivable={type:'Income',account:22,amount:total_amount,description:'credit note from credit note',debit:total_amount,credit:0,credit_no:credit_note_id,types:'Credit',created_on:today,from_id:6}
+                var accountReacivable={type:'Income',account:22,amount:total_amount,description:'credit note from credit note',debit:total_amount,credit:0,credit_no:credit_note_id,types:'Credit',created_on:today,from_id:6,shipper_code:shipper_code}
                 var array=[accountReacivable]
                 let accountdetailsinvoice = array.map((m) => Object.values(m))
-                let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,credit_no,types,created_on,from_id) values ? "
+                let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,credit_no,types,created_on,from_id,shipper_code) values ? "
 connection.query(acc_query, [accountdetailsinvoice], function (err, data) {
 if (err) {
     console.log(err)
@@ -882,6 +884,7 @@ if (err) {
                 
                 var o_acc_data = {
                     "type"         : "Income",
+                    "credit"   :  0 ,
                     "description"  :  "Payment for credit note " + credit_note_id,
                     "amount"       :  amount_paid,
                     "account"      :  20,
@@ -891,7 +894,8 @@ if (err) {
                     ispayment:0,
                     credit_no:credit_note_id,
                     payment_method:  payment_method	,
-                    from_id:8
+                    from_id:8,
+                    types:'Credit payment'
                 }
 
                 var accountrecviable = {
@@ -905,7 +909,8 @@ if (err) {
                     ispayment:0,
                     credit_no:credit_note_id,
                     payment_method:  payment_method,
-                    from_id:8		
+                    from_id:8,
+                    types:'Credit payment'		
                 }
 
                 let o_acc_state_query = "INSERT INTO account_statements SET ?"

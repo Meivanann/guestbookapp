@@ -1,10 +1,15 @@
 var connection = require('../../../config');
-
-
+let commonFunction=require('../../commonFunction');
+var _=require('lodash')
 module.exports = {
-    getAccountStatement: (req,res) => {
+    getAccountStatement: async(req,res) => {
         let shipper_code = req.body.shipper_code;
         let type = req.body.type;
+        let creditQuery="select * from credit_note where shipper_code ='"+shipper_code+"' and status != 'Paid'"
+            let creditdata=await commonFunction.getQueryResults(creditQuery)
+
+            let debitQuery="select * from debit_note where shipper_code ='"+shipper_code+"' and status != 'Paid'";
+            let debitdata=await commonFunction.getQueryResults(debitQuery)
         console.log(type);
         if( type === 'A'){
             let outstanding_invoice_query = "SELECT * FROM invoice where shipper_code=? and status != 'Paid';"
@@ -26,10 +31,33 @@ module.exports = {
                             console.log(err);
                         }else{
                             shipper_details = shipper_rows[0];
+                            
+                            
+                            var invoicedue=_.sumBy(rows, function (day) {
+
+                                return day.inv_total_amount - day.amount_paid;
+                
+                            })
+                            var creditdue=_.sumBy(creditdata, function (day) {
+
+                                return day.amount - day.amount_paid;
+                
+                            })
+                          
+                            var debitdue=_.sumBy(debitdata, function (day) {
+
+                                return day.amount - day.amount_paid;
+                
+                            })
+
+                            var totaldue=(invoicedue-creditdue+debitdue)
                             res.json({
                                 status:true,
                                 data: rows,
-                                shipper: shipper_details
+                                shipper: shipper_details,
+                                totaldue,
+                                creditdata,
+                                debitdata
                             })
                         }
                     });
