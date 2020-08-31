@@ -4,7 +4,148 @@ var _ = require('lodash');
 var moment=require('moment')
 module.exports = {
 
+    Incomebycustomer: async (req, res) => {
+        let { start_date, end_date } = req.body
+        let accountObject = {};
+        let accountNameObject = {}
+        let consignmentObject = {};
+        let billObject = {};
+        var bill = [];
+        let incomes = [];
+        let expense = []
+        let incomepaymentObject=[];
+        let expensepaymentObject=[];
+        let expenseObject = {}
+        let costofgoodsexpense=[];
+        let operatingexpensetransaction=[];
+        let costofgoodsexpensepayment=[];
+        let operatingexpensepayment=[]
+        var paymentdetails;
 
+var condition=''
+
+let reponse=[]
+         
+        var finalResponse = [];
+        let accounttypeQuery = "Select *,at.id as accountypeid,at.name as accounttypename,a.id as accountid,a.account_name as accountname from accounts as a left join account_types as at on at.id=a.account_type_id ";
+
+        let accountdata = await commonFunction.getQueryResults(accounttypeQuery);
+
+        accountdata.forEach(element => {
+            accountObject[element.accountypeid] = element.accounttypename;
+            accountNameObject[element.accountid] = element.accountname
+        });
+ 
+
+let balancpaid={}
+
+let paidobject={}
+         
+        let unpaidincomequery = "SELECT *,inv.shipper_code as shipper FROM invoice as inv left join account_statements as ac on inv.invoice_no=ac.invoice_number WHERE ac.account=20 and inv.invoice_date >= '" + start_date + "' AND inv.invoice_date  <= '" + end_date + "'  and inv.status='UnPaid'  group by inv.invoice_no ";
+        //let transactionQuery = " Select *,ad.type as accountype,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  and a.from_id NOT IN (6,7,8,9,10,11) " + condition + " group by a.id ";
+        let unpaidincomedata = await commonFunction.getQueryResults(unpaidincomequery);
+        
+
+        let paidincomequery = "SELECT *,inv.shipper_code as shipper FROM invoice as inv left join account_statements as ac on inv.invoice_no=ac.invoice_number WHERE ac.account=20 and ac.created_on >= '" + start_date + "' AND ac.created_on  <= '" + end_date + "'  and inv.status!='Unpaid'  group by inv.invoice_no ";
+        //let transactionQuery = " Select *,ad.type as accountype,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  and a.from_id NOT IN (6,7,8,9,10,11) " + condition + " group by a.id ";
+        let paidincomedata = await commonFunction.getQueryResults(paidincomequery);
+
+         
+    if (unpaidincomedata.length > 0 ||paidincomedata.length > 0 ) {
+      
+
+
+        paidincomedata.forEach(element => {
+            balancpaid[element.shipper]= (balancpaid[element.shipper]? balancpaid[element.shipper] : 0 ) + Number(element.amount_paid)
+            paidobject[element.shipper]=balancpaid[element.shipper]
+        });
+        reponse.push(...unpaidincomedata,...paidincomedata)
+        
+        var unpaid=_(unpaidincomedata)
+        .groupBy('shipper')
+        .map((objs, key) => ({
+            'shipper_code': key,
+            'shipper_name': _.get(objs[0], 'shipper_name'),
+            'totalinvoice':  _.sumBy(objs, function (day) {
+ 
+                return Number(day.inv_total_amount) ;
+         
+            }),
+
+            
+ 
+             
+        }))
+
+
+        var paid=_(paidincomedata)
+        .groupBy('shipper')
+        .map((objs, key) => ({
+            'shipper_code': key,
+            'shipper_name': _.get(objs[0], 'shipper_name'),
+            'totalpaid': _.sumBy(objs, function (day) {
+ 
+                return day.amount_paid ;
+         
+            }),
+
+            
+ 
+             
+        }))
+
+var meragearray=[...unpaid,...paid]
+
+var meragegrouping=_(meragearray)
+.groupBy('shipper_code')
+.map((objs, key) => ({
+    'shipper_code': key,
+    'shipper_name': _.get(objs[0], 'shipper_name'),
+    'totalpaid':paidobject[key]?paidobject[key]:0,
+    'totalinvoice':_.get(objs[0],'totalinvoice')!=undefined?_.get(objs[0],'totalinvoice'):0
+}))
+
+
+
+
+res.json({ status: 1, message: 'Income list successfully',paidincomedata,meragearray,unpaidincomedata,paid,unpaid,meragegrouping})
+
+    }
+         else
+
+         {
+
+            res.json({ status: 0, message: 'No data found' })
+        }
+
+       
+
+
+
+    },
+
+    getallAccounts: async (req, res) => {
+         
+       
+        let accounttypeQuery = "Select *  from accounts as a   ";
+
+        let accountdata = await commonFunction.getQueryResults(accounttypeQuery);
+
+         
+ 
+if (accountdata.length > 0 ) {
+    res.json({status:1,message:'Accounts list',accountdata})
+}
+
+else
+{
+    res.json({status:0,message:'No accounts found'})
+}
+
+
+
+         
+    }, 
    
     getpaymentaccount: async (req, res) => {
          
@@ -31,7 +172,7 @@ console.log(paymentaccountQuery)
 
     
     Generalledger: async (req, res) => {
-        let { start_date, end_date, report_type } = req.body
+        let { start_date, end_date, report_type,account_id } = req.body
         let accountObject = {};
         let categoryObject={};
         let accountNameObject = {}
@@ -50,7 +191,11 @@ console.log(paymentaccountQuery)
         var paymentdetails;
 
 var condition=''
+var account_condition=''
 
+if (account_id!=undefined) {
+    account_condition="and a.account='"+account_id+"'"
+}
 var closingbalanceObject={}
         if(report_type==2)
         {
@@ -72,7 +217,7 @@ var closingbalanceObject={}
         var opeingbalanceObject={}
         var finalreponse=[];
 
-        var  opeingbalance="select *,sum(c.debit-c.credit) as balance   from account_statements as c where     DATE_FORMAT(c.created_on, '%Y-%m-%d')  <  DATE_FORMAT('" + start_date + "','%Y-%m-%d') group by c.account";
+        var  opeingbalance="select *,sum(a.debit-a.credit) as balance   from account_statements as a where     DATE_FORMAT(a.created_on, '%Y-%m-%d')  <  DATE_FORMAT('" + start_date + "','%Y-%m-%d')  " + condition + " "+account_condition+" group by a.account";
         var openingtotalbalance=await commonFunction.getQueryResults(opeingbalance);
     //     if(is_reconcile==1)
     //     {
@@ -84,7 +229,7 @@ var closingbalanceObject={}
     
 console.log(opeingbalance)
 
-var  closingbalance="select *,sum(c.debit-c.credit) as balance,sum(c.debit) as totaldebit,sum(c.credit) as totalcredit from account_statements as c where     DATE_FORMAT(c.created_on, '%Y-%m-%d')  <=  DATE_FORMAT('" + end_date + "','%Y-%m-%d') group by c.account"
+var  closingbalance="select *,sum(a.debit-a.credit) as balance,sum(a.debit) as totaldebit,sum(a.credit) as totalcredit from account_statements as a where     DATE_FORMAT(a.created_on, '%Y-%m-%d')  <=  DATE_FORMAT('" + end_date + "','%Y-%m-%d') " + condition + "  "+account_condition+" group by a.account"
   
  var closingtotalbalance=await commonFunction.getQueryResults(closingbalance);
 
@@ -99,7 +244,7 @@ var  closingbalance="select *,sum(c.debit-c.credit) as balance,sum(c.debit) as t
         // //billdetailsQuery
         // let billDetailsQuery = "Select * from bill as b inner join  bill_details as bd on b.id=bd.bill_id inner join accounts as ac on ac.id=bd.expense_category where b.bill_date >= '" + start_date + "' AND b.bill_date  <= '" + end_date + "' and b.isdelete = 0 ";
         // let billDetailsdata = await commonFunction.getQueryResults(billDetailsQuery);
-        let transactionQuery = " Select *,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  " + condition + " group by a.id order by a.created_on ";
+        let transactionQuery = " Select *,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  " + condition + " "+account_condition+" group by a.id order by a.created_on ";
         //let transactionQuery = " Select *,ad.type as accountype,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  and a.from_id NOT IN (6,7,8,9,10,11) " + condition + " group by a.id ";
         let transactionData = await commonFunction.getQueryResults(transactionQuery);
      
