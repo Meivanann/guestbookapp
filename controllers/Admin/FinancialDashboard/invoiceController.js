@@ -664,7 +664,7 @@ module.exports = {
                                 var accountReacivable={type:'Income',account:22,amount:total_amount,description:'invoice from create invoice',debit:total_amount,credit:0,invoice_number:invoice_number,types:'Invoice',created_on:invoice_date,from_id:1,shipper_code:shipper_code}
                                 var array=[incomeobject,accountReacivable]
                                 let accountdetailsinvoice = array.map((m) => Object.values(m))
-                                let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,invoice_number,types,created_on,from_id) values ? "
+                                let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,invoice_number,types,created_on,from_id,shipper_code) values ? "
                                 connection.query(acc_query, [accountdetailsinvoice], function (err, data) {
                                     if (err) {
                                         console.log(err)
