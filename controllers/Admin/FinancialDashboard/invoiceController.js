@@ -1081,7 +1081,7 @@ payment.push(paymentObject,accountobject,salesbjectpayment)
                                 var array=[accountrecivable,o_acc_data,salesobject]
                                 let accountdetailsinvoice = array.map((m) => Object.values(m))
 
-                                let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,invoice_number,types,created_on,ispayment,from_id,payment_method,is_profit,money_type,category) values ? "
+                                let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,invoice_number,types,created_on,ispayment,from_id,payment_method,is_profit,money_type,category)values ? "
                         connection.query(acc_query, [accountdetailsinvoice], function (err, data) {
                             if (err) {
                                 console.log(err)
