@@ -4,6 +4,39 @@ var _ = require('lodash');
 var moment=require('moment')
 module.exports = {
 
+    getaccountstransaction: async (req, res) => {
+         
+        var paymentaccountQuery="SELECT *,a.id as account_id,a.account_name as account_name,ac.name as accounttypename  FROM accounts as a inner join account_types as ac on ac.id=a.account_type_id where ac.id not in (3,6,12,13,15) group by a.id";
+        var paymentaccountData=await commonFunction.getQueryResults(paymentaccountQuery);
+
+console.log(paymentaccountQuery) 
+        if(paymentaccountData.length > 0 )
+        {
+
+
+            var data = _(paymentaccountData)
+            .groupBy('account_type_id')
+            .map((objs, key) => ({
+                  
+                'account_type_id':key,
+                'account_type_name': _.get(objs[0], 'accounttypename') ? _.get(objs[0], 'accounttypename') : '',
+ 
+                'values':objs  
+            }))
+            .value();
+            
+            res.json({status:1,message:' account list',data})
+            
+        }
+        else
+        {
+
+            res.json({status:0,message:'No  account list'})
+            
+        }
+
+
+    },
     Incomebycustomer: async (req, res) => {
         let { start_date, end_date } = req.body
         let accountObject = {};
@@ -171,6 +204,7 @@ console.log(paymentaccountQuery)
     },
 
     
+  
     Generalledger: async (req, res) => {
         let { start_date, end_date, report_type,account_id } = req.body
         let accountObject = {};
@@ -193,7 +227,7 @@ console.log(paymentaccountQuery)
 var condition=''
 var account_condition=''
 
-if (account_id!=undefined) {
+if (account_id!=undefined && account_id!='') {
     account_condition="and a.account='"+account_id+"'"
 }
 var closingbalanceObject={}

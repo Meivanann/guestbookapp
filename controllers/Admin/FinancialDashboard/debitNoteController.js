@@ -569,7 +569,9 @@ newObject={
                     'debit':amount_paid,
                     'credit':0,
                     'debit_no':debit_note_id,
-                    paymentdate:today
+                    paymentdate:today,
+                    money_type:1,
+                    category:0
                 }   
         
                 let salesbjectpayment= {
@@ -581,14 +583,16 @@ newObject={
                     'debit':0,
                     'credit':amount_paid,
                     'debit_no':debit_note_id,
-                    paymentdate:today
+                    paymentdate:today,
+                    money_type:1,
+                    category:0
                 } 
         
                 let payment=[]
         payment.push(paymentObject,salesbjectpayment)
         
         let paymentvalues= payment.map((m) => Object.values(m))
-                let acc_payment_query = "INSERT INTO  payments(payment_type,account,amount,type,debit,credit,debit_no,paymentdate)values ?"
+                let acc_payment_query = "INSERT INTO  payments(payment_type,account,amount,type,debit,credit,debit_no,paymentdate,money_type,category)values ?"
             connection.query(acc_payment_query, [paymentvalues], function (lgerr, lgres, fields) {
                 if (lgerr) {
                     console.log(lgerr)
@@ -631,7 +635,9 @@ newObject={
                     debit_no:debit_note_id,
                     payment_method:  payment_method,
                     from_id:11,
-                    types:'debit payment'
+                    types:'debit payment',
+                    money_type:1,
+                    category:0
                 }
 
                 var accountrecviable = {
@@ -646,7 +652,9 @@ newObject={
                     debit_no:debit_note_id,
                     payment_method:  payment_method,
                     from_id:11,
-                    types:'debit payment'	
+                    types:'debit payment',
+                    money_type:1,
+                    category:0	
                 }
 
 

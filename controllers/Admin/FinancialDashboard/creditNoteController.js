@@ -853,7 +853,9 @@ if (err) {
                     'debit':0,
                     'credit':amount_paid,
                     'credit_no':credit_note_id,
-                    paymentdate:today
+                    paymentdate:today,
+                    money_type:1,
+                    category:0
                 }   
         
                 let salesbjectpayment= {
@@ -865,14 +867,16 @@ if (err) {
                     'debit':amount_paid,
                     'credit':0,
                     'credit_no':credit_note_id,
-                    paymentdate:today
+                    paymentdate:today,
+                    money_type:1,
+                    category:0
                 } 
         
                 let payment=[]
         payment.push(paymentObject,salesbjectpayment)
         
         let paymentvalues= payment.map((m) => Object.values(m))
-                let acc_payment_query = "INSERT INTO  payments(payment_type,account,amount,type,debit,credit,credit_no,paymentdate)values ?"
+                let acc_payment_query = "INSERT INTO  payments(payment_type,account,amount,type,debit,credit,credit_no,paymentdate,money_type,category)values ?"
             connection.query(acc_payment_query, [paymentvalues], function (lgerr, lgres, fields) {
                 if (lgerr) {
                     console.log(lgerr)
@@ -895,7 +899,10 @@ if (err) {
                     credit_no:credit_note_id,
                     payment_method:  payment_method	,
                     from_id:8,
-                    types:'Credit payment'
+                    types:'Credit payment',
+                    money_type:1,
+                    category:0
+                    
                 }
 
                 var accountrecviable = {
@@ -910,7 +917,9 @@ if (err) {
                     credit_no:credit_note_id,
                     payment_method:  payment_method,
                     from_id:8,
-                    types:'Credit payment'		
+                    types:'Credit payment',
+                    money_type:1,
+                    category:0		
                 }
 
                 let o_acc_state_query = "INSERT INTO account_statements SET ?"
