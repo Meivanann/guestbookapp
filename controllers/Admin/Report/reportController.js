@@ -335,7 +335,8 @@ var  closingbalance="select *,sum(a.debit-a.credit) as balance,sum(a.debit) as t
              debit_detail_no:element.debit_detail_id,
              bill_detail_no:element.bill_detail_id,
              type:element.types,
-             descripation:element.description
+             descripation:element.description,
+             accountype:element.accountype
 
          })
     });
@@ -354,15 +355,38 @@ var  closingbalance="select *,sum(a.debit-a.credit) as balance,sum(a.debit) as t
 
         val.forEach(element => {
             
-            if(element.debit!=undefined)
-            {
-                categorybalance[key]=categorybalance[key]+element.debit
-            }
-            if(element.credit!=undefined)
-            {
-                categorybalance[key]=categorybalance[key]-element.credit
-            }
+            // if(element.debit!=undefined)
+            // {
 
+                 
+                
+            //}
+
+            console.log('before',element.accountype)
+             
+            if(element.accountype=='Liabilities & Credit Cards')
+            {
+                console.log('sls')
+                categorybalance[key]=categorybalance[key] + (element.credit)-(element.debit)
+            }
+            if(element.accountype=='Assets')
+            {
+            categorybalance[key]=categorybalance[key] + (element.debit)-(element.credit)
+        }
+        if(element.accountype=='Expenses')
+        {
+        categorybalance[key]=categorybalance[key] + (element.debit)-(element.credit)
+    }
+
+        if(element.accountype=='Income')
+        {
+        categorybalance[key]=categorybalance[key] + (element.credit)-(element.debit)
+    }
+
+    if(element.accountype=='Equity')
+    {
+    categorybalance[key]=categorybalance[key] + (element.credit)-(element.debit)
+}
             element.balance=categorybalance[key]
 
 
