@@ -97,7 +97,7 @@ module.exports = app => {
     app.post('/api/:id/tracking', trackingController.index);
     app.post('/uploaduserimage', userAuthenticationController.userupload);
     //outforDelivery
-    app.get('/api/:id/outfordelivery', outforDelivery.index);
+    app.post('/api/:id/outfordelivery', outforDelivery.index);
     app.get('/api/:id/outfordeliverycompleted', outforDelivery.ofdCompleted);
     app.post('/api/:id/updateoutfordelivery',outforDelivery.upload);
     app.get('/api/:id/deletepod/:cn_no', outforDelivery.deletePod);
@@ -198,7 +198,8 @@ module.exports = app => {
     app.post('/api/:id/updatevendorproduct', billController.updateVendorProduct);
 
     
-    //report
+    //reportt
+    app.post('/api/billpaymentlist', billController.getbillpayment);
     app.post('/api/profitandloss', reportController.ProfitandLossreport);
     app.get('/api/paymentaccountlist', reportController.getpaymentaccount);
     app.post('/api/balancesheet', reportController.BalanceSheetreport);
