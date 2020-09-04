@@ -12,10 +12,37 @@ var pdf = require('html-pdf');
 var COMMONURL=require('../../../common.json')
  
 module.exports = {
-    index: (req,res) => {
+    index: async(req,res) => {
         console.log(req.params.id);
         let cn_no = req.params.cn_no;
-        let query = "select o.*, c.quantity, c.expiry_date ,c.cn_datetime from out_for_delivery o, consignment c where o.status = 'In-progress' and o.cn_no = c.cn_no order by c.cn_no asc;"
+        var limit = (req.body.limit != undefined && req.body.limit != '') ? parseInt(req.body.limit) : 25;
+
+        var page = (req.body.page != undefined && req.body.page != '') ? parseInt(req.body.page) : 1;
+            var skip = ((page - 1) * limit);
+           // var filter_id = req.body.filter_id;
+            var search=req.body.search;
+
+var condition=''
+            if(search!=undefined && search!='')
+            {
+                condition ="and  (o.cn_no like '%"+search+"%' or o.shipper_code like '%"+search+"%' or  o.receiver_name like '%"+search+"%' or  o.destination_code like '%"+search+"%' )";
+            }
+
+         var totalnumber=0
+var totalnumberofrecords="select COUNT(*) AS totalcount from out_for_delivery o, consignment c where o.status = 'In-progress' and o.cn_no = c.cn_no   "+condition+" order by c.cn_no asc;";
+var totalnumberdata=await commonFunction.getQueryResults(totalnumberofrecords);
+
+console.log(totalnumberofrecords)
+totalnumber=totalnumberdata[0].totalcount
+
+        let query = "select o.*, c.quantity, c.expiry_date ,c.cn_datetime from out_for_delivery o, consignment c where o.status = 'In-progress' and o.cn_no = c.cn_no  group by c.cn_no order by c.cn_no asc  limit " + skip + "," + limit + " "
+       
+        if(search!=undefined && search!='')
+        {
+            query ="select o.*, c.quantity, c.expiry_date ,c.cn_datetime from out_for_delivery o, consignment c where o.status = 'In-progress' and o.cn_no = c.cn_no and (o.cn_no like '%"+search+"%' or o.shipper_code like '%"+search+"%' or  o.receiver_name like '%"+search+"%' or  o.destination_code like '%"+search+"%' )order by c.cn_no asc;";
+        }
+        console.log(query)
+       // let query = "select o.*, c.quantity, c.expiry_date ,c.cn_datetime from out_for_delivery o, consignment c where o.status = 'In-progress' and o.cn_no = c.cn_no order by c.cn_no asc;"
        connection.query(query,cn_no, (err,rows) => {
             if(err){
                 console.log(err);
@@ -29,13 +56,41 @@ module.exports = {
                 console.log("results found");
                 res.json({
                     status: 1,
-                    data:rows
+                
+                    data:rows,
+                    totalnumber,
+                   // TotalPages: Math.ceil((totalnumberdata.length > 0 ? (totalnumberdata[0].totalcount) : 0) / limit)
                 })
             }
             
         })
        
     },
+    //sep4backup
+    // index: (req,res) => {
+    //     console.log(req.params.id);
+    //     let cn_no = req.params.cn_no;
+    //     let query = "select o.*, c.quantity, c.expiry_date ,c.cn_datetime from out_for_delivery o, consignment c where o.status = 'In-progress' and o.cn_no = c.cn_no order by c.cn_no asc;"
+    //    connection.query(query,cn_no, (err,rows) => {
+    //         if(err){
+    //             console.log(err);
+    //         } else if (rows.length == 0 ){
+    //            console.log("no results found");
+    //            res.json({
+    //             status: 2,
+    //             message:"No results found"
+    //         });
+    //         } else {
+    //             console.log("results found");
+    //             res.json({
+    //                 status: 1,
+    //                 data:rows
+    //             })
+    //         }
+            
+    //     })
+       
+    // },
 
     ofdCompleted: (req,res) => {
         console.log(req.params.id);

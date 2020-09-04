@@ -54,12 +54,17 @@ module.exports = {
     getAllConsignmentsForApproval: async(req,res) => {
         console.log(req.params.id);
             let reciverObject={}
+            let cityObject={};
+            let stateObject={};
         let reciverquery="SELECT * FROM  shipping as r  ";
 
         let reciverdata=await commonFunction.getQueryResults(reciverquery);
 
         reciverdata.forEach(element => {
+            //combinedObject[element.shipper_code]
             reciverObject[element.shipper_code]=element.address1
+            cityObject[element.shipper_code]=element.city
+            stateObject[element.shipper_code]=element.state + "-" +element.postcode
         });
         
         let query = "SELECT * FROM consignment as c  where is_approved = 0 order by cn_datetime"
@@ -80,6 +85,8 @@ module.exports = {
                     
     
                     element.receiver_address=reciverObject[element.receiver_code]? reciverObject[element.receiver_code]: ''
+                    element.receiver_city=cityObject[element.receiver_code]? cityObject[element.receiver_code]: ''
+                    element.receiver_state=stateObject[element.receiver_code]? stateObject[element.receiver_code]: ''
                 });
            
                 res.json({
@@ -91,6 +98,47 @@ module.exports = {
         })
        
     },
+    //sep4 backup
+    // getAllConsignmentsForApproval: async(req,res) => {
+    //     console.log(req.params.id);
+    //         let reciverObject={}
+    //     let reciverquery="SELECT * FROM  shipping as r  ";
+
+    //     let reciverdata=await commonFunction.getQueryResults(reciverquery);
+
+    //     reciverdata.forEach(element => {
+    //         reciverObject[element.shipper_code]=element.address1
+    //     });
+        
+    //     let query = "SELECT * FROM consignment as c  where is_approved = 0 order by cn_datetime"
+    //    connection.query(query, (err,rows) => {
+    //         if(err){
+    //             console.log(err);
+    //         } else if (rows.length == 0 ){
+    //            console.log("no results found");
+
+           
+    //            res.json({
+    //                 status: 2,
+    //                 message:"No results found"
+    //             });
+    //         } else {
+    //             console.log("results found");
+    //             rows.forEach(element => {
+                    
+    
+    //                 element.receiver_address=reciverObject[element.receiver_code]? reciverObject[element.receiver_code]: ''
+    //             });
+           
+    //             res.json({
+    //                 status: 1,
+    //                 data:rows
+    //             })
+    //         }
+            
+    //     })
+       
+    // },
 
     postConsignmentApproval : (req,res) => {
         let cn_no = req.body.cn_no;

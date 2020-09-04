@@ -27,7 +27,15 @@ module.exports = {
         })
     },
 
-    getAllAccounts: (req,res) => {
+    getAllAccounts: async(req,res) => {
+
+        let lastransactionObject={}
+        let transactionquery="SELECT MAX(created_on) as date,account FROM account_statements  group by account"
+        let transactiondata=await commonFunction.getQueryResults(transactionquery)
+       console.log('name',transactionquery)
+        transactiondata.forEach(element => {
+            lastransactionObject[element.account]=element.date
+       });
         let query = "SELECT * FROM accounts;"
 
         connection.query(query, (err,rows) => {
@@ -42,6 +50,9 @@ module.exports = {
                     message:' No results found'
                 })
             } else {
+                rows.forEach(element => {
+                    element.lasttransactiondate=lastransactionObject[element.id]?lastransactionObject[element.id]:''
+                });
                 res.json({
                     status: 1,
                     data:rows

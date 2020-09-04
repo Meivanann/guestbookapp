@@ -4,6 +4,31 @@ const commonFunction = require('../../commonFunction');
 var _=require('lodash')
 //const { async } = require('q');
 module.exports = {
+
+    getbillpayment: (req, res) => {
+        let bill_id=req.body.bill_id
+        let query = "SELECT *,p.amount as payamount,c.name as vendorname  FROM payments as p left join bill as b on b.id=p.bill_id left join vendors as c on c.id=b.vendor_id where p.type=2 and p.bill_id=" + bill_id + ""
+
+        connection.query(query, (err, rows) => {
+            if (err) {
+                console.log(err)
+                res.json({
+                    status: false,
+                    message: 'there are some error with query'
+                })
+            } else if (rows.length == 0) {
+                res.json({
+                    status: -1,
+                    message: ' No results found'
+                })
+            } else {
+                res.json({
+                    status: 1,
+                    data: rows
+                })
+            }
+        })
+    },
     getAllVendors: (req, res) => {
         let query = "SELECT * FROM vendors;"
 
