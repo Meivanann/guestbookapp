@@ -1,21 +1,21 @@
 var mysql      = require('mysql');
 
-// var connection = mysql.createConnection({
-//     host     : 'psatrans-db.caljkao8crbq.us-east-2.rds.amazonaws.com',
-//     user     : 'admin',
-//     password : 'Psatrans#2020',
-//     database : 'psa',
-//     multipleStatements : true
-//   });
-
-
 var connection = mysql.createConnection({
     host     : 'psatrans-db.caljkao8crbq.us-east-2.rds.amazonaws.com',
     user     : 'admin',
     password : 'Psatrans#2020',
-    database : 'psa_staging',
+    database : 'psa',
     multipleStatements : true
   });
+
+
+// var connection = mysql.createConnection({
+//     host     : 'psatrans-db.caljkao8crbq.us-east-2.rds.amazonaws.com',
+//     user     : 'admin',
+//     password : 'Psatrans#2020',
+//     database : 'psa_staging',
+//     multipleStatements : true
+//   });
 
 // var connection = mysql.createConnection({
 //       host     : 'localhost',
