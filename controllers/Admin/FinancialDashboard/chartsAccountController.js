@@ -1,9 +1,49 @@
 
 var connection = require('../../../config');
 const commonFunction = require('../../commonFunction');
-
+var _=require('lodash')
 
 module.exports = {
+    gettransactioncategory: async(req,res) => {
+
+
+        
+        let query = "SELECT *,a.id as accountid,at.name as accounttypename FROM accounts as a LEFT join account_types as at on at.id=a.account_type_id where at.id not in(1,2,10,11)  "
+
+        console.log('ksls',query)
+        connection.query(query, (err,rows) => {
+            if(err){
+                res.json({
+                    status:false,
+                    message: 'there are some error with query'
+                })
+            } else if (rows.length == 0 ){
+                res.json({
+                    status: -1,
+                    message:' No results found'
+                })
+            } else {
+
+                var data = _(rows)
+            .groupBy('type')
+            .map((objs, key) => ({
+                  type:key,
+                'account_type_id':_.get(objs[0], 'account_type_id') ? _.get(objs[0], 'account_type_id') : '',
+                'account_type_name': _.get(objs[0], 'accounttypename') ? _.get(objs[0], 'accounttypename') : '',
+ 
+                'values':objs  
+            }))
+            .value();
+
+                
+                res.json({
+                    status: 1,
+                    data:data
+                    
+                })
+            }
+        })
+    },
     getAllAccountTypes: (req,res) => {
         let query = "SELECT * FROM account_types;"
 

@@ -73,7 +73,7 @@ module.exports = app => {
     app.get('/api/:id/getallconsignments', consignmentController.getAllConsignments);
     app.get('/api/:id/getalltheconsignments', consignmentController.getAllTheConsignments);
     app.get('/api/:id/getconsignmenthq', consignmentController.getConsignmentHq);
-    app.get('/api/:id/getconsignmentnorth', consignmentController.getConsignmentNorth);
+    app.post('/api/:id/getconsignmentnorth', consignmentController.getConsignmentNorth);
     app.get('/api/:id/getconsignmentsouth', consignmentController.getConsignmentSouth);
     app.get('/api/:id/getconsignmentsforapproval', dashboardController.getAllConsignmentsForApproval);
     app.post('/api/:id/postconsignmenthq', consignmentController.postConsignmentHq);
@@ -214,6 +214,7 @@ module.exports = app => {
     app.post('/api/gettransactiondetails', transactionController.getTransactiondetails);
     app.post('/api/deletetransaction', transactionController.deleteTransaction);
     app.post('/api/edittransaction', transactionController.Edittransaction);
+    app.post('/api/gettransactioncategory', chartAccountController.gettransactioncategory);
     // charts of accounts
     app.get('/api/:id/getallaccounttypes', chartAccountController.getAllAccountTypes);
     app.get('/api/:id/getallaccounts', chartAccountController.getAllAccounts);

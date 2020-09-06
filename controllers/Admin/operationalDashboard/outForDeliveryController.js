@@ -16,16 +16,24 @@ module.exports = {
         console.log(req.params.id);
         let cn_no = req.params.cn_no;
         var limit = (req.body.limit != undefined && req.body.limit != '') ? parseInt(req.body.limit) : 25;
-
+        var sortby=req.body.sortby;
+        var order=req.body.order
+        
         var page = (req.body.page != undefined && req.body.page != '') ? parseInt(req.body.page) : 1;
             var skip = ((page - 1) * limit);
            // var filter_id = req.body.filter_id;
             var search=req.body.search;
 
-var condition=''
+var condition='';
+var sortcondition='order by c.cn_no asc'
             if(search!=undefined && search!='')
             {
-                condition ="and  (o.cn_no like '%"+search+"%' or o.shipper_code like '%"+search+"%' or  o.receiver_name like '%"+search+"%' or  o.destination_code like '%"+search+"%' )";
+                condition ="and (c.cn_no like '%"+search+"%' or c.shipper_code like '%"+search+"%' or  c.receiver_name like '%"+search+"%' or  c.destination_code like '%"+search+"%' )";
+            }
+
+            if(sortby!=undefined && sortby!='' && order!=undefined && order!='')
+            {
+                sortcondition ="ORDER BY " + sortby + " " + order + "";
             }
 
          var totalnumber=0
@@ -35,13 +43,12 @@ var totalnumberdata=await commonFunction.getQueryResults(totalnumberofrecords);
 console.log(totalnumberofrecords)
 totalnumber=totalnumberdata[0].totalcount
 
-        let query = "select o.*, c.quantity, c.expiry_date ,c.cn_datetime from out_for_delivery o, consignment c where o.status = 'In-progress' and o.cn_no = c.cn_no  group by c.cn_no order by c.cn_no asc  limit " + skip + "," + limit + " "
+        let query = "select o.*, c.quantity, c.expiry_date ,c.cn_datetime from out_for_delivery o, consignment c where o.status = 'In-progress' and o.cn_no = c.cn_no  group by c.cn_no " + sortcondition + "  limit " + skip + "," + limit + " "
        
         if(search!=undefined && search!='')
         {
-            query ="select o.*, c.quantity, c.expiry_date ,c.cn_datetime from out_for_delivery o, consignment c where o.status = 'In-progress' and o.cn_no = c.cn_no and (o.cn_no like '%"+search+"%' or o.shipper_code like '%"+search+"%' or  o.receiver_name like '%"+search+"%' or  o.destination_code like '%"+search+"%' )order by c.cn_no asc;";
+            query ="select o.*, c.quantity, c.expiry_date ,c.cn_datetime from out_for_delivery o, consignment c where o.status = 'In-progress' and o.cn_no = c.cn_no and  (c.cn_no like '%"+search+"%' or c.shipper_code like '%"+search+"%' or  c.receiver_name like '%"+search+"%' or  c.destination_code like '%"+search+"%' ) " + sortcondition + "";
         }
-        console.log(query)
        // let query = "select o.*, c.quantity, c.expiry_date ,c.cn_datetime from out_for_delivery o, consignment c where o.status = 'In-progress' and o.cn_no = c.cn_no order by c.cn_no asc;"
        connection.query(query,cn_no, (err,rows) => {
             if(err){

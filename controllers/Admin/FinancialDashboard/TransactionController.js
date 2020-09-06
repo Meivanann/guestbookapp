@@ -185,6 +185,7 @@ let transaction_id=req.body.transaction_id
     PostNewExpense: (req,res) => {
         var today = new Date();
 
+        let catgoryid=req.body.accountid
          // inserting  Account of Statements
          var acc_data = {
             "account"       : req.body.account,
@@ -196,7 +197,9 @@ let transaction_id=req.body.transaction_id
             ispayment: 1,
             credit:0,
             debit:req.body.amount,
-            types:'Expense Transaction'
+            types:'Expense Transaction',
+            money_type:2,
+            category:catgoryid
         }
 
         let acc_state_query = "INSERT INTO account_statements SET ?"
@@ -215,7 +218,7 @@ let transaction_id=req.body.transaction_id
 
     PostNewIncome: (req,res) => {
         var today = new Date();
-
+        let catgoryid=req.body.accountid
          // inserting  Account of Statements
          var acc_data = {
             "account"       : req.body.account,
@@ -227,7 +230,9 @@ let transaction_id=req.body.transaction_id
             ispayment: 1,
             credit:req.body.amount,
             debit:0,
-            types:'Income Transaction'
+            types:'Income Transaction',
+            money_type:1,
+            category:catgoryid
              
         }
 
