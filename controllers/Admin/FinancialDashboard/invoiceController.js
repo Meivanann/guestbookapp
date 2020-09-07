@@ -882,7 +882,7 @@ module.exports = {
                         let acc_bal = 0;
                         shipper_details = shipper_rows[0];
 
-                        acc_bal = parseFloat(shipper_details.acc_bal) - parseFloat(invoice_row.inv_total_amount); 
+                        acc_bal = parseFloat(shipper_rows.length > 0 && shipper_rows[0].acc_bal!=undefined&&shipper_rows[0].acc_bal!=''?shipper_rows[0].acc_bal:0) - parseFloat(invoice_row.inv_total_amount); 
 
                         let shipper_acc_update = "UPDATE shipping SET ? where shipper_code = ?";
                         var shipper_acc_update_data = {
