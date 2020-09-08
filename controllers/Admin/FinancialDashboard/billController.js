@@ -7,7 +7,7 @@ module.exports = {
 
     getbillpayment: (req, res) => {
         let bill_id=req.body.bill_id
-        let query = "SELECT *,p.amount as payamount,c.name as vendorname  FROM payments as p left join bill as b on b.id=p.bill_id left join vendors as c on c.id=b.vendor_id where p.type=2 and p.bill_id=" + bill_id + "and account NOT IN(21,22)"
+        let query = "SELECT *,p.amount as payamount,c.name as vendorname  FROM payments as p left join bill as b on b.id=p.bill_id left join vendors as c on c.id=b.vendor_id where p.type=2 and p.bill_id=" + bill_id + "and p.account NOT IN(21,22)"
 
         connection.query(query, (err, rows) => {
             if (err) {
