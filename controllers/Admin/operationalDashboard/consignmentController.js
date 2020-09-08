@@ -1,5 +1,6 @@
 var connection = require('./../../../config');
 var _ = require('lodash');
+var moment=require('moment');
 var commonFunction=require('../../commonFunction');   
 module.exports = {
 
@@ -193,6 +194,7 @@ var order=req.body.order
     },
 
     postConsignmentHq: (req, res) => {
+        let today=moment().format('YYYY-MM-DD')
         let consignmentIds = req.body.arr;
         let driverName = req.body.driver;
         let consignmentQuery = "SELECT * FROM consignment WHERE id IN ("+ consignmentIds +");"
@@ -265,6 +267,7 @@ var order=req.body.order
                                                 'destination_code': row.destination_code,
                                                 'driver_name': driverName,
                                                 'receiver_name': row.receiver_name,
+                                                assigned_date:today
                                             }
             
                                             connection.query('INSERT INTO out_for_delivery SET ?',ofd_data, function (ofderr, ofdres, fields) {
@@ -337,6 +340,7 @@ var order=req.body.order
     },
 
     postConsignmentNorth: (req, res) => {
+        let today=moment().format('YYYY-MM-DD')
         let consignmentIds = req.body.arr;
         let driverName = req.body.driver;
         let consignmentQuery = "SELECT * FROM consignment WHERE id IN ("+ consignmentIds +");"
@@ -408,6 +412,7 @@ var order=req.body.order
                                     'destination_code': row.destination_code,
                                     'driver_name': driverName,
                                     'receiver_name': row.receiver_name,
+                                    assigned_date:today
                                 }
         
                                 connection.query('INSERT INTO out_for_delivery SET ?',ofd_data, function (ofderr, ofdres, fields) {
@@ -463,6 +468,7 @@ var order=req.body.order
     },
 
     postConsignmentSouth: (req, res) => {
+        let today=moment().format('YYYY-MM-DD')
         let consignmentIds = req.body.arr;
         let driverName = req.body.driver;
         let consignmentQuery = "SELECT * FROM consignment WHERE id IN ("+ consignmentIds +");"
@@ -541,6 +547,7 @@ var order=req.body.order
                                         'destination_code': row.destination_code,
                                         'driver_name': driverName,
                                         'receiver_name': row.receiver_name,
+                                        assigned_date:today
                                     }
             
                                     connection.query('INSERT INTO out_for_delivery SET ?',ofd_data, function (ofderr, ofdres, fields) {
