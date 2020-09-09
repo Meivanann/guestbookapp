@@ -260,6 +260,7 @@ var closingbalanceObject={}
     openingtotalbalance.forEach(element => {
         opeingbalanceObject[element.account]=element.balance
     });
+    var lastclosingbalance={}
     
 console.log(opeingbalance)
 var  closingbalance="select *,sum(a.debit-a.credit) as balance,sum(a.debit) as totaldebit,sum(a.credit) as totalcredit from account_statements as a where  DATE_FORMAT(a.created_on, '%Y-%m-%d')  >=  DATE_FORMAT('" + start_date + "','%Y-%m-%d') and   DATE_FORMAT(a.created_on, '%Y-%m-%d')  <=  DATE_FORMAT('" + end_date + "','%Y-%m-%d') " + condition + "  "+account_condition+" group by a.account"
@@ -339,6 +340,9 @@ var  closingbalance="select *,sum(a.debit-a.credit) as balance,sum(a.debit) as t
              accountype:element.accountype
 
          })
+
+        
+
     });
 
 
@@ -395,6 +399,35 @@ var  closingbalance="select *,sum(a.debit-a.credit) as balance,sum(a.debit) as t
       });
 
 
+      
+    Object.keys(categoryObject).forEach(function(key) {
+        var val = categoryObject[key];
+
+
+         
+
+
+        val.forEach(element => {
+            
+            // if(element.debit!=undefined)
+            // {
+
+                lastclosingbalance[element.account]=element.balance
+                closingbalanceObject[element.account].totalbalance=element.balance
+                
+            //}
+
+             
+             
+             
+             
+
+
+        });
+         
+      });
+
+console.log('ssss',lastclosingbalance,'s',closingbalanceObject)
 
     //   Object.keys(categoryObject).forEach(function(key) {
     //     var val = categoryObject[key];
