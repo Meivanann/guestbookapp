@@ -4,6 +4,42 @@ let commonFunction=require('../../commonFunction');
 var moment=require('moment');
 
 module.exports = {
+
+    getCreditNotepaymentlist: (req,res) => {
+        let credit_id = req.body.credit_id;
+        let query = "select * from credit_note as c left join payments as p on p.credit_no=c.id where p.type =3 and p.credit_no= ? and p.account NOT IN(21,22)"
+
+        connection.query(query,credit_id, (err,rows) => {
+            if(err){
+                res.json({
+                    status:false,
+                    message: 'there are some error with query'
+                })
+            } else if (rows.length == 0 ){
+                res.json({
+                    status:0,
+                    message: 'No data found'
+                })
+
+             
+            } else {
+                
+                         
+                        res.json({
+                            status:1,
+                            message:'credit payment list ',
+                            data: rows
+                             
+                        })
+                    }
+                 
+                
+             
+        })
+            
+        
+    },
+
     index: (req,res) => {
         let query = "SELECT * FROM credit_note;"
 

@@ -3,6 +3,41 @@ const { parse } = require('handlebars');
 let commonFunction=require('../../commonFunction');
 var moment=require('moment');
 module.exports = {
+    getdebitNotepaymentlist: (req,res) => {
+        let debit_id = req.body.debit_id;
+        let query = "select * from debit_note as c left join payments as p on p.debit_no=c.id where p.type =4 and p.debit_no= ? and p.account NOT IN(21,22)"
+
+        connection.query(query,debit_id, (err,rows) => {
+            if(err){
+                console.log(err)
+                res.json({
+                    status:false,
+                    message: 'there are some error with query'
+                })
+            } else if (rows.length == 0 ){
+                res.json({
+                    status:0,
+                    message: 'No data found'
+                })
+
+             
+            } else {
+                
+                         
+                        res.json({
+                            status:1,
+                            message:'debit payment list ',
+                            data: rows
+                             
+                        })
+                    }
+                 
+                
+             
+        })
+            
+        
+    },
     
      
     editDebitNote: async(req,res) => {

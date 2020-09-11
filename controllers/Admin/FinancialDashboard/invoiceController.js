@@ -6,6 +6,7 @@ const fs = require('fs')
 const commonFunction = require('../../commonFunction');
 //const { async } = require('q');
 var moment=require('moment');
+var _=require('lodash')
 module.exports = {
     getAllInvoices: (req,res) => {
        
@@ -448,6 +449,11 @@ module.exports = {
                     if(err){
                         console.log(err);
                     }else{
+                        console.log(_.sumBy(consignment_rows, function (day) {
+ 
+                            return  Number(day.total_amount)
+                     
+                        }))
                         // fetching shipper details
                         let shipper_query = "select * from shipping where shipper_code = ?"
                         connection.query(shipper_query, rows[0].shipper_code, (err,shipper_rows) => {
