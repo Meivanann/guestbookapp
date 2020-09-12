@@ -449,6 +449,8 @@ module.exports = {
                     if(err){
                         console.log(err);
                     }else{
+
+                        console.log(consignment_query);
                         console.log(_.sumBy(consignment_rows, function (day) {
  
                             return  Number(day.total_amount)
@@ -553,16 +555,22 @@ module.exports = {
         })
     },
 
-    generateInvoice: (req,res) =>{
+    generateInvoice: async(req,res) =>{
         let today = new Date();
+        
+        let uniquequery="SELECT invoice_no as totalcount FROM invoice order by invoice_no desc limit 1"
+        let uniquedata=await commonFunction.getQueryResults(uniquequery)
         let total_amount = 0, sub_amount = 0, tax_amount = 0, shipper_details, shipper_acc_details, acc_bal = 0;
         let start_date = req.body.start_date;
         let end_date = req.body.end_date;
         let shipper_code = req.body.shipper_code;
         let payment_due =req.body.payment_due;
-        let invoice_number;
+        let invoice_number=0
         let invoice_date = req.body.invoice_date;
 
+        if (uniquedata.length > 0 ) {
+            invoice_number=Number(uniquedata[0].totalcount) + Number(1)
+            }
         let query = "SELECT * FROM consignment as c  left join out_for_delivery as o  on o.cn_no=c.cn_no   where (DATE_FORMAT(o.datetime,'%Y-%m-%d') >= DATE('"+start_date+"') and DATE_FORMAT(o.datetime,'%Y-%m-%d') <= DATE('"+end_date+"') )  and c.status = 'Close' and ( c.shipper_code=? or c.receiver_code = ?) and c.is_billed = 0 and c.is_approved = 1;"
         let data = [shipper_code, shipper_code];
 
@@ -624,7 +632,8 @@ module.exports = {
                             "consignment_start_date" : start_date,
                             "consignment_end_date"  : end_date,
                             debit:total_amount,
-                            credit:0
+                            credit:0,
+                            invoice_no:invoice_number
                         };
 
                         let invoice_query = "INSERT INTO invoice SET ?"
@@ -822,6 +831,7 @@ module.exports = {
     // },
 
     deleteInvoice: (req,res) => {
+        let user_id=req.body.user_id
         let invoice_no = req.body.invoice_no;
         connection.query("select * from invoice where invoice_no = ? ", invoice_no, async(invoice_err,invoice_rows) => {
             if(invoice_err){
@@ -879,6 +889,21 @@ module.exports = {
                                             console.log("condignment updated Successfully")
                                         }
                                     });
+                                }
+                            });
+
+
+                            let today=moment().format('YYYY-MM-DD')
+                            var log_data = {
+                                "user_id" : user_id,
+                                "invoice_no"   : invoice_no,
+                                "status": "Invoice "+invoice_no+" has deleted on" +today
+                            }
+                            connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
+                                if (lgerr) {
+                                console.log(lgerr)
+                                }else{
+                                    console.log("log added successfully");
                                 }
                             });
                         }
