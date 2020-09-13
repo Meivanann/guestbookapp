@@ -642,7 +642,7 @@ module.exports = {
                             if (error) {
                                 console.log(error);
                             }else{
-                                invoice_number = results.insertId;
+                                //invoice_number = results.insertId;
                                 let shipper_acc_update = "UPDATE shipping SET ? where shipper_code = ?";
                                 var shipper_acc_update_data = {
                                     "acc_bal"   :   acc_bal
@@ -856,6 +856,22 @@ module.exports = {
                         if (error) {
                             console.log(error);
                         }else{
+                            console.log('correct')
+
+                            let today=moment().format('YYYY-MM-DD')
+                            var log_data = {
+                                "user_id" : user_id,
+                                "invoice_no"   : invoice_no,
+                                "status": "Invoice "+invoice_no+" has deleted on" +today
+                            }
+                            connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
+                                if (lgerr) {
+                                console.log(lgerr)
+                                }else{
+                                    console.log("log added successfully");
+                                }
+                            });
+                       // }
                             console.log("consignment updated Successfully")
                         }
                     });
