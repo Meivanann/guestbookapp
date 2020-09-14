@@ -72,9 +72,9 @@ module.exports = app => {
     //dashboard - Consignment Hq
     app.get('/api/:id/getallconsignments', consignmentController.getAllConsignments);
     app.get('/api/:id/getalltheconsignments', consignmentController.getAllTheConsignments);
-    app.get('/api/:id/getconsignmenthq', consignmentController.getConsignmentHq);
+    app.post('/api/:id/getconsignmenthq', consignmentController.getConsignmentHq);
     app.post('/api/:id/getconsignmentnorth', consignmentController.getConsignmentNorth);
-    app.get('/api/:id/getconsignmentsouth', consignmentController.getConsignmentSouth);
+    app.post('/api/:id/getconsignmentsouth', consignmentController.getConsignmentSouth);
     app.get('/api/:id/getconsignmentsforapproval', dashboardController.getAllConsignmentsForApproval);
     app.post('/api/:id/postconsignmenthq', consignmentController.postConsignmentHq);
     app.post('/api/:id/postconsignmentnorth', consignmentController.postConsignmentNorth);
@@ -100,7 +100,7 @@ module.exports = app => {
     app.post('/api/:id/outfordelivery', outforDelivery.index);
     app.get('/api/:id/outfordeliverycompleted', outforDelivery.ofdCompleted);
     app.post('/api/:id/updateoutfordelivery',outforDelivery.upload);
-    app.get('/api/:id/deletepod/:cn_no', outforDelivery.deletePod);
+    app.post('/api/:id/deletepod', outforDelivery.deletePod);
 
     //manifest
     app.post('/api/:id/driverofd', manifest.driverofd);

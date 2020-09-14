@@ -51,10 +51,42 @@ module.exports = {
             
         })
     },
+    getConsignmentHq: async(req,res) => { 
 
+        var limit = (req.body.limit != undefined && req.body.limit != '') ? parseInt(req.body.limit) : 25;
+var sortby=req.body.sortby;
+var order=req.body.order
+        var page = (req.body.page != undefined && req.body.page != '') ? parseInt(req.body.page) : 1;
+            var skip = ((page - 1) * limit);
+           // var filter_id = req.body.filter_id;
+            var search=req.body.search;
 
-    getConsignmentHq: (req,res) => { 
-        let query = "SELECT * FROM consignment WHERE ((region = 'HQ' AND status='created') or status ='assign to hq') and is_approved = 1 ORDER BY cn_datetime desc; SELECT * FROM users WHERE position='driver';"
+            var condition=''
+            var sortcondition='order by cn_datetime desc'
+
+            if(sortby!=undefined && sortby!='' && order!=undefined && order!='')
+            {
+                sortcondition ="ORDER BY " + sortby + " " + order + "";
+            }
+            if(search!=undefined && search!='')
+            {
+                condition ="and (c.cn_no like '%"+search+"%' or c.shipper_code like '%"+search+"%' or  c.receiver_name like '%"+search+"%' or  c.destination_code like '%"+search+"%' )";
+            }
+
+            var totalnumber=0
+            var totalnumberofrecords="select COUNT(*) AS totalcount from consignment c where ((region='HQ' and status='created') or status='assign to hq') and is_approved = 1 "+condition+" ORDER BY cn_datetime desc;SELECT count(*) FROM users WHERE position='driver'";
+            var totalnumberdata=await commonFunction.getQueryResults(totalnumberofrecords);
+
+        
+            total=totalnumberdata[0]
+            totalnumber=total[0].totalcount
+       
+        let query = "SELECT * FROM consignment WHERE ((region = 'HQ' AND status='created') or status ='assign to hq') and is_approved = 1  " + sortcondition + " limit " + skip + "," + limit + "; SELECT * FROM users WHERE position='driver';"
+
+        if(search!=undefined && search!='')
+        {
+            query = "SELECT * FROM consignment WHERE ((region = 'HQ' AND status='created') or status ='assign to hq') and is_approved = 1  and (cn_no like '%"+search+"%' or shipper_code like '%"+search+"%' or  receiver_name like '%"+search+"%' or  destination_code like '%"+search+"%' ) " + sortcondition + " ; SELECT * FROM users WHERE position='driver';"
+        }
 
         connection.query(query, (err,rows) => {
             if(err){
@@ -70,12 +102,100 @@ module.exports = {
             } else {
                 res.json({
                     status: 1,
-                    data:rows
+                    data:rows,
+                    totalnumber
                 })
             }
             
         })
     },
+
+    getConsignmentSouth: async(req,res) => { 
+        var limit = (req.body.limit != undefined && req.body.limit != '') ? parseInt(req.body.limit) : 25;
+        var sortby=req.body.sortby;
+        var order=req.body.order
+                var page = (req.body.page != undefined && req.body.page != '') ? parseInt(req.body.page) : 1;
+                    var skip = ((page - 1) * limit);
+                   // var filter_id = req.body.filter_id;
+                    var search=req.body.search;
+        
+                    var condition=''
+                    var sortcondition='order by cn_datetime desc'
+        
+                    if(sortby!=undefined && sortby!='' && order!=undefined && order!='')
+                    {
+                        sortcondition ="ORDER BY " + sortby + " " + order + "";
+                    }
+                    if(search!=undefined && search!='')
+                    {
+                        condition ="and (c.cn_no like '%"+search+"%' or c.shipper_code like '%"+search+"%' or  c.receiver_name like '%"+search+"%' or  c.destination_code like '%"+search+"%' )";
+                    }
+        
+                    var totalnumber=0
+                    var totalnumberofrecords="select COUNT(*) AS totalcount from consignment c where ((region='SOUTH' and status='created') or status='assign to south') and is_approved = 1 "+condition+" ;SELECT count(*) FROM users WHERE position='driver'";
+                    var totalnumberdata=await commonFunction.getQueryResults(totalnumberofrecords);
+        
+                
+                    total=totalnumberdata[0]
+                    totalnumber=total[0].totalcount
+
+
+        let query = "SELECT * FROM consignment where ((region='SOUTH' and status='created') or status='assign to south') and is_approved = 1  " + sortcondition + " limit " + skip + "," + limit + "; SELECT * FROM users WHERE position='driver';"
+
+        if(search!=undefined && search!='')
+        {
+            query = "SELECT * FROM consignment where ((region='SOUTH' and status='created') or status='assign to south') and is_approved = 1 and (cn_no like '%"+search+"%' or shipper_code like '%"+search+"%' or  receiver_name like '%"+search+"%' or  destination_code like '%"+search+"%' ) " + sortcondition + ";SELECT * FROM users WHERE position='driver';"
+        }
+
+        connection.query(query, (err,rows) => {
+            if(err){
+                console.log(err)
+                res.json({
+                    status:false,
+                    message:'there are some error with query'
+                    })
+            } else if (rows.length == 0 ){
+                res.json({
+                    status:false,
+                    message:"No results found"
+                   });
+            } else {
+                res.json({
+                    status: 1,
+                    data:rows,
+                    totalnumber
+                })
+            }
+            
+        })
+    },
+
+
+
+//sep14 backup
+    // getConsignmentHq: (req,res) => { 
+    //     let query = "SELECT * FROM consignment WHERE ((region = 'HQ' AND status='created') or status ='assign to hq') and is_approved = 1 ORDER BY cn_datetime desc; SELECT * FROM users WHERE position='driver';"
+
+    //     connection.query(query, (err,rows) => {
+    //         if(err){
+    //             res.json({
+    //                 status:false,
+    //                 message:'there are some error with query'
+    //                 })
+    //         } else if (rows.length == 0 ){
+    //             res.json({
+    //                 status:false,
+    //                 message:"No results found"
+    //                });
+    //         } else {
+    //             res.json({
+    //                 status: 1,
+    //                 data:rows
+    //             })
+    //         }
+            
+    //     })
+    // },
     getConsignmentNorth: async(req,res) => { 
 
         var limit = (req.body.limit != undefined && req.body.limit != '') ? parseInt(req.body.limit) : 25;
@@ -168,30 +288,33 @@ var order=req.body.order
     //     })
     // },
 
-    getConsignmentSouth: (req,res) => { 
-        let query = "SELECT * FROM consignment where ((region='SOUTH' and status='created') or status='assign to south') and is_approved = 1 ORDER BY cn_datetime desc; SELECT * FROM users WHERE position='driver';"
 
-        connection.query(query, (err,rows) => {
-            if(err){
-                console.log(query)
-                res.json({
-                    status:false,
-                    message:'there are some error with query'
-                    })
-            } else if (rows.length == 0 ){
-                res.json({
-                    status:false,
-                    message:"No results found"
-                   });
-            } else {
-                res.json({
-                    status: 1,
-                    data:rows
-                })
-            }
+    //sep14 backup
+
+    // getConsignmentSouth: (req,res) => { 
+    //     let query = "SELECT * FROM consignment where ((region='SOUTH' and status='created') or status='assign to south') and is_approved = 1 ORDER BY cn_datetime desc; SELECT * FROM users WHERE position='driver';"
+
+    //     connection.query(query, (err,rows) => {
+    //         if(err){
+    //             console.log(query)
+    //             res.json({
+    //                 status:false,
+    //                 message:'there are some error with query'
+    //                 })
+    //         } else if (rows.length == 0 ){
+    //             res.json({
+    //                 status:false,
+    //                 message:"No results found"
+    //                });
+    //         } else {
+    //             res.json({
+    //                 status: 1,
+    //                 data:rows
+    //             })
+    //         }
             
-        })
-    },
+    //     })
+    // },
 
     postConsignmentHq: (req, res) => {
         let today=moment().format('YYYY-MM-DD')

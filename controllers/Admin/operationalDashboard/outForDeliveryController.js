@@ -993,7 +993,7 @@ totalnumber=totalnumberdata[0].totalcount
 
     deletePod : (req,res) => {
         
-        let cn_no = req.params.cn_no;
+        let cn_no = req.body.cn_no;
 
         console.log("delete pod fnction");
 
