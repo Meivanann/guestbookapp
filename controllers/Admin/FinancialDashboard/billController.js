@@ -834,11 +834,12 @@ let newobject={ }
             'bill_id': bill_id,
             paymentdate:today,
             money_type:2,
-            category:0
+            category:0,
+            'vendor_id': vendor_id
 
         }
         var accountobject={payment_type:payment_method,account:21,amount:amount_paid,type:2,debit:amount_paid,credit:0,'bill_id': bill_id,paymentdate:today,money_type:2,
-        category:0}
+        category:0,'vendor_id': vendor_id}
 
 
 
@@ -876,7 +877,7 @@ let newobject={ }
 
 
                         let paymentvalues= payment.map((m) => Object.values(m))
-                        var paymentQuery = "insert payments(payment_type,account,amount,type,debit,credit,bill_id,paymentdate,money_type,category)values ? "
+                        var paymentQuery = "insert payments(payment_type,account,amount,type,debit,credit,bill_id,paymentdate,money_type,category,vendor_id)values ? "
                         connection.query(paymentQuery, [paymentvalues], function (err, datas) {
                             if (error) {
                                 console.log(error);
@@ -923,16 +924,17 @@ let newobject={ }
                                     from_id:5,
                                     payment_method:payment_method,
                                     money_type:2,
-                                    category:0
+                                    category:0,
+                                    'vendor_id': vendor_id
 
                                 }
 
                                 // for account of  payment amount come under credit form bill but account payable account amount come under the debit for bill payment
                                 var accountpayable={type:'Expense',account:21,amount:amount_paid,description:'bill from bill payment',debit:amount_paid,credit:0,bill_no:bill_id,types:'Bill payment',created_on:today,ispayment:1,from_id:5,payment_method:payment_method,money_type:2,
-                                category:0}
+                                category:0,'vendor_id': vendor_id}
                         var array=[accountpayable,o_acc_data]
                         let accountdetailsbill = array.map((m) => Object.values(m))
-                        let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,bill_no,types,created_on,ispayment,from_id,payment_method,money_type,category) values ? "
+                        let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,bill_no,types,created_on,ispayment,from_id,payment_method,money_type,category,vendor_id) values ? "
                         connection.query(acc_query, [accountdetailsbill], function (err, data) {
                             if (err) {
                                 console.log(err)

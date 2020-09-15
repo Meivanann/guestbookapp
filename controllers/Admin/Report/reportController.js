@@ -223,9 +223,14 @@ console.log(paymentaccountQuery)
         let costofgoodsexpensepayment=[];
         let operatingexpensepayment=[]
         var paymentdetails;
-
+        let filter=req.body.filterid
+console.log(req.body)
 var condition=''
 var account_condition=''
+var filter_condition=''
+if (filter!=undefined && filter!='') {
+    filter_condition="and(( a.shipper_code='"+filter+"') or (vendor_id='"+filter+"') and a.vendor_id!='')"
+}
 
 if (account_id!=undefined && account_id!='') {
     account_condition="and a.account='"+account_id+"'"
@@ -251,7 +256,7 @@ var closingbalanceObject={}
         var opeingbalanceObject={}
         var finalreponse=[];
 
-        var  opeingbalance="select *,sum(a.debit-a.credit) as balance   from account_statements as a where     DATE_FORMAT(a.created_on, '%Y-%m-%d')  <  DATE_FORMAT('" + start_date + "','%Y-%m-%d')  " + condition + " "+account_condition+" group by a.account";
+        var  opeingbalance="select *,sum(a.debit-a.credit) as balance   from account_statements as a where     DATE_FORMAT(a.created_on, '%Y-%m-%d')  <  DATE_FORMAT('" + start_date + "','%Y-%m-%d')  " + condition + " "+account_condition+" "+filter_condition+" group by a.account";
         var openingtotalbalance=await commonFunction.getQueryResults(opeingbalance);
     //     if(is_reconcile==1)
     //     {
@@ -263,7 +268,7 @@ var closingbalanceObject={}
     var lastclosingbalance={}
     
 console.log(opeingbalance)
-var  closingbalance="select *,sum(a.debit-a.credit) as balance,sum(a.debit) as totaldebit,sum(a.credit) as totalcredit from account_statements as a where  DATE_FORMAT(a.created_on, '%Y-%m-%d')  >=  DATE_FORMAT('" + start_date + "','%Y-%m-%d') and   DATE_FORMAT(a.created_on, '%Y-%m-%d')  <=  DATE_FORMAT('" + end_date + "','%Y-%m-%d') " + condition + "  "+account_condition+" group by a.account"
+var  closingbalance="select *,sum(a.debit-a.credit) as balance,sum(a.debit) as totaldebit,sum(a.credit) as totalcredit from account_statements as a where  DATE_FORMAT(a.created_on, '%Y-%m-%d')  >=  DATE_FORMAT('" + start_date + "','%Y-%m-%d') and   DATE_FORMAT(a.created_on, '%Y-%m-%d')  <=  DATE_FORMAT('" + end_date + "','%Y-%m-%d') " + condition + "  "+account_condition+" "+filter_condition+" group by a.account"
 //var  closingbalance="select *,sum(a.debit-a.credit) as balance,sum(a.debit) as totaldebit,sum(a.credit) as totalcredit from account_statements as a where     DATE_FORMAT(a.created_on, '%Y-%m-%d')  <=  DATE_FORMAT('" + end_date + "','%Y-%m-%d') " + condition + "  "+account_condition+" group by a.account"
   
  var closingtotalbalance=await commonFunction.getQueryResults(closingbalance);
@@ -279,7 +284,7 @@ var  closingbalance="select *,sum(a.debit-a.credit) as balance,sum(a.debit) as t
         // //billdetailsQuery
         // let billDetailsQuery = "Select * from bill as b inner join  bill_details as bd on b.id=bd.bill_id inner join accounts as ac on ac.id=bd.expense_category where b.bill_date >= '" + start_date + "' AND b.bill_date  <= '" + end_date + "' and b.isdelete = 0 ";
         // let billDetailsdata = await commonFunction.getQueryResults(billDetailsQuery);
-        let transactionQuery = " Select *,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  " + condition + " "+account_condition+" group by a.id order by a.created_on ";
+        let transactionQuery = " Select *,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where DATE_FORMAT(a.created_on,'%Y-%m-%d') >=  DATE('" + start_date + "') AND DATE_FORMAT(a.created_on,'%Y-%m-%d')  <= DATE('" + end_date + "')  " + condition + " "+account_condition+" "+filter_condition+" group by a.id order by a.created_on ";
         //let transactionQuery = " Select *,ad.type as accountype,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  and a.from_id NOT IN (6,7,8,9,10,11) " + condition + " group by a.id ";
         let transactionData = await commonFunction.getQueryResults(transactionQuery);
      

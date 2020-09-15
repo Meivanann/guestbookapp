@@ -1002,7 +1002,8 @@ module.exports = {
             'invoice_id':invoice_no,
             paymentdate:today,
             money_type:1,
-            category:0
+            category:0,
+            "shipper_code" : shipper_code
         }  
         
 
@@ -1017,11 +1018,12 @@ module.exports = {
             'invoice_id':invoice_no,
             paymentdate:today,
             money_type:1,
-            category:0
+            category:0,
+            "shipper_code" : shipper_code
         }   
         
 
-var accountobject={payment_type:payment_method,account:22,amount:amount_paid,type:1,debit:0,credit:amount_paid,'invoice_id':invoice_no, paymentdate:today,money_type:1,category:0}
+var accountobject={payment_type:payment_method,account:22,amount:amount_paid,type:1,debit:0,credit:amount_paid,'invoice_id':invoice_no, paymentdate:today,money_type:1,category:0,"shipper_code" : shipper_code}
 let payment=[]
 payment.push(paymentObject,accountobject,salesbjectpayment)
 // updating the invoice table and recording the payment
@@ -1057,7 +1059,7 @@ payment.push(paymentObject,accountobject,salesbjectpayment)
 
                         
                         let paymentvalues= payment.map((m) => Object.values(m))
-                        var paymentQuery = "insert payments(payment_type,account,amount,type,debit,credit,invoice_id,paymentdate,money_type,category)values ? "
+                        var paymentQuery = "insert payments(payment_type,account,amount,type,debit,credit,invoice_id,paymentdate,money_type,category,shipper_code)values ? "
                         connection.query(paymentQuery,[paymentvalues], function (err, datas) {
                             if (error) {
                                 console.log(error);
@@ -1124,15 +1126,16 @@ payment.push(paymentObject,accountobject,salesbjectpayment)
                                     payment_method:payment_method,
                                     is_profit:0,
                                     money_type:1,
-                                    category:0
+                                    category:0,
+                                    shipper_code:shipper_code
                                 }
    // for account of  payment amount come under debit from invoice but account reciveable account amount come under the credit for invoice payment
-                                var accountrecivable={type:'Income',account:22,amount:amount_paid,description:'invoice payment from invoice',debit:0,credit:amount_paid,invoice_no:invoice_no,types:'invoice payment',created_on:today,ispayment:1,from_id:4,payment_method:payment_method,is_profit:0,money_type:1,category:0}
-                                var salesobject={type:'Income',account:20,amount:amount_paid,description:"invoice "+invoice_no+" payment from invoice",debit:0,credit:amount_paid,invoice_no:invoice_no,types:'invoice payment',created_on:today,ispayment:1,from_id:4,payment_method:payment_method,is_profit:1,money_type:1,category:0}
+                                var accountrecivable={type:'Income',account:22,amount:amount_paid,description:'invoice payment from invoice',debit:0,credit:amount_paid,invoice_no:invoice_no,types:'invoice payment',created_on:today,ispayment:1,from_id:4,payment_method:payment_method,is_profit:0,money_type:1,category:0,shipper_code:shipper_code}
+                                var salesobject={type:'Income',account:20,amount:amount_paid,description:"invoice "+invoice_no+" payment from invoice",debit:0,credit:amount_paid,invoice_no:invoice_no,types:'invoice payment',created_on:today,ispayment:1,from_id:4,payment_method:payment_method,is_profit:1,money_type:1,category:0,shipper_code:shipper_code}
                                 var array=[accountrecivable,o_acc_data,salesobject]
                                 let accountdetailsinvoice = array.map((m) => Object.values(m))
 
-                                let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,invoice_number,types,created_on,ispayment,from_id,payment_method,is_profit,money_type,category)values ? "
+                                let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,invoice_number,types,created_on,ispayment,from_id,payment_method,is_profit,money_type,category,shipper_code)values ? "
                         connection.query(acc_query, [accountdetailsinvoice], function (err, data) {
                             if (err) {
                                 console.log(err)

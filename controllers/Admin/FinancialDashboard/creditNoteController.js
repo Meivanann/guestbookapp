@@ -891,7 +891,8 @@ if (err) {
                     'credit_no':credit_note_id,
                     paymentdate:today,
                     money_type:1,
-                    category:0
+                    category:0,
+                    "shipper_code" : shipper_code
                 }   
         
                 let salesbjectpayment= {
@@ -905,14 +906,15 @@ if (err) {
                     'credit_no':credit_note_id,
                     paymentdate:today,
                     money_type:1,
-                    category:0
+                    category:0,
+                    "shipper_code" : shipper_code
                 } 
         
                 let payment=[]
         payment.push(paymentObject,salesbjectpayment)
         
         let paymentvalues= payment.map((m) => Object.values(m))
-                let acc_payment_query = "INSERT INTO  payments(payment_type,account,amount,type,debit,credit,credit_no,paymentdate,money_type,category)values ?"
+                let acc_payment_query = "INSERT INTO  payments(payment_type,account,amount,type,debit,credit,credit_no,paymentdate,money_type,category,shipper_code)values ?"
             connection.query(acc_payment_query, [paymentvalues], function (lgerr, lgres, fields) {
                 if (lgerr) {
                     console.log(lgerr)
@@ -937,7 +939,8 @@ if (err) {
                     from_id:8,
                     types:'Credit payment',
                     money_type:1,
-                    category:0
+                    category:0,
+                    "shipper_code" : shipper_code
                     
                 }
 
@@ -955,7 +958,8 @@ if (err) {
                     from_id:8,
                     types:'Credit payment',
                     money_type:1,
-                    category:0		
+                    category:0,
+                    "shipper_code" : shipper_code	
                 }
 
                 let o_acc_state_query = "INSERT INTO account_statements SET ?"

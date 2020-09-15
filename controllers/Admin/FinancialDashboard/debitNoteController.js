@@ -606,7 +606,8 @@ newObject={
                     'debit_no':debit_note_id,
                     paymentdate:today,
                     money_type:1,
-                    category:0
+                    category:0,
+                    "shipper_code" : shipper_code,
                 }   
         
                 let salesbjectpayment= {
@@ -620,14 +621,15 @@ newObject={
                     'debit_no':debit_note_id,
                     paymentdate:today,
                     money_type:1,
-                    category:0
+                    category:0,
+                    "shipper_code" : shipper_code,
                 } 
         
                 let payment=[]
         payment.push(paymentObject,salesbjectpayment)
         
         let paymentvalues= payment.map((m) => Object.values(m))
-                let acc_payment_query = "INSERT INTO  payments(payment_type,account,amount,type,debit,credit,debit_no,paymentdate,money_type,category)values ?"
+                let acc_payment_query = "INSERT INTO  payments(payment_type,account,amount,type,debit,credit,debit_no,paymentdate,money_type,category,shipper_code)values ?"
             connection.query(acc_payment_query, [paymentvalues], function (lgerr, lgres, fields) {
                 if (lgerr) {
                     console.log(lgerr)
@@ -672,7 +674,8 @@ newObject={
                     from_id:11,
                     types:'debit payment',
                     money_type:1,
-                    category:0
+                    category:0,
+                    "shipper_code" : shipper_code,
                 }
 
                 var accountrecviable = {
@@ -689,7 +692,8 @@ newObject={
                     from_id:11,
                     types:'debit payment',
                     money_type:1,
-                    category:0	
+                    category:0,
+                    "shipper_code" : shipper_code,
                 }
 
 
