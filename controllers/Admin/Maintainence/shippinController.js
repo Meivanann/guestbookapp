@@ -28,10 +28,35 @@ module.exports = {
         let shipper_code = req.body.shipper_code;
         let shipper_name = req.body.shipper_name;
         let today = new Date();
+    
         
         console.log(shipper_name);
         console.log(shipper_code);
-        let validationQuery = "SELECT * FROM shipping where shipper_code = ? or shipper_name = ?;"
+        var encryptedString = cryptr.encrypt('password');
+        var users={
+            "firstname":req.body.shipper_name,
+            "lastname":req.body.shipper_name,
+            "email":req.body.email,
+            "username":req.body.shipper_code,
+            "password":encryptedString,
+            "position":'Client',
+            "active":1,
+            "created_at":today,
+            "updated_at":today
+        }
+
+        connection.query('select * from users where username = ?', req.body.shipper_code, function(err, rows){
+            if(err){
+                console.log(err);
+            } else if (rows.length === 0){
+                connection.query('INSERT INTO users SET ?',users, function (error, results, fields) {
+                    if (error) {
+                      console.log(error);
+          
+                       
+                    }else{
+                        console.log('klak;',results)
+                        let validationQuery = "SELECT * FROM shipping where shipper_code = ? or shipper_name = ?;"
         let validationData = [shipper_code, shipper_name];
         connection.query(validationQuery, validationData, (err,rows) => { 
             if(err){
@@ -39,7 +64,8 @@ module.exports = {
                     status:false,
                     message: 'there are some error with validation query'
                 })
-            } else if (rows.length == 0 ){
+            } 
+            else if (rows.length == 0 ){
                 
                 //inserting the record in shipping table
                 var shipping_data = {
@@ -59,7 +85,8 @@ module.exports = {
                     'credit_limit'    :  req.body.credit_limit,
                     'term_day'        :  req.body.term_day,
                     // 'invoice_format'  :  req.body.invoice_format,
-                    'deleted_by'      :  ''
+                    'deleted_by'      :  '',
+                    user_id           :  results.insertId
                 }
 
                 connection.query('INSERT INTO shipping SET ?', shipping_data, (err,rows) => {
@@ -99,6 +126,7 @@ module.exports = {
                 })
 
                 //inserting record in accounta table
+
                 var account_data = {
                     'shipper_code' : shipper_code,
                     'shipper_name' : shipper_name,
@@ -116,6 +144,10 @@ module.exports = {
                     }
                 })
 
+
+
+
+//usertable
                 //adding a log
                 var log_data = {
                     "user_id" : req.params.id,
@@ -141,7 +173,137 @@ module.exports = {
                 })
             }
         })
-    },
+   
+                         
+                    }
+                  });
+            }else{
+                 
+            }
+        });
+
+              
+
+         },
+ //sep15backup
+    // store: (req,res) => {
+    //     let shipper_code = req.body.shipper_code;
+    //     let shipper_name = req.body.shipper_name;
+    //     let today = new Date();
+        
+    //     console.log(shipper_name);
+    //     console.log(shipper_code);
+    //     let validationQuery = "SELECT * FROM shipping where shipper_code = ? or shipper_name = ?;"
+    //     let validationData = [shipper_code, shipper_name];
+    //     connection.query(validationQuery, validationData, (err,rows) => { 
+    //         if(err){
+    //             res.json({
+    //                 status:false,
+    //                 message: 'there are some error with validation query'
+    //             })
+    //         } else if (rows.length == 0 ){
+                
+    //             //inserting the record in shipping table
+    //             var shipping_data = {
+    //                 'shipper_code'    :  shipper_code,
+    //                 'shipper_name'    :  shipper_name,
+    //                 'contact'         :  req.body.contact,
+    //                 'gst_id'          :  req.body.gst_id,
+    //                 'address1'        :  req.body.address1,
+    //                 'city'            :  req.body.city,
+    //                 'state'           :  req.body.state,
+    //                 'country'         :  req.body.country,
+    //                 'postcode'        :  req.body.postcode,
+    //                 'telephone'       :  req.body.telephone,
+    //                 'mobile'          :  req.body.mobile,
+    //                 'fax'             :  req.body.fax,
+    //                 'email'           :  req.body.email,
+    //                 'credit_limit'    :  req.body.credit_limit,
+    //                 'term_day'        :  req.body.term_day,
+    //                 // 'invoice_format'  :  req.body.invoice_format,
+    //                 'deleted_by'      :  ''
+    //             }
+
+    //             connection.query('INSERT INTO shipping SET ?', shipping_data, (err,rows) => {
+    //                 if(err){
+    //                     console.log(err);
+    //                 } else {
+    //                     console.log("Shipping record added sucessfully");
+    //                 }
+    //             })
+
+
+    //             //inserting the record in charges table based on shipping
+    //             let chargeQuery = "select distinct destination_code from destination  order by destination_code;"
+    //             connection.query(chargeQuery, (err,rows) => { 
+    //                 if(err){
+    //                     console.log(err);
+    //                 }else{
+    //                     //inserting records in charge table
+    //                     rows.forEach(e => {
+    //                         var charge_data = {
+    //                             'shipper_code'      : shipper_code,
+    //                             'destination_code'  : e.destination_code,
+    //                             'created_by'        : '',
+    //                             'created_on'        : today
+    //                         }
+
+    //                         connection.query('INSERT INTO charges SET ?', charge_data, (err,rows) => {
+    //                             if(err){
+    //                                 console.log(err);
+    //                             } else {
+    //                                 console.log("charge for " + e.destination_code + " added sucessfully");
+    //                             }
+    //                         })
+
+    //                     });
+    //                 }
+    //             })
+
+    //             //inserting record in accounta table
+    //             var account_data = {
+    //                 'shipper_code' : shipper_code,
+    //                 'shipper_name' : shipper_name,
+    //                 'details'      : 'Account created',
+    //                 'amount'       : '0.00',
+    //                 'acc_bal'      : '0.00',
+    //                 'update_time'  : today
+    //             }
+
+    //             connection.query('INSERT INTO shipper_acc SET ?', account_data, (err,rows) => {
+    //                 if(err){
+    //                     console.log(err);
+    //                 } else {
+    //                     console.log("Account- Record added sucessfully");
+    //                 }
+    //             })
+
+    //             //adding a log
+    //             var log_data = {
+    //                 "user_id" : req.params.id,
+    //                 "status": " has created shipper name" + shipper_name + " - " +  shipper_code 
+    //             }
+    //             connection.query('INSERT INTO log SET ?',log_data, function (lgerr, lgres, fields) {
+    //                 if (lgerr) {
+    //                 console.log(lgerr)
+    //                 }else{
+    //                     console.log("log added successfully");
+    //                 }
+    //             });
+
+    //             res.json({
+    //                 status:true,
+    //                 message:'Shipper  Added sucessfully'
+    //             })
+
+    //         } else {
+    //             res.json({
+    //                 status:2,
+    //                 message: 'shipper name / Code Already exists'
+    //             })
+    //         }
+    //     })
+    // },
     
     update: (req,res) => {
         let today = new Date();

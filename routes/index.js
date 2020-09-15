@@ -72,7 +72,8 @@ module.exports = app => {
     //dashboard - Consignment Hq
     app.get('/api/:id/getallconsignments', consignmentController.getAllConsignments);
     app.get('/api/:id/getalltheconsignments', consignmentController.getAllTheConsignments);
-    app.post('/api/:id/getconsignmenthq', consignmentController.getConsignmentHq);
+    app.post('/api/:id/getconsignmenthq', consignmentController.pagnitiongetConsignmentHq);
+    app.get('/api/:id/getconsignmenthq', consignmentController.getConsignmentHq);
     app.post('/api/:id/getconsignmentnorth', consignmentController.getConsignmentNorth);
     app.post('/api/:id/getconsignmentsouth', consignmentController.getConsignmentSouth);
     app.get('/api/:id/getconsignmentsforapproval', dashboardController.getAllConsignmentsForApproval);

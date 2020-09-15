@@ -4,6 +4,29 @@ var moment=require('moment');
 var commonFunction=require('../../commonFunction');   
 module.exports = {
 
+    getConsignmentHq: (req,res) => { 
+        let query = "SELECT * FROM consignment WHERE ((region = 'HQ' AND status='created') or status ='assign to hq') and is_approved = 1 ORDER BY cn_datetime desc; SELECT * FROM users WHERE position='driver';"
+
+        connection.query(query, (err,rows) => {
+            if(err){
+                res.json({
+                    status:false,
+                    message:'there are some error with query'
+                    })
+            } else if (rows.length == 0 ){
+                res.json({
+                    status:false,
+                    message:"No results found"
+                   });
+            } else {
+                res.json({
+                    status: 1,
+                    data:rows
+                })
+            }
+            
+        })
+     },
     getAllConsignments: (req,res) => { 
         let query = "SELECT cn_no FROM consignment where is_approved = 1;"
 
@@ -51,7 +74,7 @@ module.exports = {
             
         })
     },
-    getConsignmentHq: async(req,res) => { 
+    pagnitiongetConsignmentHq: async(req,res) => { 
 
         var limit = (req.body.limit != undefined && req.body.limit != '') ? parseInt(req.body.limit) : 25;
 var sortby=req.body.sortby;
@@ -77,7 +100,7 @@ var order=req.body.order
             var totalnumberofrecords="select COUNT(*) AS totalcount from consignment c where ((region='HQ' and status='created') or status='assign to hq') and is_approved = 1 "+condition+" ORDER BY cn_datetime desc;SELECT count(*) FROM users WHERE position='driver'";
             var totalnumberdata=await commonFunction.getQueryResults(totalnumberofrecords);
 
-        
+        console.log('ssss')
             total=totalnumberdata[0]
             totalnumber=total[0].totalcount
        
