@@ -1,6 +1,6 @@
 var connection = require('./../../../config');
 var _ = require('lodash');
-var moment=require('moment');
+var tmoment=require('moment');
 var commonFunction=require('../../commonFunction');   
 module.exports = {
 
@@ -367,7 +367,7 @@ var order=req.body.order
                     var row = rows[key];
 
                     console.log(row);
-                    var checkingQuery="select  * FROM out_for_delivery WHERE cn_no ='"+ row.id +"'"
+                    var checkingQuery="select  * FROM out_for_delivery WHERE cn_no ='"+ row.cn_no +"'"
                    
 
                     connection.query(checkingQuery, function(err,data){
