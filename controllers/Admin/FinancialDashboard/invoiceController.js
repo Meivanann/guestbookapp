@@ -1355,12 +1355,19 @@ payment.push(paymentObject,accountobject,salesbjectpayment)
         })
     },
 
-    consignmentGenerateInvoice: (req,res) =>{
+    consignmentGenerateInvoice: async(req,res) =>{
         let today = new Date();
         let total_amount = 0, sub_amount = 0, tax_amount = 0, shipper_details, shipper_acc_details, acc_bal = 0;
         let payment_due =req.body.payment_due;
         let invoice_number, code ;
+        let uniquequery="SELECT invoice_no as totalcount FROM invoice order by invoice_no desc limit 1"
+        let uniquedata=await commonFunction.getQueryResults(uniquequery);
 
+        if (uniquedata.length > 0 ) {
+            invoice_number=Number(uniquedata[0].totalcount) + Number(1)
+            }
+
+            console.log(invoice_number)
         let query = "SELECT * FROM consignment where cn_no = ? and is_billed = 0 and is_approved = 1;"
 
 
@@ -1405,7 +1412,7 @@ payment.push(paymentObject,accountobject,salesbjectpayment)
                         acc_bal = parseFloat(shipper_details.acc_bal) + parseFloat(rows[0].total_amount); 
                            // creating an invoice record
                         var invoice_data = {
-                            // "invoice_no"        : invoice_number,
+                             "invoice_no"        : invoice_number,
                             "invoice_date"      : req.body.invoice_date,
                             "shipper_code"      : rows[0].shipper_code,
                             "shipper_name"      : shipper_details.shipper_name,
@@ -1426,7 +1433,7 @@ payment.push(paymentObject,accountobject,salesbjectpayment)
                             if (error) {
                                 console.log(error);
                             }else{
-                                invoice_number = results.insertId;
+                                //invoice_number = results.insertId;
                                 let shipper_acc_update = "UPDATE shipping SET ? where shipper_code = ?";
                                 var shipper_acc_update_data = {
                                     "acc_bal"   :   acc_bal
