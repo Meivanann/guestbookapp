@@ -74,7 +74,7 @@ let balancpaid={}
 
 let paidobject={}
          
-        let unpaidincomequery = "SELECT *,ac.shipper_code as shipper FROM  account_statements as ac  left join shipping as c on c.shipper_code=ac.shipper_code WHERE ac.account=20 and DATE_FORMAT(ac.created_on, '%Y-%m-%d')>= '" + start_date + "' AND DATE_FORMAT(ac.created_on, '%Y-%m-%d')  <= '" + end_date + "'  and ac.ispayment=0   ";
+        let unpaidincomequery = "SELECT *,ac.shipper_code as shipper FROM  account_statements as ac  left join shipping as c on c.shipper_code=ac.shipper_code WHERE ac.account=20 and DATE_FORMAT(ac.created_on, '%Y-%m-%d')>= '" + start_date + "' AND DATE_FORMAT(ac.created_on, '%Y-%m-%d')  <= '" + end_date + "'  and ac.ispayment=0  and ac.from_id!=8 ";
         //let transactionQuery = " Select *,ad.type as accountype,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  and a.from_id NOT IN (6,7,8,9,10,11) " + condition + " group by a.id ";
         let unpaidincomedata = await commonFunction.getQueryResults(unpaidincomequery);
         
@@ -86,7 +86,9 @@ console.log(unpaidincomequery);
         let creditquery = "SELECT *,ac.shipper_code as shipper FROM  account_statements as ac  WHERE ac.account=20 and DATE_FORMAT(ac.created_on, '%Y-%m-%d') >= '" + start_date + "' AND DATE_FORMAT(ac.created_on, '%Y-%m-%d')  <= '" + end_date + "'  and ac.ispayment=0  and ac.from_id=8";
         //let transactionQuery = " Select *,ad.type as accountype,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  and a.from_id NOT IN (6,7,8,9,10,11) " + condition + " group by a.id ";
         let creditdata = await commonFunction.getQueryResults(creditquery);
-         
+        let uncreditquery = "SELECT *,ac.shipper_code as shipper FROM  account_statements as ac  WHERE ac.account=20 and DATE_FORMAT(ac.created_on, '%Y-%m-%d') >= '" + start_date + "' AND DATE_FORMAT(ac.created_on, '%Y-%m-%d')  <= '" + end_date + "'  and ac.ispayment=0  and ac.from_id=8";
+        //let transactionQuery = " Select *,ad.type as accountype,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  and a.from_id NOT IN (6,7,8,9,10,11) " + condition + " group by a.id ";
+        let uncreditdata = await commonFunction.getQueryResults(uncreditquery);
         
 console.log(creditquery);
     if (unpaidincomedata.length > 0 ||paidincomedata.length > 0 ) {
@@ -96,8 +98,14 @@ console.log(creditquery);
             element.credit=element.amount
     
 });
+uncreditdata.forEach(element => {
+    element.debit=element.amount
+    element.credit=0
+
+});
 console.log(paidincomedata.length);
 paidincomedata.push(...creditdata);
+unpaidincomedata.push(...uncreditdata);
 console.log('combined',paidincomedata.length);
 
         paidincomedata.forEach(element => {
@@ -113,7 +121,7 @@ console.log('combined',paidincomedata.length);
             'shipper_name': _.get(objs[0], 'shipper_name'),
             'totalinvoice':  _.sumBy(objs, function (day) {
  
-                return Math.abs(day.credit-day.debit)//Math.abs(Number(day.credit)-Number(day.debit));
+                return day.debit-day.credit//Math.abs(Number(day.credit)-Number(day.debit));
          
             }),
 
