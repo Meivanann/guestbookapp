@@ -1,6 +1,6 @@
 var connection = require('./../../../config');
 var _ = require('lodash');
-var tmoment=require('moment');
+var moment=require('moment');
 var commonFunction=require('../../commonFunction');   
 module.exports = {
 
