@@ -229,6 +229,12 @@ module.exports = app => {
     app.get('/api/getaccounttransaction', transactionController.gettransactionaccounts);
     // client routes starts here
     
+    app.post('/api/client/getconsigmentnorth', clientConsignmentController.getConsignmentNorth);
+    app.post('/api/client/getconsigmentsouth', clientConsignmentController.getConsignmentSouth);
+    app.post('/api/client/getconsigmenthq', clientConsignmentController.getConsignmenthq);
+    app.post('/api/client/consigmentonroad', clientConsignmentController.getclientconsigmentroad);
+    app.post('/api/client/consigmenttocheck', clientConsignmentController.getclientpodcheck);
+    app.post('/api/client/podtobill', clientConsignmentController.getclientPodBill);
     // new consignment routes3
     app.get('/api/:id/generateconsignmentnumber', clinetNewCosignmentController.generateNeConsignmentNumber);
     app.post('/api/:id/client/postnewconsignment', clinetNewCosignmentController.postNewConsignmentClient);
