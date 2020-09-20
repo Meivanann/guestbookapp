@@ -85,6 +85,9 @@ module.exports = {
         let { cnnos, isdone, login_id, descripation } = req.body
         console.log(req.body)
         let message = descripation
+        var assigneddatetime='';
+        var isAssigned=0;
+       let  todaytime=moment().format("YYYY-MM-DD HH:mm:ss")
         let driver_query = "select * from users where id=" + login_id + "";
         let data = await commonFunction.getQueryResults(driver_query)
         let trackingQuery = "insert tracking(cn_no,status,descripation,datetime)values ? ";
@@ -154,7 +157,7 @@ console.log('sss',trackingQuery,err)
                 //pushback functioality 
                // var deletedoneQuery = "delete  from out_for_delivery   where cn_no in( '" + ids + "')";
                // let updatedoneQuery = "update consignment set status=?  where cn_no in( '" + ids + "')";
-               let updatedoneQuery = "update consignment set status=?  where cn_no = ?";
+               let updatedoneQuery = "update consignment set status=?,assignedtime=?,isAssigned=?  where cn_no = ?";
                var deletedoneQuery = "delete  from out_for_delivery   where cn_no =? ";
                 let trackingQuery = "insert tracking(cn_no,status,descripation,datetime)values ? ";
                 let query = "SELECT * FROM consignment where cn_no = ? "
@@ -201,10 +204,15 @@ console.log('sss',trackingQuery,err)
                                      
                                     if(regiondata[0].region === "SOUTH"  && data[0].region != "SOUTH"){
                                         console.clear()
-                                        
+                                        assigneddatetime=todaytime
+                                        isAssigned=1
                                         status = "assign to south";
+                                        
+                                        
                                     }else if (regiondata[0].region === "NORTH"  && data[0].region != "NORTH"){
                                         status = "assign to north";
+                                        assigneddatetime=todaytime
+                                         isAssigned=1
                                     }else {
                                        
                                         status = "assign to hq";
@@ -247,7 +255,7 @@ console.log('sss',trackingQuery,err)
                                     // consigmentQuery = consigmentQuery.substring(0, consigmentQuery.length - 1);
                                     // var query = consigmentQuery +  " ON DUPLICATE KEY UPDATE status=VALUES(status)"
                                     console.log('ss',status,id)
-                                    sql.query(updatedoneQuery,[status,data[0].cn_no], function (err, updatedconsigndata) {
+                                    sql.query(updatedoneQuery,[status,assigneddatetime,isAssigned,data[0].cn_no], function (err, updatedconsigndata) {
                                         if (err) {
                                             return sql.rollback(function () {
                                                  

@@ -2,7 +2,7 @@ var express=require("express");
 var bodyParser=require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
-
+var consignmentcontroller=require('./controllers/Admin/operationalDashboard/consignmentController')
 
 const {
     PORT = 8011,
@@ -117,6 +117,14 @@ var CronJob = require('cron').CronJob;
 }, null, true, 'Asia/Singapore');
 job.start();
 
+
+// var CronJob = require('cron').CronJob;
+// //var job = new CronJob('59 59 23 * * *', function() {
+//     var trackingjob = new CronJob('0 */1 * * * *', function() {
+//     //cron job for moving the consignments which is in out for delivery back to cosignments
+//     consignmentcontroller.trackingcronjob()
+// }, null, true, 'Asia/Kolkata');
+// trackingjob.start();
 
 app.listen(PORT, () => {
      

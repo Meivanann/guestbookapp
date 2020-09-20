@@ -97,7 +97,8 @@ module.exports = {
             "invoice_no":'',
             'is_approved' : 0,
             'is_online' : 1,
-            "descripation" : req.body.descripation
+            "descripation" : req.body.descripation,
+            isReceived:req.body.region=='HQ'?1:0
         }
         //inserting a record in consignmnet table
         let query = "INSERT INTO consignment SET ?"

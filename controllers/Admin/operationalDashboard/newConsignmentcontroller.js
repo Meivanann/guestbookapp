@@ -162,7 +162,9 @@ module.exports = {
                     "remarks":req.body.remarks,
                     "invoice_no":'',
                     "is_approved": 1,
-                    "bill_to" : req.body.bill_to
+                    "bill_to" : req.body.bill_to,
+                    isReceived:req.body.region=='HQ'?1:0
+
                     
                 }
                 //inserting a record in consignmnet table
@@ -310,7 +312,8 @@ module.exports = {
                         "status":"Close",
                         "remarks":req.body.remarks,
                         "bill_to" : req.body.bill_to,
-                        "descripation" : req.body.descripation
+                        "descripation" : req.body.descripation,
+                        isReceived:req.body.region=='HQ'?1:0
                     }
                     out_for_deliverydata={
                         "cn_no":req.body.cn_no,
@@ -364,7 +367,8 @@ module.exports = {
                             "status":status_old,
                             "remarks":req.body.remarks,
                             "bill_to" : req.body.bill_to,
-                            "descripation" : req.body.descripation
+                            "descripation" : req.body.descripation,
+                            isReceived:req.body.region=='HQ'?1:0
                             }
                             out_for_deliverydata={
                                 "cn_no":req.body.cn_no,
@@ -436,7 +440,8 @@ module.exports = {
                             "status":"created",
                             "remarks":req.body.remarks,
                             "bill_to" : req.body.bill_to,
-                            "descripation" : req.body.descripation
+                            "descripation" : req.body.descripation,
+                            isReceived:req.body.region=='HQ'?1:0
                         }
 
                          

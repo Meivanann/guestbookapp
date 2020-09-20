@@ -3,6 +3,173 @@ var _ = require('lodash');
 var moment=require('moment');
 var commonFunction=require('../../commonFunction');   
 module.exports = {
+    trackingcronjob:async (req,res) => { 
+        console.log('sonofgod')
+        let today=moment().format('YYYY-MM-DD HH:mm:ss')
+        let cnoids=[]
+        let assignids=[]
+        var tracking_data;
+        let query = "SELECT * FROM consignment WHERE ((region = 'HQ' AND status='created') or status ='assign to hq') and isReceived=1"
+        let assignedquery = "SELECT * FROM consignment WHERE (status ='assign to north' or status ='assign to south') and isAssigned=1"
+        let assigneddata=await commonFunction.getQueryResults(assignedquery)
+       console.log(assignedquery)
+      
+       
+      
+      
+        connection.query(query, async(err,rows) => {
+            if(err){
+                 console.log(err);
+            } else if (rows.length == 0 ){
+                  console.log('NO DATA FOUND')
+            } else {
+                rows.forEach(element => {
+                    cnoids.push(element.cn_no)
+                });
+               
+                let cnos=cnoids.join('","')
+                console.log('date',cnos)
+
+                let selectedquery = "SELECT * FROM consignment WHERE cn_no in('"+cnoids.join("','")+"')"
+           let data=await commonFunction.getQueryResults(selectedquery)
+
+          
+           if (data.length > 0) {
+            data.forEach(element => {
+
+                var timeminute=moment(moment().format('YYYY-MM-DD HH:mm:ss')).diff(new Date(element.cn_datetime), 'minutes')
+                console.log('timelog',timeminute)
+                if (timeminute > 5) {
+                    var tracking_data2 = {
+                        "cn_no": element.cn_no,
+                        "status": 'ARRANGING  FOR DELIVERY',
+                        "datetime": today
+                    }
+                    connection.query('INSERT INTO tracking SET ?', tracking_data2, (err,rows) => {
+                        if(err){
+                            console.log(err);
+                        } else {
+                            console.log(rows)
+                             if (rows.insertId>0) {
+
+                                let updatedquery = "update  consignment set isReceived=0 where  cn_no ='"+element.cn_no+"'"
+
+                                connection.query(updatedquery, (err,datas) => {
+                                    if(err){
+                                        console.log(err);
+                                    } else {
+                                    }
+                                })
+                             }
+                        }
+                    })
+                    
+                }
+            });
+          
+
+               
+           }
+        
+
+            }
+            
+        })
+
+
+        console.log('sons',moment().format('YYYY-MM-DD HH:mm:ss'))
+console.log('length',assigneddata.length)
+        if (assigneddata.length > 0 ) {
+            assigneddata.forEach(element => {
+                assignids.push(element.cn_no)
+            });
+            let assignidss=assignids.join('","')
+            console.log('sona',assignidss,assignids)
+            let assignedupdatequery = "SELECT * FROM consignment WHERE cn_no in('"+assignids.join("','")+"')"
+            let assignupdatedata=await commonFunction.getQueryResults(assignedupdatequery)
+           console.log('assignedquery',assignedupdatequery)
+           
+            if (assignupdatedata.length > 0) {
+
+                assignupdatedata.forEach(element => {
+                
+                    var timeminute=moment(moment().format('YYYY-MM-DD HH:mm:ss')).diff(new Date(element.assignedtime), 'hours')
+                    console.log('timeline',timeminute,element.assignedtime)
+                    if (timeminute >= 8 && timeminute < 10) {
+        
+                        if (element.status=='assign to north') {
+                             tracking_data = {
+                                "cn_no": element.cn_no,
+                                "status": 'AUTO UPDATE TRANSIT PENANG',
+                                "datetime": today
+                            } 
+                        }
+                        if (element.status=='assign to south') {
+                            console.log('south')
+                            tracking_data = {
+                                "cn_no": element.cn_no,
+                                "status": ' AUTO UPDATE TRANSIT JB',
+                                "datetime": today
+                            }  
+                        }
+                        // var tracking_data2 = {
+                        //     "cn_no": element.cn_no,
+                        //     "status": '',
+                        //     "datetime": today
+                        // }
+                        connection.query('INSERT INTO tracking SET ?', tracking_data, (err,rows) => {
+                            if(err){
+                                console.log(err);
+                            } else {
+                                 if (rows.insertId > 0) {
+        console.log('ssss') 
+                                    let updatedquery = "update   consignment set isAssigned=0 where  cn_no ='"+element.cn_no+"' and ( status='assign to north' or status='assign to south')"
+        
+                                    connection.query(updatedquery, (err,datas) => {
+                                        if(err){
+                                            console.log(err);
+                                        } else {
+                                        }
+                                    })
+                                 }
+                            }
+                        })
+                        
+                    }
+                    if (timeminute > 10) {
+                        var tracking_data2 = {
+                            "cn_no": element.cn_no,
+                            "status": 'ARRANGING  FOR DELIVERY',
+                            "datetime": today
+                        }
+                        connection.query('INSERT INTO tracking SET ?', tracking_data2, (err,rows) => {
+                            if(err){
+                                console.log(err);
+                            } else {
+                                 if (rows.insertId > 0) {
+        
+                                    let updatedquery = "update   consignment set isAssigned=0 where  cn_no ='"+element.cn_no+"'"
+        
+                                    connection.query(updatedquery, (err,datas) => {
+                                        if(err){
+                                            console.log(err);
+                                        } else {
+                                        }
+                                    })
+                                 }
+                            }
+                        })
+                        
+                    }
+                });
+              
+        
+                   
+               }
+
+           }
+
+     },
 
     getConsignmentHq: (req,res) => { 
         let query = "SELECT * FROM consignment WHERE ((region = 'HQ' AND status='created') or status ='assign to hq') and is_approved = 1 ORDER BY cn_datetime desc; SELECT * FROM users WHERE position='driver';"
@@ -343,6 +510,9 @@ var order=req.body.order
         let today=moment().format('YYYY-MM-DD')
         let consignmentIds = req.body.arr;
         let driverName = req.body.driver;
+        var assigneddatetime=''
+        var isAssigned=0
+        let todaytime=moment().format('YYYY-MM-DD HH:mm:ss')
         let consignmentQuery = "SELECT * FROM consignment WHERE id IN ("+ consignmentIds +");"
         let consignments;
         //fetch all the consignment request
@@ -395,17 +565,21 @@ var order=req.body.order
                                         let date_ob = new Date(ts);
             
                                          
-                                        let updateConsignmentQuery = "update consignment set driver_name = ?,  status = ?, expiry_date = ?  where id = ?";
+                                        let updateConsignmentQuery = "update consignment set driver_name = ?,assignedtime=?,  status = ?, expiry_date = ?,isAssigned= ? where id = ?";
                                         if(regrows[0].region === "SOUTH"  && row.region != "SOUTH"){
                                             status = "assign to south";
                                             tracking_status = "TRANSIT JB"
+                                            assigneddatetime=todaytime
+                                            isAssigned=1
                                         }else if (regrows[0].region === "NORTH" && row.region != "NORTH"){
                                             status = "assign to north";
                                             tracking_status = "TRANSIT PENANG"
+                                            assigneddatetime=todaytime
+                                            isAssigned=1
                                         }else {
                                             status = "out for delivery"
                                             tracking_status = "ARRANGING"
-            
+                                            assigneddatetime=''
                                             //out for delivery
                                             var ofd_data={
                                                 'cn_no' : row.cn_no,
@@ -427,7 +601,7 @@ var order=req.body.order
             
                                         }
                                         
-                                        let consignment_data = [driverName, status, req.body.expiry_date ,row.id ];
+                                        let consignment_data = [driverName,assigneddatetime, status, req.body.expiry_date,isAssigned ,row.id ];
                                         // console.log( "region : " + regrows[0].region);
                                         console.log( "status : " + status);
                                         console.log( "cn_no : " + row.cn_no);
@@ -1216,6 +1390,9 @@ var order=req.body.order
         console.log(req.body);
         let data = JSON.parse(req.body.arr);
         let consignmentIds = req.body.arr;
+        var assigneddatetime='';
+        var isAssigned=0;
+       let  todaytime=moment().format("YYYY-MM-DD HH:mm:ss")
         let today = new Date();
         Object.keys(data).forEach(function(key) {
             var row = data[key];
@@ -1233,14 +1410,18 @@ var order=req.body.order
                     }else { 
                         if(regrows[0].region === "SOUTH"  && rowss[0].region != "SOUTH"){
                             status = "assign to south";
+                            assigneddatetime=todaytime
+                            isAssigned=1
                         }else if (regrows[0].region === "NORTH"  && rowss[0].region != "NORTH"){
                             status = "assign to north";
+                            assigneddatetime=todaytime
+                            isAssigned=1
                         }else {
                             status = "assign to hq";
                         }
              
-                            let updateConsignmentQuery = "update consignment set status = ?  where cn_no = ?";
-                            let consignment_data = [ status, rowss[0].cn_no ];
+                            let updateConsignmentQuery = "update consignment set status = ?,isAssigned = ?,assignedtime = ?   where cn_no = ?";
+                            let consignment_data = [ status,isAssigned,assigneddatetime, rowss[0].cn_no ];
                             let delete_tracking = "delete from out_for_delivery where cn_no = ?;"
 
                             connection.query(updateConsignmentQuery, consignment_data, (err,rows) => {
