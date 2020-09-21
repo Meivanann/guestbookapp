@@ -9,8 +9,8 @@ module.exports = {
         let cnoids=[]
         let assignids=[]
         var tracking_data;
-        let query = "SELECT * FROM consignment WHERE ((region = 'HQ' AND status='created') or status ='assign to hq') and isReceived=1"
-        let assignedquery = "SELECT * FROM consignment WHERE (status ='assign to north' or status ='assign to south') and isAssigned=1"
+        let query = "SELECT * FROM consignment WHERE ((region = 'HQ' AND status='created') or status ='assign to hq') and isReceived=1 and is_approved=1"
+        let assignedquery = "SELECT * FROM consignment WHERE (status ='assign to north' or status ='assign to south') and isAssigned=1 and is_approved=1"
         let assigneddata=await commonFunction.getQueryResults(assignedquery)
        console.log(assignedquery)
       
@@ -42,7 +42,7 @@ module.exports = {
                 if (timeminute > 5) {
                     var tracking_data2 = {
                         "cn_no": element.cn_no,
-                        "status": 'ARRANGING  FOR DELIVERY',
+                        "status":'ARRANGING_FOR_DELIVERY',
                         "datetime": today
                     }
                     connection.query('INSERT INTO tracking SET ?', tracking_data2, (err,rows) => {
@@ -95,12 +95,12 @@ console.log('length',assigneddata.length)
                 
                     var timeminute=moment(moment().format('YYYY-MM-DD HH:mm:ss')).diff(new Date(element.assignedtime), 'hours')
                     console.log('timeline',timeminute,element.assignedtime)
-                    if (timeminute >= 8 && timeminute < 10) {
+                    if (timeminute > 8 && timeminute < 10) {
         
                         if (element.status=='assign to north') {
                              tracking_data = {
                                 "cn_no": element.cn_no,
-                                "status": 'AUTO UPDATE TRANSIT PENANG',
+                                "status":'AUTO_UPDATE_TRANSIT_PENANG',
                                 "datetime": today
                             } 
                         }
@@ -108,7 +108,7 @@ console.log('length',assigneddata.length)
                             console.log('south')
                             tracking_data = {
                                 "cn_no": element.cn_no,
-                                "status": ' AUTO UPDATE TRANSIT JB',
+                                "status":'AUTO_UPDATE_TRANSIT_JB',
                                 "datetime": today
                             }  
                         }
@@ -139,7 +139,7 @@ console.log('length',assigneddata.length)
                     if (timeminute > 10) {
                         var tracking_data2 = {
                             "cn_no": element.cn_no,
-                            "status": 'ARRANGING  FOR DELIVERY',
+                            "status": 'ARRANGING_FOR_DELIVERY',
                             "datetime": today
                         }
                         connection.query('INSERT INTO tracking SET ?', tracking_data2, (err,rows) => {
