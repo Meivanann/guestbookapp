@@ -440,7 +440,49 @@ module.exports = {
                     message:"NO Records found"
                 })
             } else {
-                // fetching consignment records
+            let cnolist=rows.length>0&&rows[0].cnolist!=undefined ?rows[0].cnolist.replace(/\s/g, ""):''
+            console.log('kls',cnolist.replace(/\s/g, ""))
+            if (cnolist!=undefined && cnolist!='') {
+                    let cnoarry=cnolist.split(',')
+                    console.log('kls',cnoarry)
+                    let consignment_query = "SELECT * FROM consignment as c left join  out_for_delivery as o  on o.cn_no=c.cn_no where o.cn_no in ('"+cnoarry.join("','")+"') and c.status = 'Close' and c.shipper_code=? and c.is_billed = 1 and c.is_approved = 1 order by c.cn_no asc"
+                    let consignment_data = [rows[0].shipper_code];
+                    connection.query(consignment_query, consignment_data, (consignment_err,consignment_rows) => {
+                        if(err){
+                            console.log(err);
+                        }else{
+    
+                            console.log('consigment',consignment_query);
+                            console.log(_.sumBy(consignment_rows, function (day) {
+     
+                                return  Number(day.total_amount)
+                         
+                            }))
+                            // fetching shipper details
+                            let shipper_query = "select * from shipping where shipper_code = ?"
+                            connection.query(shipper_query, rows[0].shipper_code, (err,shipper_rows) => {
+                                if(err){
+                                    console.log(err);
+                                }else{
+                                    shipper_details = shipper_rows[0];
+                                    res.json({
+                                        status:true,
+                                        consignments: consignment_rows,
+                                        shipper: shipper_details,
+                                        invoice: rows
+                                    })
+                                }
+                            });
+                        }
+                    });
+                }
+                else
+                {
+
+                    //let previewquery = "SELECT * FROM consignment as c left join out_for_delivery as o  on o.cn_no=c.cn_no where (DATE_FORMAT(o.datetime,'%Y-%m-%d') >= DATE('" + start_date + "') AND DATE_FORMAT(o.datetime,'%Y-%m-%d')  <= DATE('" + end_date + "')) and c.status = 'Close' and ( c.shipper_code=? or c.receiver_code = ?) and c.is_billed = 1 and c.is_approved = 1 and c.bill_to!='' order by o.id desc "
+               
+               
+                    // fetching consignment records
                // let consignment_query = "SELECT * FROM consignment as c left join  out_for_delivery as o  on o.cn_no=c.cn_no where (o.datetime between ? and ? ) and c.status = 'Close' and c.shipper_code=? and c.is_billed = 1 and c.is_approved = 1 order by c.cn_no asc"
                let consignment_query = "SELECT * FROM consignment as c left join  out_for_delivery as o  on o.cn_no=c.cn_no where (DATE_FORMAT(o.datetime,'%Y-%m-%d') >= DATE('"+moment(rows[0].consignment_start_date).format('YYYY-MM-DD')+"') and DATE_FORMAT(o.datetime,'%Y-%m-%d') <= DATE('"+moment(rows[0].consignment_end_date).format('YYYY-MM-DD')+"') ) and c.status = 'Close' and c.shipper_code=? and c.is_billed = 1 and c.is_approved = 1 order by c.cn_no asc"
                let consignment_data = [rows[0].shipper_code];
@@ -450,7 +492,7 @@ module.exports = {
                         console.log(err);
                     }else{
 
-                        console.log(consignment_query);
+                        console.log('consigment',consignment_query);
                         console.log(_.sumBy(consignment_rows, function (day) {
  
                             return  Number(day.total_amount)
@@ -474,8 +516,10 @@ module.exports = {
                     }
                 });
             }
-            
+        }
+
         })
+        
        
     },
 
@@ -567,7 +611,42 @@ module.exports = {
         let payment_due =req.body.payment_due;
         let invoice_number=0
         let invoice_date = req.body.invoice_date;
+var result=[]
+var cnoids=[]
+        let cnolistquery = "SELECT * FROM consignment as c left join out_for_delivery as o  on o.cn_no=c.cn_no where (DATE_FORMAT(o.datetime,'%Y-%m-%d') >= DATE('" + start_date + "') AND DATE_FORMAT(o.datetime,'%Y-%m-%d')  <= DATE('" + end_date + "')) and c.status = 'Close' and ( c.shipper_code='" + shipper_code + "' or c.receiver_code = '" + shipper_code + "') and c.is_billed = 0 and c.is_approved = 1 and c.bill_to!='' order by c.cn_no asc "
+        let cndata=await commonFunction.getQueryResults(cnolistquery)
+console.log('skl',cnolistquery)
+        if (cndata.length > 0 ) {
+            Object.keys(cndata).forEach(function(key) {
+                var row = cndata[key];
+                if(row.bill_to!=undefined)
+                {
+                    console.log('ss',row.bill_to);
+                if((row.bill_to === 'shipper' && row.shipper_code === shipper_code) || (row.bill_to === 'receiver' && row.receiver_code === shipper_code)){
+                    console.log('ssss',row.bill_to);
+                   // sub_amount = sub_amount + parseFloat(row.sub_amount);
+                   // tax_amount = tax_amount + parseFloat(row.tax_amount);
+                    result.push(cndata[key]);
 
+                }
+                // else
+                // {
+                //     console.log('correct');
+                    
+                // }
+
+            }
+                
+            });
+        }
+        console.log('array',result)
+
+        if (result.length > 0 ) {
+            result.forEach(element => {
+                cnoids.push(element.cn_no)
+            });
+            }
+            console.log('cnoids',cnoids);
         if (uniquedata.length > 0 ) {
             invoice_number=Number(uniquedata[0].totalcount) + Number(1)
             }
@@ -584,6 +663,7 @@ module.exports = {
                     message:"No Results Found"
                 })
             }else{
+
                 Object.keys(rows).forEach(function(key) {
                     var row = rows[key];
                     if((row.bill_to === 'shipper' && row.shipper_code === shipper_code) || (row.bill_to === 'receiver' && row.receiver_code === shipper_code)){
@@ -633,7 +713,8 @@ module.exports = {
                             "consignment_end_date"  : end_date,
                             debit:total_amount,
                             credit:0,
-                            invoice_no:invoice_number
+                            invoice_no:invoice_number,
+                            cnolist:cnoids.join()
                         };
 
                         let invoice_query = "INSERT INTO invoice SET ?"
