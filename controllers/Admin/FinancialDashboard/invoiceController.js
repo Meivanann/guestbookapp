@@ -1204,7 +1204,8 @@ payment.push(paymentObject,accountobject,salesbjectpayment)
                                     if(err){
                                         console.log(err);
                                     }else{
-                                        acc_bal = parseFloat(shipper_rows[0].acc_bal) - parseFloat(amount_paid); 
+
+                                        acc_bal = parseFloat(shipper_rows.length>0&&shipper_rows[0].acc_bal!=undefined&&shipper_rows[0].acc_bal!=''?shipper_rows[0].acc_bal:0 ) - parseFloat(amount_paid); 
                                         let shipper_acc_update = "UPDATE shipping SET ? where shipper_code = ?";
                                         var shipper_acc_update_data = {
                                             "acc_bal"   :   acc_bal
