@@ -1187,7 +1187,7 @@ console.log('skl',cnolistquery)
         }   
         
 
-var accountobject={payment_type:payment_method,account:22,amount:amount_paid,type:1,debit:0,credit:amount_paid,'invoice_id':invoice_no, paymentdate:today,money_type:1,category:0,"shipper_code" : shipper_code}
+var accountobject={payment_type:payment_method,account:22,amount:amount_paid,type:1,debit:0,credit:amount_paid,'invoice_id':invoice_no, paymentdate:payment_date,money_type:1,category:0,"shipper_code" : shipper_code}
 let payment=[]
 payment.push(paymentObject,accountobject,salesbjectpayment)
 // updating the invoice table and recording the payment
