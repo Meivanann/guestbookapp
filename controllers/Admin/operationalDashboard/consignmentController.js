@@ -277,7 +277,8 @@ var order=req.body.order
         {
             query = "SELECT * FROM consignment WHERE ((region = 'HQ' AND status='created') or status ='assign to hq') and is_approved = 1  and (cn_no like '%"+search+"%' or shipper_code like '%"+search+"%' or  receiver_name like '%"+search+"%' or  destination_code like '%"+search+"%' ) " + sortcondition + " ; SELECT * FROM users WHERE position='driver';"
         }
-
+    
+console.log('hqquery',query)
         connection.query(query, (err,rows) => {
             if(err){
                 res.json({

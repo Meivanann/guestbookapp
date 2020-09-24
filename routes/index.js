@@ -93,6 +93,7 @@ module.exports = app => {
     app.post('/api/:id/postnewconsignment', newConsignmentController.postNewConsignment);
     app.post('/api/:id/updateconsignment', newConsignmentController.updateConsignment);
     app.post('/api/:id/checkconsignmentnote', newConsignmentController.checkConsignmentNote);
+    app.post('/api/invoicepaymentlist', invoiceController.getpaymentlist);
 
     //tracking
     app.post('/api/:id/tracking', trackingController.index);

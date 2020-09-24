@@ -107,6 +107,36 @@ module.exports = {
         })
        
     },
+    getpaymentlist: (req,res) => {
+        console.log(req.params.id);
+        let invoice_no = req.body.invoice_no;
+        // let end_date = req.body.end_date;
+        // let shipper_code = req.body.shipper_code;
+       // let query, data;
+        // let search=req.body.search;
+
+        //console.log(start_date);
+      let query="select * from payments where invoice_id='"+invoice_no+"' and type=1"
+        
+       connection.query(query, (err,rows) => {
+            if(err){
+                console.log(err);
+            } else if (rows.length == 0 ){
+                res.json({
+                    status: 2,
+                    message:"No Results Found"
+                })
+            } else {
+                console.log("results found");
+                res.json({
+                    status: 1,
+                    data:rows
+                })
+            }
+            
+        })
+       
+    },
 
     //backup19Aug
     // getInvoices: (req,res) => {
