@@ -1121,7 +1121,8 @@ console.log('skl',cnolistquery)
         let payment_method = req.body.payment_method;
         let total_amount = req.body.total_amount;
         let shipper_code = req.body.shipper_code;
-        let account=req.body.account
+        let account=req.body.account;
+        let payment_date = req.body.payment_date;
         let acc_bal = 0, amt = 0;
         console.log("record pay,emnt");
         let paymentObject= {
@@ -1133,7 +1134,7 @@ console.log('skl',cnolistquery)
             'debit':amount_paid,
             'credit':0,
             'invoice_id':invoice_no,
-            paymentdate:today,
+            paymentdate:payment_date,
             money_type:1,
             category:0,
             "shipper_code" : shipper_code
@@ -1149,7 +1150,7 @@ console.log('skl',cnolistquery)
             'debit':0,
             'credit':amount_paid,
             'invoice_id':invoice_no,
-            paymentdate:today,
+            paymentdate:payment_date,
             money_type:1,
             category:0,
             "shipper_code" : shipper_code
@@ -1170,14 +1171,14 @@ payment.push(paymentObject,accountobject,salesbjectpayment)
                     var invoice_data = {
                         "amount_paid"       :   parseFloat(invoice_rows[0].amount_paid) + parseFloat(amount_paid),
                         "payment_method"    :   payment_method,
-                        "paid_on"           :   req.body.paid_on,
+                        "paid_on"           :   payment_date,
                         "status"            :   "Paid"
                     }
                 }else{
                     var invoice_data = {
                         "amount_paid"       :   parseFloat(invoice_rows[0].amount_paid) + parseFloat(amount_paid),
                         "payment_method"    :   payment_method,
-                        "paid_on"           :   req.body.paid_on,
+                        "paid_on"           :   payment_date,
                         "status"            :   "Partially Paid"
                     }
                 }
@@ -1228,7 +1229,7 @@ payment.push(paymentObject,accountobject,salesbjectpayment)
                                     "invoice_no"   :  invoice_no,
                                     "description"  :  "Payment for invoice " + invoice_no,
                                     "amount"       :  amount_paid,
-                                    "created_on"   :  today 
+                                    "created_on"   :  payment_date 
                                 }
                                 
                                 let acc_state_query = "INSERT INTO shipper_acc_statements SET ?"
@@ -1252,8 +1253,8 @@ payment.push(paymentObject,accountobject,salesbjectpayment)
                                     "credit"      :  0,
                                     invoice_no:invoice_no,
                                     types:'invoice payment',
-                                    "created_on": today,
-                                    "created_on"   :  today,
+                                    "created_on": payment_date,
+                                    "created_on"   :  payment_date,
                                     ispayment:1,
                                     from_id:4,  //4-invoice payment
                                     payment_method:payment_method,
@@ -1263,8 +1264,8 @@ payment.push(paymentObject,accountobject,salesbjectpayment)
                                     shipper_code:shipper_code
                                 }
    // for account of  payment amount come under debit from invoice but account reciveable account amount come under the credit for invoice payment
-                                var accountrecivable={type:'Income',account:22,amount:amount_paid,description:'invoice payment from invoice',debit:0,credit:amount_paid,invoice_no:invoice_no,types:'invoice payment',created_on:today,ispayment:1,from_id:4,payment_method:payment_method,is_profit:0,money_type:1,category:0,shipper_code:shipper_code}
-                                var salesobject={type:'Income',account:20,amount:amount_paid,description:"invoice "+invoice_no+" payment from invoice",debit:0,credit:amount_paid,invoice_no:invoice_no,types:'invoice payment',created_on:today,ispayment:1,from_id:4,payment_method:payment_method,is_profit:1,money_type:1,category:0,shipper_code:shipper_code}
+                                var accountrecivable={type:'Income',account:22,amount:amount_paid,description:'invoice payment from invoice',debit:0,credit:amount_paid,invoice_no:invoice_no,types:'invoice payment',created_on:payment_date,ispayment:1,from_id:4,payment_method:payment_method,is_profit:0,money_type:1,category:0,shipper_code:shipper_code}
+                                var salesobject={type:'Income',account:20,amount:amount_paid,description:"invoice "+invoice_no+" payment from invoice",debit:0,credit:amount_paid,invoice_no:invoice_no,types:'invoice payment',created_on:payment_date,ispayment:1,from_id:4,payment_method:payment_method,is_profit:1,money_type:1,category:0,shipper_code:shipper_code}
                                 var array=[accountrecivable,o_acc_data,salesobject]
                                 let accountdetailsinvoice = array.map((m) => Object.values(m))
 

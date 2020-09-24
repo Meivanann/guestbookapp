@@ -817,6 +817,7 @@ let newobject={ }
         console.log(req.body);
         let today = new Date();
         let bill_id = req.body.id;
+        let payment_date = req.body.payment_date;
         let amount_paid = req.body.amount_paid;
         let account=req.body.account;
         let payment_method = req.body.payment_method;
@@ -832,13 +833,13 @@ let newobject={ }
             'debit': 0,
             'credit': amount_paid,
             'bill_id': bill_id,
-            paymentdate:today,
+            paymentdate:payment_date,
             money_type:2,
             category:0,
             'vendor_id': vendor_id
 
         }
-        var accountobject={payment_type:payment_method,account:21,amount:amount_paid,type:2,debit:amount_paid,credit:0,'bill_id': bill_id,paymentdate:today,money_type:2,
+        var accountobject={payment_type:payment_method,account:21,amount:amount_paid,type:2,debit:amount_paid,credit:0,'bill_id': bill_id,paymentdate:payment_date,money_type:2,
         category:0,'vendor_id': vendor_id}
 
 
@@ -855,14 +856,14 @@ let newobject={ }
                     var bill_data = {
                         "amount_paid": parseFloat(results[0].amount_paid) + parseFloat(amount_paid),
                         "payment_method": payment_method,
-                        "paid_on": today,
+                        "paid_on": payment_date,
                         "status": "Paid"
                     }
                 } else {
                     var bill_data = {
                         "amount_paid": parseFloat(results[0].amount_paid) + parseFloat(amount_paid),
                         "payment_method": payment_method,
-                        "paid_on": today,
+                        "paid_on": payment_date,
                         "status": "Partially Paid"
                     }
                 }
@@ -919,7 +920,7 @@ let newobject={ }
                                     
                                     bill_no:bill_id,
                                     types:'Bill payment',
-                                    "created_on": today,
+                                    "created_on": payment_date,
                                     ispayment:1,
                                     from_id:5,
                                     payment_method:payment_method,
@@ -930,7 +931,7 @@ let newobject={ }
                                 }
 
                                 // for account of  payment amount come under credit form bill but account payable account amount come under the debit for bill payment
-                                var accountpayable={type:'Expense',account:21,amount:amount_paid,description:'bill from bill payment',debit:amount_paid,credit:0,bill_no:bill_id,types:'Bill payment',created_on:today,ispayment:1,from_id:5,payment_method:payment_method,money_type:2,
+                                var accountpayable={type:'Expense',account:21,amount:amount_paid,description:'bill from bill payment',debit:amount_paid,credit:0,bill_no:bill_id,types:'Bill payment',created_on:payment_date,ispayment:1,from_id:5,payment_method:payment_method,money_type:2,
                                 category:0,'vendor_id': vendor_id}
                         var array=[accountpayable,o_acc_data]
                         let accountdetailsbill = array.map((m) => Object.values(m))
