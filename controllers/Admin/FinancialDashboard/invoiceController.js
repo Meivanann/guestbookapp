@@ -427,10 +427,10 @@ module.exports = {
     //     }
     // },
 
-    checkInvoice: (req,res) => {
+    checkInvoice: async(req,res) => {
         let invoice_no = req.params.invoice_no;
         let query = "SELECT * FROM invoice where invoice_no = ?;"
-       connection.query(query, invoice_no, (err,rows) => {
+       connection.query(query, invoice_no, async(err,rows) => {
             if(err){
                 console.log(err);
             } else if (rows.length == 0 ){
@@ -440,6 +440,44 @@ module.exports = {
                     message:"NO Records found"
                 })
             } else {
+let cnoids=[]
+                let updatequery = "SELECT * FROM consignment as c left join out_for_delivery as o  on o.cn_no=c.cn_no where (DATE_FORMAT(o.datetime,'%Y-%m-%d') >= DATE('"+moment(rows[0].consignment_start_date).format('YYYY-MM-DD')+"') AND DATE_FORMAT(o.datetime,'%Y-%m-%d')  <= DATE('"+moment(rows[0].consignment_end_date).format('YYYY-MM-DD')+"')) and c.status = 'Close' and ( c.shipper_code='"+rows[0].shipper_code+"') and c.is_billed = 1 and c.is_approved = 1 and c.bill_to!='' order by c.cn_no asc "
+                let updatedata=await commonFunction.getQueryResults(updatequery);
+                console.log('updatedquery', updatequery)
+if (updatedata.length > 0 ) {
+ let sumtotal=   _.sumBy(updatedata, function (day) {
+     
+        return  Number(day.total_amount)
+ 
+    })
+    updatedata.forEach(element => {
+       // cnoids.push(element.cn_no)
+
+        if(element.bill_to!=undefined)
+        {
+            console.log('ss',element.bill_to);
+        if((element.bill_to === 'shipper' && element.shipper_code === rows[0].shipper_code) || (element.bill_to === 'receiver' && element.receiver_code === rows[0].shipper_code)){
+            //console.log('ssss',row.bill_to);
+             
+            cnoids.push(element.cn_no);
+
+        }
+        // else
+        // {
+        //     console.log('correct');
+            
+        // }
+
+    }
+    });
+    console.clear()
+    console.log('updated',sumtotal)
+
+ 
+    
+}
+                
+
             let cnolist=rows.length>0&&rows[0].cnolist!=undefined ?rows[0].cnolist.replace(/\s/g, ""):''
             console.log('kls',cnolist.replace(/\s/g, ""))
             if (cnolist!=undefined && cnolist!='') {
@@ -453,7 +491,7 @@ module.exports = {
                         }else{
     
                             console.log('consigment',consignment_query);
-                            console.log(_.sumBy(consignment_rows, function (day) {
+                            console.log('cnoarray',_.sumBy(consignment_rows, function (day) {
      
                                 return  Number(day.total_amount)
                          
@@ -493,7 +531,7 @@ module.exports = {
                     }else{
 
                         console.log('consigment',consignment_query);
-                        console.log(_.sumBy(consignment_rows, function (day) {
+                        console.log('consigmentsection',_.sumBy(consignment_rows, function (day) {
  
                             return  Number(day.total_amount)
                      
@@ -957,10 +995,17 @@ console.log('skl',cnolistquery)
                         }
                     });
                 }else{
-                    let start_date=moment(invoice_row.consignment_start_date).format('YYYY-MM-DD');
-                    let end_date=moment(invoice_row.consignment_end_date).format('YYYY-MM-DD')
-                    let consignment_query = "SELECT * FROM consignment as c INNER JOIN out_for_delivery as o on o.cn_no=c.cn_no where (DATE_FORMAT(o.datetime,'%Y-%m-%d') >= DATE('"+start_date+"') and DATE_FORMAT(o.datetime,'%Y-%m-%d') <= DATE('"+end_date+"') )  and c.status = 'Close' and ( c.shipper_code=? or c.receiver_code = ?) and c.is_billed = 1 and c.is_approved = 1;"
-                    let consignment_data = [invoice_row.shipper_code, invoice_row.shipper_code];
+                    let cnoarry=[]
+                    let cnolist=invoice_rows.length>0&&invoice_rows[0].cnolist!=undefined ?invoice_rows[0].cnolist.replace(/\s/g, ""):''
+            console.log('kls',cnolist.replace(/\s/g, ""))
+            if (cnolist!=undefined && cnolist!='') {
+                     cnoarry=cnolist.split(',')
+                }  
+                 // let start_date=moment(invoice_row.consignment_start_date).format('YYYY-MM-DD');
+                  //  let end_date=moment(invoice_row.consignment_end_date).format('YYYY-MM-DD')
+                   // let consignment_query = "SELECT * FROM consignment as c INNER JOIN out_for_delivery as o on o.cn_no=c.cn_no where (DATE_FORMAT(o.datetime,'%Y-%m-%d') >= DATE('"+start_date+"') and DATE_FORMAT(o.datetime,'%Y-%m-%d') <= DATE('"+end_date+"') )  and c.status = 'Close' and ( c.shipper_code=? or c.receiver_code = ?) and c.is_billed = 1 and c.is_approved = 1;"
+                   let consignment_query = "SELECT * FROM consignment as c INNER JOIN out_for_delivery as o on o.cn_no=c.cn_no where o.cn_no in ('"+cnoarry.join("','")+"')  and c.status = 'Close' and ( c.shipper_code=? or c.receiver_code = ?) and c.is_billed = 1 and c.is_approved = 1;"
+                   let consignment_data = [invoice_row.shipper_code, invoice_row.shipper_code];
                     // let consignment_query = "SELECT * FROM consignment where (cn_datetime between ? and ? ) and status = 'Close' and ( shipper_code=? or receiver_code = ?) and is_billed = 1 and is_approved = 1;"
                     // let consignment_data = [invoice_row.consignment_start_date, invoice_row.consignment_end_date, invoice_row.shipper_code, invoice_row.shipper_code];
             
@@ -1505,7 +1550,8 @@ payment.push(paymentObject,accountobject,salesbjectpayment)
                             "payment_due_date"  : req.body.payment_due,
                             "consignment_start_date" : null,
                             "consignment_end_date"  : null,
-                            "cn_no" : req.body.cn_no
+                            "cn_no" : req.body.cn_no,
+                            "cnolist" : req.body.cn_no
                         };
 
                         let invoice_query = "INSERT INTO invoice SET ?"
