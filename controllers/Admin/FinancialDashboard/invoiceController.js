@@ -757,10 +757,15 @@ console.log('skl',cnolistquery)
 
                         let invoice_query = "INSERT INTO invoice SET ?"
 
-                        connection.query(invoice_query,invoice_data, function (error, results, fields) {
+                        connection.query(invoice_query,invoice_data, async function (error, results, fields) {
                             if (error) {
                                 console.log(error);
                             }else{
+
+                                console.log('results',results);
+                                console.log('invoicenumber',invoice_number);
+                                let invoiceupdatequery="UPDATE consignment as c SET c.invoice_no='"+invoice_number+"' where c.cn_no in ('"+cnoids.join("','")+"') ";
+                                let invoiceupdatedata=await commonFunction.getQueryResults(invoiceupdatequery)
                                 //invoice_number = results.insertId;
                                 let shipper_acc_update = "UPDATE shipping SET ? where shipper_code = ?";
                                 var shipper_acc_update_data = {
@@ -967,7 +972,8 @@ console.log('skl',cnolistquery)
                 if(invoice_row.cn_no != null && invoice_row != ""){
 
                     var consignment_update_datas = {
-                        "is_billed"   :   0
+                        "is_billed"   :   0,
+                        "invoice_no"   :   0
                     }
                     let consignment_update_data = [consignment_update_datas ,invoice_row.cn_no];
 
@@ -1008,7 +1014,7 @@ console.log('skl',cnolistquery)
                    let consignment_data = [invoice_row.shipper_code, invoice_row.shipper_code];
                     // let consignment_query = "SELECT * FROM consignment where (cn_datetime between ? and ? ) and status = 'Close' and ( shipper_code=? or receiver_code = ?) and is_billed = 1 and is_approved = 1;"
                     // let consignment_data = [invoice_row.consignment_start_date, invoice_row.consignment_end_date, invoice_row.shipper_code, invoice_row.shipper_code];
-            
+            console.log('cnolos',consignment_query)
                     connection.query(consignment_query, consignment_data, async(consignment_err,consignment_rows) => {
                         if(consignment_err){
                             console.log(consignment_err);
@@ -1020,7 +1026,8 @@ console.log('skl',cnolistquery)
                                 if((row.bill_to === 'shipper' && row.shipper_code === invoice_row.shipper_code) || (row.bill_to === 'receiver' && row.receiver_code === invoice_row.shipper_code)){
                      
                                     var consignment_update_datas = {
-                                        "is_billed"   :   0
+                                        "is_billed"   :   0,
+                                        "invoice_no"   :   0
                                     }
                                     let consignment_update_data = [consignment_update_datas ,row.cn_no];
             
@@ -1556,10 +1563,15 @@ payment.push(paymentObject,accountobject,salesbjectpayment)
 
                         let invoice_query = "INSERT INTO invoice SET ?"
 
-                        connection.query(invoice_query,invoice_data, function (error, results, fields) {
+                        connection.query(invoice_query,invoice_data, async function (error, results, fields) {
                             if (error) {
                                 console.log(error);
                             }else{
+
+                                console.log('results',results);
+                                console.log('invoicenumber',invoice_number);
+                                let invoiceupdatequery="UPDATE consignment as c SET c.invoice_no='"+invoice_number+"' where c.cn_no = '"+req.body.cn_no+"' ";
+                                let invoiceupdatedata=await commonFunction.getQueryResults(invoiceupdatequery)
                                 //invoice_number = results.insertId;
                                 let shipper_acc_update = "UPDATE shipping SET ? where shipper_code = ?";
                                 var shipper_acc_update_data = {
