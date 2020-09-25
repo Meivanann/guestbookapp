@@ -426,7 +426,7 @@ var order=req.body.order
 
         if(search!=undefined && search!='')
         {
-            query = "SELECT * FROM consignment where ((region='NORTH' and status='created') or status='assign to north') and is_approved = 1 and (cn_no like '%"+search+"%' or shipper_code like '%"+search+"%' or  receiver_name like '%"+search+"%' or  destination_code like '%"+search+"%' ) " + sortcondition + " ;SELECT * FROM users WHERE position='driver';"
+            query = "SELECT * FROM consignment where ((region='NORTH' and status='created') or status='assign to north') and is_approved = 1 and (cn_no like '%"+search+"%' or shipper_name like '%"+search+"%' or  receiver_name like '%"+search+"%' or  destination_code like '%"+search+"%' ) " + sortcondition + " ;SELECT * FROM users WHERE position='driver';"
         }
         console.log('ss',query)
 
@@ -800,7 +800,7 @@ var order=req.body.order
         let consignmentIds = req.body.arr;
         let driverName = req.body.driver;
         let consignmentQuery = "SELECT * FROM consignment WHERE id IN ("+ consignmentIds +");"
-
+console.log('name',consignmentQuery)
         //fetch all the consignment request
         connection.query(consignmentQuery, (err, rows) => {
             if(err){
