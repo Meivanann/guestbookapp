@@ -95,7 +95,7 @@ module.exports = {
             if(password==decryptedString){
               if(results[0].active === 1){
                 req.session.userId = results[0].id;
-                let imagesfolder=results[0].imageurl
+                let imagesfolder=results.length>0&&results[0].imageurl!=undefined&&results[0].imageurl!=''?results[0].imageurl:''
                 var filePath = COMMONURL.SERVERURL+ ':' + COMMONURL.SERVERPORT + '/'+imagesfolder;
                 // var filePath = COMMONURL.SERVERURL+ ':' + COMMONURL.SERVERPORT + '/'+imagesfolder;
                 res.json({

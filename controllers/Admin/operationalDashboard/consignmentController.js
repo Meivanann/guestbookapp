@@ -43,7 +43,8 @@ module.exports = {
                     var tracking_data2 = {
                         "cn_no": element.cn_no,
                         "status":'ARRANGING_FOR_DELIVERY',
-                        "datetime": today
+                        "datetime": today,
+                        isold:1
                     }
                     connection.query('INSERT INTO tracking SET ?', tracking_data2, (err,rows) => {
                         if(err){
@@ -101,7 +102,8 @@ console.log('length',assigneddata.length)
                              tracking_data = {
                                 "cn_no": element.cn_no,
                                 "status":'AUTO_UPDATE_TRANSIT_PENANG',
-                                "datetime": today
+                                "datetime": today,
+                                isold:1
                             } 
                         }
                         if (element.status=='assign to south') {
@@ -109,7 +111,8 @@ console.log('length',assigneddata.length)
                             tracking_data = {
                                 "cn_no": element.cn_no,
                                 "status":'AUTO_UPDATE_TRANSIT_JB',
-                                "datetime": today
+                                "datetime": today,
+                                isold:1
                             }  
                         }
                         // var tracking_data2 = {
@@ -140,7 +143,9 @@ console.log('length',assigneddata.length)
                         var tracking_data2 = {
                             "cn_no": element.cn_no,
                             "status": 'ARRANGING_FOR_DELIVERY',
-                            "datetime": today
+                            "datetime": today,
+                            isold:1
+                            
                         }
                         connection.query('INSERT INTO tracking SET ?', tracking_data2, (err,rows) => {
                             if(err){
@@ -260,7 +265,7 @@ var order=req.body.order
             }
             if(search!=undefined && search!='')
             {
-                condition ="and (c.cn_no like '%"+search+"%' or c.shipper_code like '%"+search+"%' or  c.receiver_name like '%"+search+"%' or  c.destination_code like '%"+search+"%' )";
+                condition ="and (c.cn_no like '%"+search+"%' or c.shipper_name like '%"+search+"%' or  c.receiver_name like '%"+search+"%' or  c.destination_code like '%"+search+"%' )";
             }
 
             var totalnumber=0
@@ -275,7 +280,7 @@ var order=req.body.order
 
         if(search!=undefined && search!='')
         {
-            query = "SELECT * FROM consignment WHERE ((region = 'HQ' AND status='created') or status ='assign to hq') and is_approved = 1  and (cn_no like '%"+search+"%' or shipper_code like '%"+search+"%' or  receiver_name like '%"+search+"%' or  destination_code like '%"+search+"%' ) " + sortcondition + " ; SELECT * FROM users WHERE position='driver';"
+            query = "SELECT * FROM consignment WHERE ((region = 'HQ' AND status='created') or status ='assign to hq') and is_approved = 1  and (cn_no like '%"+search+"%' or shipper_name like '%"+search+"%' or  receiver_name like '%"+search+"%' or  destination_code like '%"+search+"%' ) " + sortcondition + " ; SELECT * FROM users WHERE position='driver';"
         }
     
 console.log('hqquery',query)
@@ -319,7 +324,7 @@ console.log('hqquery',query)
                     }
                     if(search!=undefined && search!='')
                     {
-                        condition ="and (c.cn_no like '%"+search+"%' or c.shipper_code like '%"+search+"%' or  c.receiver_name like '%"+search+"%' or  c.destination_code like '%"+search+"%' )";
+                        condition ="and (c.cn_no like '%"+search+"%' or c.shipper_name like '%"+search+"%' or  c.receiver_name like '%"+search+"%' or  c.destination_code like '%"+search+"%' )";
                     }
         
                     var totalnumber=0
@@ -335,7 +340,7 @@ console.log('hqquery',query)
 
         if(search!=undefined && search!='')
         {
-            query = "SELECT * FROM consignment where ((region='SOUTH' and status='created') or status='assign to south') and is_approved = 1 and (cn_no like '%"+search+"%' or shipper_code like '%"+search+"%' or  receiver_name like '%"+search+"%' or  destination_code like '%"+search+"%' ) " + sortcondition + ";SELECT * FROM users WHERE position='driver';"
+            query = "SELECT * FROM consignment where ((region='SOUTH' and status='created') or status='assign to south') and is_approved = 1 and (cn_no like '%"+search+"%' or shipper_name like '%"+search+"%' or  receiver_name like '%"+search+"%' or  destination_code like '%"+search+"%' ) " + sortcondition + ";SELECT * FROM users WHERE position='driver';"
         }
 
         connection.query(query, (err,rows) => {
@@ -406,7 +411,7 @@ var order=req.body.order
             }
             if(search!=undefined && search!='')
             {
-                condition ="and (c.cn_no like '%"+search+"%' or c.shipper_code like '%"+search+"%' or  c.receiver_name like '%"+search+"%' or  c.destination_code like '%"+search+"%' )";
+                condition ="and (c.cn_no like '%"+search+"%' or c.shipper_name like '%"+search+"%' or  c.receiver_name like '%"+search+"%' or  c.destination_code like '%"+search+"%' )";
             }
 
             var totalnumber=0
@@ -619,6 +624,7 @@ var order=req.body.order
                                             "cn_no":row.cn_no,
                                             "status":tracking_status,
                                             "datetime":date_ob,
+                                            isold:1
                                         }
                                         connection.query('INSERT INTO tracking SET ?',tracking_data, function (trerr, trres, fields) {
                                             if (trerr) {
@@ -750,6 +756,7 @@ var order=req.body.order
                                 "cn_no":row.cn_no,
                                 "status":out_for_deleivery_status,
                                 "datetime":date_ob,
+                                isold:1
                             }
                             connection.query('INSERT INTO tracking SET ?',tracking_data, function (trerr, trres, fields) {
                                 if (trerr) {
@@ -886,6 +893,7 @@ var order=req.body.order
                                     "cn_no":row.cn_no,
                                     "status":out_for_deleivery_status,
                                     "datetime":date_ob,
+                                    isold:1
                                 }
                                 connection.query('INSERT INTO tracking SET ?',tracking_data, function (trerr, trres, fields) {
                                     if (trerr) {

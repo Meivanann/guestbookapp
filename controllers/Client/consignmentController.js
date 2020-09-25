@@ -28,7 +28,7 @@ module.exports = {
                     }
                     if(search!=undefined && search!='')
                     {
-                        condition ="and (c.cn_no like '%"+search+"%' or c.shipper_code like '%"+search+"%' or  c.receiver_name like '%"+search+"%' or  c.destination_code like '%"+search+"%' )";
+                        condition ="and (c.cn_no like '%"+search+"%' or c.shipper_name like '%"+search+"%' or  c.receiver_name like '%"+search+"%' or  c.destination_code like '%"+search+"%' )";
                     }
         
                     var totalnumber=0
@@ -132,7 +132,7 @@ module.exports = {
                     }
                     if(search!=undefined && search!='')
                     {
-                        condition ="and (c.cn_no like '%"+search+"%' or c.shipper_code like '%"+search+"%' or  c.receiver_name like '%"+search+"%' or  c.destination_code like '%"+search+"%' )";
+                        condition ="and (c.cn_no like '%"+search+"%' or c.shipper_name like '%"+search+"%' or  c.receiver_name like '%"+search+"%' or  c.destination_code like '%"+search+"%' )";
                     }
         
                     var totalnumber=0
@@ -202,10 +202,10 @@ module.exports = {
         
         var condition='';
         var sortcondition='order by o.cn_no asc'
-                    if(search!=undefined && search!='')
-                    {
-                        condition ="and c.cn_no='"+search+"'";
-                    }
+        if(search!=undefined && search!='')
+        {
+            condition ="and (c.cn_no like '%"+search+"%' or c.shipper_name like '%"+search+"%' or  c.receiver_name like '%"+search+"%' or  c.destination_code like '%"+search+"%' )";
+        }
         
                     if(sortby!=undefined && sortby!='' && order!=undefined && order!='')
                     {
@@ -223,9 +223,10 @@ module.exports = {
                
                 if(search!=undefined && search!='')
                 {
-                    query ="select o.*, c.quantity, c.expiry_date ,c.cn_datetime from out_for_delivery o, consignment c where o.status = 'In-progress' and o.cn_no = c.cn_no  and o.shipper_code='" + shipper_code + "' and o.cn_no='"+search+"' " + sortcondition + "";
+                    query ="select o.*, c.quantity, c.expiry_date ,c.cn_datetime from out_for_delivery o, consignment c where o.status = 'In-progress' and o.cn_no = c.cn_no  and o.shipper_code='" + shipper_code + "' and  (c.cn_no like '%"+search+"%' or c.shipper_name like '%"+search+"%' or  c.receiver_name like '%"+search+"%' or  c.destination_code like '%"+search+"%' )  " + sortcondition + "";
                 }
                // let query = "select o.*, c.quantity, c.expiry_date ,c.cn_datetime from out_for_delivery o, consignment c where o.status = 'In-progress' and o.cn_no = c.cn_no order by c.cn_no asc;"
+             console.log('roadquery',query)
                connection.query(query,cn_no, (err,rows) => {
                     if(err){
                         console.log(err);
@@ -276,7 +277,7 @@ module.exports = {
                             }
                             if(search!=undefined && search!='')
                             {
-                                condition ="and (c.cn_no like '%"+search+"%' or c.shipper_code like '%"+search+"%' or  c.receiver_name like '%"+search+"%' or  c.destination_code like '%"+search+"%' )";
+                                condition ="and (c.cn_no like '%"+search+"%' or c.shipper_name like '%"+search+"%' or  c.receiver_name like '%"+search+"%' or  c.destination_code like '%"+search+"%' )";
                             }
                 
                             var totalnumber=0
@@ -350,7 +351,7 @@ module.exports = {
                                     }
                                     if(search!=undefined && search!='')
                                     {
-                                        condition ="and (c.cn_no like '%"+search+"%' or c.shipper_code like '%"+search+"%' or  c.receiver_name like '%"+search+"%' or  c.destination_code like '%"+search+"%' )";
+                                        condition ="and (c.cn_no like '%"+search+"%' or c.shipper_name like '%"+search+"%' or  c.receiver_name like '%"+search+"%' or  c.destination_code like '%"+search+"%' )";
                                     }
                         
                                     var totalnumber=0

@@ -28,7 +28,7 @@ var condition='';
 var sortcondition='order by c.cn_no asc'
             if(search!=undefined && search!='')
             {
-                condition ="and (c.cn_no like '%"+search+"%' or c.shipper_code like '%"+search+"%' or  c.receiver_name like '%"+search+"%' or  c.destination_code like '%"+search+"%' )";
+                condition ="and (c.cn_no like '%"+search+"%' or c.shipper_name like '%"+search+"%' or  c.receiver_name like '%"+search+"%' or  c.destination_code like '%"+search+"%' )";
             }
 
             if(sortby!=undefined && sortby!='' && order!=undefined && order!='')
@@ -238,7 +238,8 @@ totalnumber=totalnumberdata[0].totalcount
                                     var tracking_data2 = {
                                         "cn_no": req.body.cn_no,
                                         "status": "POD_DELIVERED",
-                                        "datetime": today
+                                        "datetime": today,
+                                        isold:1
                                     }
                                     
                                     //inserting record in tracking table

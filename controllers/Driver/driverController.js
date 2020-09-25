@@ -114,6 +114,7 @@ module.exports = {
                         cnno: result,
                         status: 'DONE_DELIVERED',
                         message: message,
+                        isold:1,
                         currenttime:moment().format('YYYY-MM-DD hh:mm:ss')
                     })
                 })
@@ -277,6 +278,7 @@ console.log('sss',trackingQuery,err)
                                                             cnno: id,
                                                             status: 'FAILED_TO_DELIVERED',
                                                             message: message,
+                                                            isold:1,
                                                             currenttime:moment().format('YYYY-MM-DD hh:mm:ss')
                                                         })
                                                    // });

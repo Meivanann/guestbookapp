@@ -163,7 +163,8 @@ module.exports = {
                 var tracking_data1 = {
                     "cn_no": req.body.cn_no,
                     "status": "RECEIVED",
-                    "datetime": today
+                    "datetime": today,
+                    isold:1
                 }
                 if( rows[0].region === "SOUTH"){
                     status = "assign to south"
@@ -171,7 +172,8 @@ module.exports = {
                     var tracking_data2 = {
                         "cn_no": req.body.cn_no,
                         "status": "TRANSIT JB",
-                        "datetime": today
+                        "datetime": today,
+                        isold:1
                     }
                 }else if (rows[0].region === "NORTH"){
                     status = "assign to north";
@@ -179,14 +181,16 @@ module.exports = {
                     var tracking_data2 = {
                         "cn_no": req.body.cn_no,
                         "status": "TRANSIT PENANG",
-                        "datetime": today
+                        "datetime": today,
+                        isold:1
                     }
                 }else {
                     status = "created";
                     var tracking_data2 = {
                         "cn_no": req.body.cn_no,
                         "status": "HQ",
-                        "datetime": today
+                        "datetime": today,
+                        isold:1
                     }
                 }
 

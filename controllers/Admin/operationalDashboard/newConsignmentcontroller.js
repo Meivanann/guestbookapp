@@ -86,7 +86,8 @@ module.exports = {
                 var tracking_data1 = {
                     "cn_no": req.body.cn_no,
                     "status": "RECEIVED",
-                    "datetime": today
+                    "datetime": today,
+                    isold:1
                 }
 
                 if( region === "SOUTH"){
@@ -95,7 +96,8 @@ module.exports = {
                     var tracking_data2 = {
                         "cn_no": req.body.cn_no,
                         "status": "TRANSIT JB",
-                        "datetime": today
+                        "datetime": today,
+                        isold:1
                     }
                 }else if (region === "NORTH"){
                     status = "created";
@@ -103,14 +105,16 @@ module.exports = {
                     var tracking_data2 = {
                         "cn_no": req.body.cn_no,
                         "status": "TRANSIT PENANG",
-                        "datetime": today
+                        "datetime": today,
+                        isold:1
                     }
                 }else {
                     status = "created";
                     var tracking_data2 = {
                         "cn_no": req.body.cn_no,
                         "status": "HQ",
-                        "datetime": today
+                        "datetime": today,
+                        isold:1
                     }
                 }
                 // let quantity =  parseFloat(req.body.pkt_size) + parseFloat(req.body.carton_size) + parseFloat(req.body.pallet_size) + parseFloat(req.body.p_size)  + parseFloat(req.body.s_size) + parseFloat(req.body.m_size) + parseFloat(req.body.l_size) + parseFloat(req.body.xl_size) + parseFloat(req.body.m3_min_size) + parseFloat(req.body.m3_size) + parseFloat(req.body.weight_min_size) +   parseFloat(req.body.weight_size) + parseFloat(req.body.other_charges);
