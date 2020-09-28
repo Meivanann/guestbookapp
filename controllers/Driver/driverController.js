@@ -90,7 +90,7 @@ module.exports = {
        let  todaytime=moment().format("YYYY-MM-DD HH:mm:ss")
         let driver_query = "select * from users where id=" + login_id + "";
         let data = await commonFunction.getQueryResults(driver_query)
-        let trackingQuery = "insert tracking(cn_no,status,descripation,datetime)values ? ";
+        let trackingQuery = "insert tracking(cn_no,status,descripation,isold,datetime)values ? ";
         
         let ids = cnnos.join("','")
         console.log(ids)
@@ -121,6 +121,7 @@ module.exports = {
 
                 let trackinglist = tracking.map((m) => Object.values(m))
                     connection.query(trackingQuery, [trackinglist], function (err, data) {
+                        
 
 console.log('sss',trackingQuery,err)
                    

@@ -29,12 +29,12 @@ module.exports = {
                 Object.keys(rows).forEach(function(key) {
                     var row = rows[key];
                     
-                    if(row.status != 'Paid' && row.payment_due_date < today)
+                    if(row.status != 'Paid' && moment(row.payment_due_date).format('YYYY-MM-DD') < moment(today).format('YYYY-MM-DD'))
                     {
                         overdue_amount = overdue_amount + ( parseFloat(row.inv_total_amount) - parseFloat(row.amount_paid));
                     }
-
-                    if(row.status != 'Paid' && row.payment_due_date < last30Days)
+console.log('ss',row.payment_due_date,today,moment(last30Days).format('YYYY-MM-DD'))
+                    if(row.status != 'Paid' && moment(row.payment_due_date).format('YYYY-MM-DD') < moment(last30Days).format('YYYY-MM-DD')&& moment(row.payment_due_date).format('YYYY-MM-DD') >= moment(today).format('YYYY-MM-DD'))
                     {
                         due = due + (parseFloat(row.inv_total_amount) - parseFloat(row.amount_paid));
                     }
@@ -725,7 +725,7 @@ console.log('skl',cnolistquery)
             if(err){
                 console.log(err);
             } else if (rows.length == 0 ){
-                console.log(rows);
+                console.log('name',rows);
                 res.json({
                     status: 2,
                     message:"No Results Found"
