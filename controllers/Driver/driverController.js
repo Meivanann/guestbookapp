@@ -161,7 +161,7 @@ console.log('sss',trackingQuery,err)
                // let updatedoneQuery = "update consignment set status=?  where cn_no in( '" + ids + "')";
                let updatedoneQuery = "update consignment set status=?,assignedtime=?,isAssigned=?  where cn_no = ?";
                var deletedoneQuery = "delete  from out_for_delivery   where cn_no =? ";
-                let trackingQuery = "insert tracking(cn_no,status,descripation,datetime)values ? ";
+                let trackingQuery = "insert tracking(cn_no,status,descripation,isold,datetime)values ? ";
                 let query = "SELECT * FROM consignment where cn_no = ? "
                 let regionQuery = "SELECT * FROM region WHERE destination_code =? ;"
 
@@ -205,7 +205,7 @@ console.log('sss',trackingQuery,err)
                                     let regiondata = regiondatas.length > 0 ? regiondatas : [];
                                      
                                     if(regiondata[0].region === "SOUTH"  && data[0].region != "SOUTH"){
-                                        console.clear()
+                                        //console.clear()
                                         assigneddatetime=todaytime
                                         isAssigned=1
                                         status = "assign to south";

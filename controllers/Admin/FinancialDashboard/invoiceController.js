@@ -33,7 +33,7 @@ module.exports = {
                     {
                         overdue_amount = overdue_amount + ( parseFloat(row.inv_total_amount) - parseFloat(row.amount_paid));
                     }
-console.log('ss',row.payment_due_date,today,moment(last30Days).format('YYYY-MM-DD'))
+console.log('ss',row.payment_due_date,today,moment(last30Days).format('YYYY-MM-DD'),row.invoice_no)
                     if(row.status != 'Paid' && moment(row.payment_due_date).format('YYYY-MM-DD') < moment(last30Days).format('YYYY-MM-DD')&& moment(row.payment_due_date).format('YYYY-MM-DD') >= moment(today).format('YYYY-MM-DD'))
                     {
                         due = due + (parseFloat(row.inv_total_amount) - parseFloat(row.amount_paid));
