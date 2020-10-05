@@ -195,8 +195,8 @@ let transaction_id=req.body.transaction_id
             "description"  :  req.body.description,
             "from_id": 12,
             ispayment: 1,
-            credit:req.body.amount,
-            debit:0,
+            credit:0,
+            debit:req.body.amount,
             types:'Expense Transaction',
             money_type:2,
             category:catgoryid
@@ -228,8 +228,8 @@ let transaction_id=req.body.transaction_id
             "description"  :  req.body.description,
             "from_id": 12,
             ispayment: 1,
-            credit:0,
-            debit:req.body.amount,
+            credit:req.body.amount,
+            debit:0,
             types:'Income Transaction',
             money_type:1,
             category:catgoryid
