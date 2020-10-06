@@ -1580,6 +1580,11 @@ payment.push(paymentObject,accountobject,salesbjectpayment)
                     }else{
                         shipper_details = shipper_rows[0];
 
+
+                        var pointvalue=rows[0].total_amount!=undefined?rows[0].total_amount:0
+                console.log('values',pointvalue)
+                var storepointvalue=getDecimal(pointvalue>0?pointvalue:0);
+                console.log('split',storepointvalue)
                         acc_bal = parseFloat(shipper_details.acc_bal) + parseFloat(rows[0].total_amount); 
                            // creating an invoice record
                         var invoice_data = {
@@ -1589,14 +1594,16 @@ payment.push(paymentObject,accountobject,salesbjectpayment)
                             "shipper_name"      : shipper_details.shipper_name,
                             "inv_sub_amount"    : rows[0].sub_amount,
                             "inv_tax_amount"    : rows[0].tax_amount,
-                            "inv_total_amount"  : rows[0].total_amount,
+                            "inv_total_amount"  : Math.round(pointvalue),
                             "status"            : "Unpaid",
                             "pdf_name"          : "test",
                             "payment_due_date"  : req.body.payment_due,
                             "consignment_start_date" : null,
                             "consignment_end_date"  : null,
                             "cn_no" : req.body.cn_no,
-                            "cnolist" : req.body.cn_no
+                            "cnolist" : req.body.cn_no,
+                            isNew:1,
+                            pointvalue:storepointvalue>0?storepointvalue:0
                         };
 
                         let invoice_query = "INSERT INTO invoice SET ?"
