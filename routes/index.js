@@ -45,7 +45,7 @@ module.exports = app => {
     var clinetNewCosignmentController = require('./../controllers/Client/NewConsignmentController');
     var clientConsignmentController = require('./../controllers/Client/consignmentController');
     var clientInvoiceController = require('./../controllers/Client/invoiceController');
-
+    var bankreconcilationcontroller=require('../controllers/Admin/Report/Bankreconcilation');
     //report controller
     var reportController=require('./../controllers/Admin/Report/reportController');
 
