@@ -417,130 +417,176 @@ var  closingbalance="select *,sum(a.debit-a.credit) as balance,sum(a.debit) as t
  var closingtotalbalance=await commonFunction.getQueryResults(closingbalance);
 
 
- var transactionclosingbalance="select * from account_statements as a where a.from_id=12 and DATE_FORMAT(a.created_on, '%Y-%m-%d')  >=  DATE_FORMAT('" + start_date + "','%Y-%m-%d') and   DATE_FORMAT(a.created_on, '%Y-%m-%d')  <=  DATE_FORMAT('" + end_date + "','%Y-%m-%d') " + condition + "  "+account_condition+" "+filter_condition+" group by a.account"
+ var transactionclosingbalance="select *,a.type as actype from account_statements as a where a.from_id=12 and DATE_FORMAT(a.created_on, '%Y-%m-%d')  >=  DATE_FORMAT('" + start_date + "','%Y-%m-%d') and   DATE_FORMAT(a.created_on, '%Y-%m-%d')  <=  DATE_FORMAT('" + end_date + "','%Y-%m-%d') " + condition + "  "+account_condition+" "+filter_condition+" group by a.account"
  var transactionclosingdata=await commonFunction.getQueryResults(transactionclosingbalance)
  
  
-// if (transactionclosingdata.length > 0) {
+ let deafultlistObject={}
+ let changedlistobject={}
+if (transactionclosingdata.length > 0) {
     
 
-//     console.log('prank goes wrong')
-//     transactionclosingdata.forEach(element => {
-//            if (element.actype=='Income') {
-//                element.account=element.category!=undefined && element.category > 0 ?element.category:element.account
-//             //    element.credit=element.amount
-//             //    element.debit=0
-//            }
-//            if (element.actype=='Expenses') {
-//             element.account=element.category!=undefined && element.category > 0 ?element.category:element.account
-//             // element.credit=0
-//             // element.debit=element.amount
-//         }
+    console.log('prank goes wrong')
+    transactionclosingdata.forEach(element => {
+           if (element.actype=='Income') {
+               element.account=element.category!=undefined && element.category > 0 ?element.category:element.account
+            //    element.credit=element.amount
+            //    element.debit=0
+           }
+           if (element.actype=='Expenses') {
+            element.account=element.category!=undefined && element.category > 0 ?element.category:element.account
+            // element.credit=0
+            // element.debit=element.amount
+        }
     
-//         defaultclosingbalance.push(element)
-//        }); 
+        defaultclosingbalance.push(element)
+       }); 
     
     
-    
-//        transactionclosingdata.forEach(element => {
+       transactionclosingdata.forEach(element => {
          
              
-//          //    element.credit=element.amount
-//          //    element.debit=0
+         //    element.credit=element.amount
+         //    element.debit=0
          
          
-//          element.account=element.account
-//          // element.credit=0
-//          // element.debit=element.amount
+         element.account=element.account
+         // element.credit=0
+         // element.debit=element.amount
      
     
      
-//     }); 
+    }); 
     
-//        console.log('prank goes wrong',defaultlist)
+       //console.log('prank goes wrong',defaultlist)
     
-//        transactionclosingdata.forEach(element => {
-//         if (element.actype=='Income') {
-//             element.credit=0
-//             element.debit=element.amount
-//         }
-//         if (element.actype=='Expenses') {
-//          element.credit=element.amount
-//          element.debit=0
-//      }
+       transactionclosingdata.forEach(element => {
+        if (element.actype=='Income') {
+            element.credit=0
+            element.debit=element.amount
+        }
+        if (element.actype=='Expenses') {
+         element.credit=element.amount
+         element.debit=0
+     }
     
-//      changedlistclosingbalance.push(element)
-//     });
-//     }
+     changedlistclosingbalance.push(element)
+    });
+
+    //console.log('name',changedlistclosingbalance);
+    
+    defaultclosingbalance.forEach(element => {
+        deafultlistObject[element.account]=
+    {
+    totalbalance:'',
+    totaldebit: _.sumBy(defaultclosingbalance, function (day) {
  
+        return Number(day.debit);
+ 
+    }),
+    totalcredit:_.sumBy(defaultclosingbalance, function (day) {
+ 
+        return Number(day.credit);
+ 
+    }),
+}
+});
+console.log('defaultobject',deafultlistObject)
+changedlistclosingbalance.forEach(element => {
+    changedlistobject[element.account]=
+{
+totalbalance:'',
+totaldebit: _.sumBy(changedlistclosingbalance, function (day) {
+
+    return Number(day.debit);
+
+}),
+totalcredit:_.sumBy(changedlistclosingbalance, function (day) {
+
+    return Number(day.credit);
+
+}),
+}
+});
+console.log('change',changedlistobject)
+
+
+
+    }
+ 
+
+   
  closingtotalbalance.forEach(element => {
     closingbalanceObject[element.account]=
     {
-    totalbalance:element.balance,
-    totaldebit:element.totaldebit,
-    totalcredit:element.totalcredit
+    totalbalance:element.balance!=undefined?element.balance:'',
+    totaldebit:element.totaldebit!=undefined?element.totaldebit:0,
+    totalcredit:element.totalcredit!=undefined?element.totalcredit:0
 }
 });
-
-
+console.log('object',changedlistobject,deafultlistObject);
+Object.assign(closingbalanceObject, changedlistobject)
+Object.assign(closingbalanceObject, deafultlistObject)
+//closingbalanceObject ={...changedlistobject,...deafultlistObject};
+//closingbalanceObject=deafultlistObject
 let defaultlist=[]
 let changedlist=[]
 var transactionlist="Select *,a.type as actype,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id=12 and  a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  " + condition + " "+account_condition+"  "+filter_condition+" group by a.id order by a.created_on "
 var transactionitems=await commonFunction.getQueryResults(transactionlist);
 
 
-// if (transactionitems.length > 0) {
+if (transactionitems.length > 0) {
     
 
-// console.log('prank goes wrong')
-//     transactionitems.forEach(element => {
-//        if (element.actype=='Income') {
-//            element.account=element.category!=undefined && element.category > 0 ?element.category:element.account
-//         //    element.credit=element.amount
-//         //    element.debit=0
-//        }
-//        if (element.actype=='Expenses') {
-//         element.account=element.category!=undefined && element.category > 0 ?element.category:element.account
-//         // element.credit=0
-//         // element.debit=element.amount
-//     }
+console.log('prank goes wrong')
+    transactionitems.forEach(element => {
+       if (element.actype=='Income') {
+           element.account=element.category!=undefined && element.category > 0 ?element.category:element.account
+        //    element.credit=element.amount
+        //    element.debit=0
+       }
+       if (element.actype=='Expenses') {
+        element.account=element.category!=undefined && element.category > 0 ?element.category:element.account
+        // element.credit=0
+        // element.debit=element.amount
+    }
 
-//     defaultlist.push(element)
-//    }); 
+    defaultlist.push(element)
+   }); 
 
 
 
-//    transactionitems.forEach(element => {
+   transactionitems.forEach(element => {
      
          
-//      //    element.credit=element.amount
-//      //    element.debit=0
+     //    element.credit=element.amount
+     //    element.debit=0
      
      
-//      element.account=element.account
-//      // element.credit=0
-//      // element.debit=element.amount
+     element.account=element.account
+     // element.credit=0
+     // element.debit=element.amount
  
 
  
-// }); 
+}); 
 
-//    console.log('prank goes wrong',defaultlist)
+   //console.log('prank goes wrong',defaultlist)
 
-//    transactionitems.forEach(element => {
-//     if (element.actype=='Income') {
-//         element.credit=0
-//         element.debit=element.amount
-//     }
-//     if (element.actype=='Expenses') {
-//      element.credit=element.amount
-//      element.debit=0
-//  }
+   transactionitems.forEach(element => {
+    if (element.actype=='Income') {
+        element.credit=0
+        element.debit=element.amount
+    }
+    if (element.actype=='Expenses') {
+     element.credit=element.amount
+     element.debit=0
+ }
 
-//  changedlist.push(element)
-// });
-// }
-// console.log('prank goes change',changedlist)
+ changedlist.push(element)
+});
+}
+//console.log('prank goes change',changedlist)
 
         // //billdetailsQuery
         // let billDetailsQuery = "Select * from bill as b inner join  bill_details as bd on b.id=bd.bill_id inner join accounts as ac on ac.id=bd.expense_category where b.bill_date >= '" + start_date + "' AND b.bill_date  <= '" + end_date + "' and b.isdelete = 0 ";
@@ -573,7 +619,7 @@ var transactionitems=await commonFunction.getQueryResults(transactionlist);
         var final=[]
     
  var categorybalance={}
- //transactionData.push(...defaultlist,...changedlist)
+ transactionData.push(...defaultlist,...changedlist)
         transactionData.forEach(element => {
 
          
@@ -670,31 +716,38 @@ var transactionitems=await commonFunction.getQueryResults(transactionlist);
       });
 
 
-      
+      console.clear();
+      console.log('closingbalanceObject',closingbalanceObject);
     Object.keys(categoryObject).forEach(function(key) {
         var val = categoryObject[key];
 
 
          
 
-
-        val.forEach(element => {
+        if (val.length > 0) {
+            val.forEach(element => {
             
-            // if(element.debit!=undefined)
-            // {
+                // if(element.debit!=undefined)
+                // {
+    
+                    lastclosingbalance[element.account]=element.balance!=undefined&&element.balance!=''?element.balance:0
+                    if (closingbalanceObject[element.account]!=undefined && closingbalanceObject[element.account]!='') {
+                        closingbalanceObject[element.account].totalbalance=element.balance!=undefined&&element.balance!=''?element.balance:0
+                    }
+                    
+                    
+                //}
+    
+                 
+                 
+                 
+                 
+    
+    
+            });
+        }
 
-                lastclosingbalance[element.account]=element.balance
-                closingbalanceObject[element.account].totalbalance=element.balance
-                
-            //}
-
-             
-             
-             
-             
-
-
-        });
+       
          
       });
 
@@ -724,7 +777,7 @@ console.log('ssss',lastclosingbalance,'s',closingbalanceObject)
             accounttype:accountObject[element.account_type_id],
             startingbalance:opeingbalanceObject[element.accountid]?opeingbalanceObject[element.accountid]:0,
             data:categoryObject[element.accountid]?categoryObject[element.accountid]:[],
-            total_and_ending_balance:closingbalanceObject[element.accountid],
+            total_and_ending_balance:closingbalanceObject[element.accountid]?closingbalanceObject[element.accountid]:'',
             //balancechange:Number((opeingbalanceObject[element.accountid]!=undefined?opeingbalanceObject[element.accountid]:0)-(closingbalanceObject[element.accountid].totalbalance!=undefined?closingbalanceObject[element.accountid].totalbalance:0))
         })
 

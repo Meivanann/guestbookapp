@@ -147,19 +147,21 @@ else
         let selecteddata=await commonFunction.getQueryResults(selectedquery)
 
     if (selecteddata.length > 0 &&   data.length > 0) {
-        console.log('correct')
+        console.log('correct',data);
+
+       
         selecteddata.forEach(row => {
 
             data.forEach(element => {
-console.log('firstcondition',moment(element.date).format("YYYY-MM-DD"),moment(row.date).format("YYYY-MM-DD"))
-                if (row.debit!=element.debit && row.credit!=element.credit&&row.descripation!=element.descripation && moment(row.date).format("YYYY-MM-DD")!=moment(element.date).format("YYYY-MM-DD")) {
+console.log('firstcondition',element.date,moment(element.date,'DD-MM-YYYY').format('YYYY-MM-DD'),moment(row.date).format("YYYY-MM-DD"))
+                if (element.debit!=row.debit && element.credit!=row.credit&&element.descripation!=row.descripation && moment(element.date,'DD-MM-YYYY').format('YYYY-MM-DD')!=moment(row.date).format("YYYY-MM-DD")) {
                     bankstatment.push({ 
                         descripation:element.descripation,
                         debit:element.debit!=undefined?element.debit:0,
                         credit:element.credit!=undefined?element.credit:0,
                         transactionid:12,
                         account:accountid!=undefined?accountid:0,
-                        createddate:element.date!=undefined?moment(element.date).format('YYYY-MM-DD'):''
+                        createddate:element.date!=undefined?moment(element.date,'DD-MM-YYYY').format('YYYY-MM-DD'):''
                     })
                     account_statements.push
                     ({ 
@@ -170,7 +172,7 @@ console.log('firstcondition',moment(element.date).format("YYYY-MM-DD"),moment(ro
                         account:accountid!=undefined?accountid:0,
                         amount:element.credit!=undefined&&element.credit>0&&element.credit!='' ?element.credit:0 ||element.debit!=undefined&&element.debit>0&&element.debit!=''?element.debit:0,
                         type:element.credit!=undefined?'Income':'Expenses',  
-                        createddate:element.date!=undefined?moment(element.date).format('YYYY-MM-DD'):'',
+                        createddate:element.date!=undefined?moment(element.date,'DD-MM-YYYY').format('YYYY-MM-DD'):'',
                         money_type:element.credit!=undefined?2:1,  
                         category:element.credit!=undefined?53:89,
                         isUpoad:1,
@@ -183,8 +185,13 @@ console.log('firstcondition',moment(element.date).format("YYYY-MM-DD"),moment(ro
             
             });   
         });
+        var duplicateremovedbankstatment=new Set(bankstatment)
+        var duplicationaccountstatment=new Set(account_statements)
+        var removedbankstatment=[...duplicateremovedbankstatment];
+        var removeaccountstatment=[...duplicationaccountstatment];
+
         console.log(account_statements,bankstatment)
-        let banking = bankstatment.map((m) => Object.values(m))
+        let banking = removedbankstatment.map((m) => Object.values(m))
             var insterquery="insert into bank_statement(descripation,debit,credit,transactionid,account,date)values ?"
             connection.query(insterquery,[banking],function(err,data) {
                 if (err) {
@@ -195,7 +202,7 @@ console.log('firstcondition',moment(element.date).format("YYYY-MM-DD"),moment(ro
                  
                     if(data.insertId > 0)
                     {
-                        let accountstatements = account_statements.map((m) => Object.values(m))
+                        let accountstatements = removeaccountstatment.map((m) => Object.values(m))
                         var accountquery="insert into account_statements(description,debit,credit,from_id,account,amount,type,created_on,money_type,category,isUpoad,ispayment)values ?"
                         connection.query(accountquery,[accountstatements],function(error,row) {
                             if (error) {
@@ -238,7 +245,7 @@ console.log('firstcondition',moment(element.date).format("YYYY-MM-DD"),moment(ro
                 credit:element.credit!=undefined?element.credit:0,
                 transactionid:12,
                 account:accountid!=undefined?accountid:0,
-                createddate:element.date!=undefined?moment(element.date).format('YYYY-MM-DD'):''
+                createddate:element.date!=undefined?moment(element.date,'DD-MM-YYYY').format('YYYY-MM-DD'):''
             })
             account_statements.push
             ({ 
@@ -249,7 +256,7 @@ console.log('firstcondition',moment(element.date).format("YYYY-MM-DD"),moment(ro
                 account:accountid!=undefined?accountid:0,
                 amount:element.credit!=undefined&&element.credit>0&&element.credit!='' ?element.credit:0 ||element.debit!=undefined&&element.debit>0&&element.debit!=''?element.debit:0,
                 type:element.credit!=undefined&&element.credit>0&&element.credit!=''?'Income':'Expenses',  
-                createddate:element.date!=undefined?moment(element.date).format('YYYY-MM-DD'):'',
+                createddate:element.date!=undefined?moment(element.date,'DD-MM-YYYY').format('YYYY-MM-DD'):'',
                 money_type:element.credit!=undefined?2:1,  
                 category:element.credit!=undefined?53:89,
                 isUpoad:1
