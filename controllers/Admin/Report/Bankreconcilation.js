@@ -173,7 +173,8 @@ console.log('firstcondition',moment(element.date).format("YYYY-MM-DD"),moment(ro
                         createddate:element.date!=undefined?moment(element.date).format('YYYY-MM-DD'):'',
                         money_type:element.credit!=undefined?2:1,  
                         category:element.credit!=undefined?53:89,
-                        isUpoad:1
+                        isUpoad:1,
+                        ispayment: 1
                     })
                    
                 }
@@ -195,7 +196,7 @@ console.log('firstcondition',moment(element.date).format("YYYY-MM-DD"),moment(ro
                     if(data.insertId > 0)
                     {
                         let accountstatements = account_statements.map((m) => Object.values(m))
-                        var accountquery="insert into account_statements(description,debit,credit,from_id,account,amount,type,created_on,money_type,category,isUpoad)values ?"
+                        var accountquery="insert into account_statements(description,debit,credit,from_id,account,amount,type,created_on,money_type,category,isUpoad,ispayment)values ?"
                         connection.query(accountquery,[accountstatements],function(error,row) {
                             if (error) {
                                console.log(error) 
