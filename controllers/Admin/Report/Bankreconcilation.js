@@ -353,6 +353,31 @@ console.log('firstcondition',element.date,moment(element.date,'DD-MM-YYYY').form
         // });
          
      },
+     updateendingbalance: async(req, res) => {
+        //var deferred = q.defer();
+
+
+        var date=req.body.date;
+        var amount=req.body.amount;
+       // var account=req.body.account;
+        var bankid=req.body.bankid
+          var query="update  accountreconaltionlist set date ='"+date+"',amount='"+amount+"' where id='"+bankid+"'";
+        var data=await commonFunction.getQueryResults(query)
+ 
+ 
+            if (data.affectedRows>0) {
+
+
+                res.json({status:1,message:" update Account reconaltionlist statment successfully"})
+            }
+            else
+            {
+                res.json({status:0,message:"No data found"})
+            } 
+                 
+        // });
+         
+     },
  
 
     
