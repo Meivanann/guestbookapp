@@ -301,8 +301,9 @@ console.log('firstcondition',moment(element.date).format("YYYY-MM-DD"),moment(ro
         // var deferred = q.defer();
         var startdate=req.body.startdate;
         var endate=req.body.endate
+        var account=req.body.account
         //var statmentquery="select * from  accountreconaltionlist as ac where ac.date ?";
-        var query="select * from account_statements as cd where c.account in ('"+account+"') and c.created_on >= '"+startdate+"' and c.created_on <= '"+endate+"' ";
+        var query="select * from account_statements as cd where cd.account in ('"+account+"') and cd.created_on >= '"+startdate+"' and cd.created_on <= '"+endate+"' ";
         
           //var query="select * from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8)";
           var data=await commonFunction.getQueryResults(query)
