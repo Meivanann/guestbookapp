@@ -736,8 +736,8 @@ console.log('skl',cnolistquery)
                     var row = rows[key];
                     if((row.bill_to === 'shipper' && row.shipper_code === shipper_code) || (row.bill_to === 'receiver' && row.receiver_code === shipper_code)){
                             
-                        sub_amount = sub_amount + parseFloat(row.sub_amount);
-                        tax_amount = tax_amount + parseFloat(row.tax_amount);
+                        sub_amount =  sub_amount + Number(row.sub_amount);
+                        tax_amount =  tax_amount + Number(row.tax_amount);
 
                         var consignment_update_datas = {
                             "is_billed"   : 1
@@ -754,7 +754,11 @@ console.log('skl',cnolistquery)
                     }
                 });
 
-                total_amount = sub_amount + tax_amount;
+                var pointvalue=sub_amount + tax_amount
+                console.log('values',pointvalue)
+                var storepointvalue=getDecimal(pointvalue);
+
+                total_amount =Math.round( sub_amount + tax_amount);
 
                 // getting the shipper details
                 let shipper_query = "select * from shipping where shipper_code = ?"
@@ -782,7 +786,9 @@ console.log('skl',cnolistquery)
                             debit:total_amount,
                             credit:0,
                             invoice_no:invoice_number,
-                            cnolist:cnoids.join()
+                            cnolist:cnoids.join(),
+                            isNew:1,
+                            pointvalue:storepointvalue
                         };
 
                         let invoice_query = "INSERT INTO invoice SET ?"
@@ -829,7 +835,7 @@ console.log('skl',cnolistquery)
                                     }
                                 });
 
-                                var incomeobject={type:'Income',account:20,amount:total_amount,description:'invoice from create invoice',debit:0,credit:total_amount,invoice_number:invoice_number,types:'Invoice',created_on:invoice_date,from_id:1,shipper_code:shipper_code}
+                                var incomeobject={type:'Income',account:20,amount:Math.round(total_amount),description:'invoice from create invoice',debit:0,credit:total_amount,invoice_number:invoice_number,types:'Invoice',created_on:invoice_date,from_id:1,shipper_code:shipper_code}
                                 var accountReacivable={type:'Income',account:22,amount:total_amount,description:'invoice from create invoice',debit:total_amount,credit:0,invoice_number:invoice_number,types:'Invoice',created_on:invoice_date,from_id:1,shipper_code:shipper_code}
                                 var array=[incomeobject,accountReacivable]
                                 let accountdetailsinvoice = array.map((m) => Object.values(m))
@@ -1650,4 +1656,10 @@ payment.push(paymentObject,accountobject,salesbjectpayment)
             }
         })
     },
+}
+function getNatural(num) {
+    return parseFloat(num.toString().split(".")[0]);
+}
+function getDecimal(num) {
+    return parseFloat(num.toString().split(".")[1]);
 }

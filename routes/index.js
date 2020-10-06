@@ -95,6 +95,10 @@ module.exports = app => {
     app.post('/api/:id/checkconsignmentnote', newConsignmentController.checkConsignmentNote);
     app.post('/api/invoicepaymentlist', invoiceController.getpaymentlist);
 
+    app.post('/api/exceltojson', bankreconcilationcontroller.exceldatatoJson);
+    app.post('/api/savebankstament', bankreconcilationcontroller.savecsvdata);
+    app.post('/api/getbankstatment', bankreconcilationcontroller.getbankstatement);
+    app.post('/api/addingendingbalance', bankreconcilationcontroller.addendingbalance);
     //tracking
     app.post('/api/:id/tracking', trackingController.index);
     app.post('/uploaduserimage', userAuthenticationController.userupload);

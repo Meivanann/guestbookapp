@@ -409,11 +409,70 @@ var closingbalanceObject={}
     var lastclosingbalance={}
     
 console.log(opeingbalance)
-var  closingbalance="select *,sum(a.debit-a.credit) as balance,sum(a.debit) as totaldebit,sum(a.credit) as totalcredit from account_statements as a where  DATE_FORMAT(a.created_on, '%Y-%m-%d')  >=  DATE_FORMAT('" + start_date + "','%Y-%m-%d') and   DATE_FORMAT(a.created_on, '%Y-%m-%d')  <=  DATE_FORMAT('" + end_date + "','%Y-%m-%d') " + condition + "  "+account_condition+" "+filter_condition+" group by a.account"
+let defaultclosingbalance=[];
+let changedlistclosingbalance=[];
+var  closingbalance="select *,sum(a.debit-a.credit) as balance,sum(a.debit) as totaldebit,sum(a.credit) as totalcredit from account_statements as a where a.from_id!=12 and DATE_FORMAT(a.created_on, '%Y-%m-%d')  >=  DATE_FORMAT('" + start_date + "','%Y-%m-%d') and   DATE_FORMAT(a.created_on, '%Y-%m-%d')  <=  DATE_FORMAT('" + end_date + "','%Y-%m-%d') " + condition + "  "+account_condition+" "+filter_condition+" group by a.account"
 //var  closingbalance="select *,sum(a.debit-a.credit) as balance,sum(a.debit) as totaldebit,sum(a.credit) as totalcredit from account_statements as a where     DATE_FORMAT(a.created_on, '%Y-%m-%d')  <=  DATE_FORMAT('" + end_date + "','%Y-%m-%d') " + condition + "  "+account_condition+" group by a.account"
   
  var closingtotalbalance=await commonFunction.getQueryResults(closingbalance);
 
+
+ var transactionclosingbalance="select * from account_statements as a where a.from_id=12 and DATE_FORMAT(a.created_on, '%Y-%m-%d')  >=  DATE_FORMAT('" + start_date + "','%Y-%m-%d') and   DATE_FORMAT(a.created_on, '%Y-%m-%d')  <=  DATE_FORMAT('" + end_date + "','%Y-%m-%d') " + condition + "  "+account_condition+" "+filter_condition+" group by a.account"
+ var transactionclosingdata=await commonFunction.getQueryResults(transactionclosingbalance)
+ 
+ 
+// if (transactionclosingdata.length > 0) {
+    
+
+//     console.log('prank goes wrong')
+//     transactionclosingdata.forEach(element => {
+//            if (element.actype=='Income') {
+//                element.account=element.category!=undefined && element.category > 0 ?element.category:element.account
+//             //    element.credit=element.amount
+//             //    element.debit=0
+//            }
+//            if (element.actype=='Expenses') {
+//             element.account=element.category!=undefined && element.category > 0 ?element.category:element.account
+//             // element.credit=0
+//             // element.debit=element.amount
+//         }
+    
+//         defaultclosingbalance.push(element)
+//        }); 
+    
+    
+    
+//        transactionclosingdata.forEach(element => {
+         
+             
+//          //    element.credit=element.amount
+//          //    element.debit=0
+         
+         
+//          element.account=element.account
+//          // element.credit=0
+//          // element.debit=element.amount
+     
+    
+     
+//     }); 
+    
+//        console.log('prank goes wrong',defaultlist)
+    
+//        transactionclosingdata.forEach(element => {
+//         if (element.actype=='Income') {
+//             element.credit=0
+//             element.debit=element.amount
+//         }
+//         if (element.actype=='Expenses') {
+//          element.credit=element.amount
+//          element.debit=0
+//      }
+    
+//      changedlistclosingbalance.push(element)
+//     });
+//     }
+ 
  closingtotalbalance.forEach(element => {
     closingbalanceObject[element.account]=
     {
@@ -422,10 +481,75 @@ var  closingbalance="select *,sum(a.debit-a.credit) as balance,sum(a.debit) as t
     totalcredit:element.totalcredit
 }
 });
+
+
+let defaultlist=[]
+let changedlist=[]
+var transactionlist="Select *,a.type as actype,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id=12 and  a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  " + condition + " "+account_condition+"  "+filter_condition+" group by a.id order by a.created_on "
+var transactionitems=await commonFunction.getQueryResults(transactionlist);
+
+
+// if (transactionitems.length > 0) {
+    
+
+// console.log('prank goes wrong')
+//     transactionitems.forEach(element => {
+//        if (element.actype=='Income') {
+//            element.account=element.category!=undefined && element.category > 0 ?element.category:element.account
+//         //    element.credit=element.amount
+//         //    element.debit=0
+//        }
+//        if (element.actype=='Expenses') {
+//         element.account=element.category!=undefined && element.category > 0 ?element.category:element.account
+//         // element.credit=0
+//         // element.debit=element.amount
+//     }
+
+//     defaultlist.push(element)
+//    }); 
+
+
+
+//    transactionitems.forEach(element => {
+     
+         
+//      //    element.credit=element.amount
+//      //    element.debit=0
+     
+     
+//      element.account=element.account
+//      // element.credit=0
+//      // element.debit=element.amount
+ 
+
+ 
+// }); 
+
+//    console.log('prank goes wrong',defaultlist)
+
+//    transactionitems.forEach(element => {
+//     if (element.actype=='Income') {
+//         element.credit=0
+//         element.debit=element.amount
+//     }
+//     if (element.actype=='Expenses') {
+//      element.credit=element.amount
+//      element.debit=0
+//  }
+
+//  changedlist.push(element)
+// });
+// }
+// console.log('prank goes change',changedlist)
+
         // //billdetailsQuery
         // let billDetailsQuery = "Select * from bill as b inner join  bill_details as bd on b.id=bd.bill_id inner join accounts as ac on ac.id=bd.expense_category where b.bill_date >= '" + start_date + "' AND b.bill_date  <= '" + end_date + "' and b.isdelete = 0 ";
         // let billDetailsdata = await commonFunction.getQueryResults(billDetailsQuery);
-        let transactionQuery = " Select *,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where DATE_FORMAT(a.created_on,'%Y-%m-%d') >=  DATE('" + start_date + "') AND DATE_FORMAT(a.created_on,'%Y-%m-%d')  <= DATE('" + end_date + "')  " + condition + " "+account_condition+" "+filter_condition+" group by a.id order by a.created_on ";
+        
+        
+        let transactionQuery = " Select *,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id!=12 and  a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  " + condition + " "+account_condition+"  "+filter_condition+" group by a.id order by a.created_on ";
+        
+        //recent let transactionQuery = " Select *,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where DATE_FORMAT(a.created_on,'%Y-%m-%d') >=  DATE('" + start_date + "') AND DATE_FORMAT(a.created_on,'%Y-%m-%d')  <= DATE('" + end_date + "')  " + condition + " "+account_condition+" "+filter_condition+" group by a.id order by a.created_on ";
         //let transactionQuery = " Select *,ad.type as accountype,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  and a.from_id NOT IN (6,7,8,9,10,11) " + condition + " group by a.id ";
         let transactionData = await commonFunction.getQueryResults(transactionQuery);
      
@@ -449,6 +573,7 @@ var  closingbalance="select *,sum(a.debit-a.credit) as balance,sum(a.debit) as t
         var final=[]
     
  var categorybalance={}
+ //transactionData.push(...defaultlist,...changedlist)
         transactionData.forEach(element => {
 
          
