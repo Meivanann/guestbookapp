@@ -259,7 +259,8 @@ console.log('firstcondition',element.date,moment(element.date,'DD-MM-YYYY').form
                 createddate:element.date!=undefined?moment(element.date,'DD-MM-YYYY').format('YYYY-MM-DD'):'',
                 money_type:element.credit!=undefined?2:1,  
                 category:element.credit!=undefined?53:89,
-                isUpoad:1
+                isUpoad:1,
+                ispayment: 1
 
             })
           });
