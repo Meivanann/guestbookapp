@@ -102,6 +102,7 @@ module.exports = app => {
     app.post('/api/updateendingbalance', bankreconcilationcontroller.updateendingbalance);
     app.post('/api/bankstatuslist', bankreconcilationcontroller.getstatusbankstatement);
     app.post('/api/indexbankstatuslist', bankreconcilationcontroller.getindexlist);
+    app.get('/api/templatefile', bankreconcilationcontroller.gettemplatefile);
     //tracking
     app.post('/api/:id/tracking', trackingController.index);
     app.post('/uploaduserimage', userAuthenticationController.userupload);

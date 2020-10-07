@@ -3,6 +3,7 @@ var commonFunction = require('../../commonFunction');
 var _ = require('lodash');
 var moment=require('moment')
 var multer = require('multer');
+var COMMONURL=require('../../../common.json')
 var fileUpload = require('express-fileupload');
 var csvtojsonV2 = require("csvtojson");
 var Validator = require('jsonschema').Validator;
@@ -349,6 +350,29 @@ console.log('firstcondition',element.date,moment(element.date,'DD-MM-YYYY').form
             {
                 res.json({status:0,message:"No data found"})
             } 
+                 
+        // });
+         
+     },
+
+       gettemplatefile: async(req, res) => {
+        // var deferred = q.defer();
+        var path='';
+          
+            
+             var path='./uploads/wave.csv'
+              console.log('path,',path)
+             
+                        
+             var filePath = COMMONURL.STAGINGURL+ ':' + COMMONURL.SERVERPORT + '/wave.csv';
+        res.json({status:1,message:'File list!',filePath,path});
+
+      //}
+// })
+         
+         
+       
+         
                  
         // });
          
