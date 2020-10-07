@@ -653,7 +653,7 @@ console.log('prank goes wrong')
              debit_detail_no:element.debit_detail_id,
              bill_detail_no:element.bill_detail_id,
              type:element.types,
-             descripation:element.description,
+            descripation:element.description,
              accountype:element.accountype
 
          })
