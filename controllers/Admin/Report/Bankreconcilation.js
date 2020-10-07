@@ -329,6 +329,45 @@ console.log('firstcondition',element.date,moment(element.date,'DD-MM-YYYY').form
         // });
          
      },
+
+     getstatusbankstatement: async(req, res) => {
+        // var deferred = q.defer();
+        var startdate=req.body.startdate;
+        var endate=req.body.endate
+        var account=req.body.account
+        
+        var startdateObject={};
+var enddateObject={}
+        var paymentquery="select *,min(DATE_FORMAT(cd.created_on,'%Y-%m-%d')) as mindate from account_statements as cd where cd.account in ('"+account+"') group by cd.account order by cd.created_on asc ";
+        var paymentdata=await commonFunction.getQueryResults(paymentquery)
+        var datequery=
+      console.log(paymentquery);
+      if (paymentdata.length >0 ) {
+
+        paymentdata.forEach(element => {
+              
+            startdateObject[element.account]=element.mindate
+          });
+      }
+      console.log(startdateObject);
+        //var statmentquery="select * from  accountreconaltionlist as ac where ac.date ?";
+        var query="select * from accountreconaltionlist as cd where cd.account in ('"+account+"') order by cd.date asc ";
+        
+          //var query="select * from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8)";
+          var data=await commonFunction.getQueryResults(query)
+ 
+ 
+            if (data.length>0) {
+                res.json({status:1,message:" bank statment  status list successfully",data})
+            }
+            else
+            {
+                res.json({status:0,message:"No data found"})
+            } 
+                 
+        // });
+         
+     },
      addendingbalance: async(req, res) => {
         //var deferred = q.defer();
 

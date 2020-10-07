@@ -513,7 +513,7 @@ if (updatedata.length > 0 ) {
             if (cnolist!=undefined && cnolist!='') {
                     let cnoarry=cnolist.split(',')
                     console.log('kls',cnoarry)
-                    let consignment_query = "SELECT * FROM consignment as c left join  out_for_delivery as o  on o.cn_no=c.cn_no where o.cn_no in ('"+cnoarry.join("','")+"') and c.status = 'Close' and c.shipper_code=? and c.is_billed = 1 and c.is_approved = 1 order by c.cn_no asc"
+                    let consignment_query = "SELECT * FROM consignment as c left join  out_for_delivery as o  on o.cn_no=c.cn_no where o.cn_no in ('"+cnoarry.join("','")+"') and c.status = 'Close' and c.shipper_code=? and c.is_billed = 1 and c.is_approved = 1  group by o.cn_no order by c.cn_no asc"
                     let consignment_data = [rows[0].shipper_code];
                     connection.query(consignment_query, consignment_data, (consignment_err,consignment_rows) => {
                         if(err){
@@ -552,7 +552,7 @@ if (updatedata.length > 0 ) {
                
                     // fetching consignment records
                // let consignment_query = "SELECT * FROM consignment as c left join  out_for_delivery as o  on o.cn_no=c.cn_no where (o.datetime between ? and ? ) and c.status = 'Close' and c.shipper_code=? and c.is_billed = 1 and c.is_approved = 1 order by c.cn_no asc"
-               let consignment_query = "SELECT * FROM consignment as c left join  out_for_delivery as o  on o.cn_no=c.cn_no where (DATE_FORMAT(o.datetime,'%Y-%m-%d') >= DATE('"+moment(rows[0].consignment_start_date).format('YYYY-MM-DD')+"') and DATE_FORMAT(o.datetime,'%Y-%m-%d') <= DATE('"+moment(rows[0].consignment_end_date).format('YYYY-MM-DD')+"') ) and c.status = 'Close' and c.shipper_code=? and c.is_billed = 1 and c.is_approved = 1 order by c.cn_no asc"
+               let consignment_query = "SELECT * FROM consignment as c left join  out_for_delivery as o  on o.cn_no=c.cn_no where (DATE_FORMAT(o.datetime,'%Y-%m-%d') >= DATE('"+moment(rows[0].consignment_start_date).format('YYYY-MM-DD')+"') and DATE_FORMAT(o.datetime,'%Y-%m-%d') <= DATE('"+moment(rows[0].consignment_end_date).format('YYYY-MM-DD')+"') ) and c.status = 'Close' and c.shipper_code=? and c.is_billed = 1 and c.is_approved = 1 group by o.cn_no order by c.cn_no asc"
                let consignment_data = [rows[0].shipper_code];
                 console.log(consignment_data);
                 connection.query(consignment_query, consignment_data, (consignment_err,consignment_rows) => {
@@ -602,7 +602,7 @@ if (updatedata.length > 0 ) {
         let data = [ shipper_code,shipper_code];
         console.log(req.body); 
       
-        let query = "SELECT * FROM consignment as c left join out_for_delivery as o  on o.cn_no=c.cn_no where (DATE_FORMAT(o.datetime,'%Y-%m-%d') >= DATE('" + start_date + "') AND DATE_FORMAT(o.datetime,'%Y-%m-%d')  <= DATE('" + end_date + "')) and c.status = 'Close' and ( c.shipper_code=? or c.receiver_code = ?) and c.is_billed = 0 and c.is_approved = 1 and c.bill_to!='' order by c.cn_no asc "
+        let query = "SELECT * FROM consignment as c left join out_for_delivery as o  on o.cn_no=c.cn_no where (DATE_FORMAT(o.datetime,'%Y-%m-%d') >= DATE('" + start_date + "') AND DATE_FORMAT(o.datetime,'%Y-%m-%d')  <= DATE('" + end_date + "')) and c.status = 'Close' and ( c.shipper_code=? or c.receiver_code = ?) and c.is_billed = 0 and c.is_approved = 1 and c.bill_to!='' group by o.cn_no  order by c.cn_no asc "
       
        
 
@@ -681,7 +681,7 @@ if (updatedata.length > 0 ) {
         let invoice_date = req.body.invoice_date;
 var result=[]
 var cnoids=[]
-        let cnolistquery = "SELECT * FROM consignment as c left join out_for_delivery as o  on o.cn_no=c.cn_no where (DATE_FORMAT(o.datetime,'%Y-%m-%d') >= DATE('" + start_date + "') AND DATE_FORMAT(o.datetime,'%Y-%m-%d')  <= DATE('" + end_date + "')) and c.status = 'Close' and ( c.shipper_code='" + shipper_code + "' or c.receiver_code = '" + shipper_code + "') and c.is_billed = 0 and c.is_approved = 1 and c.bill_to!='' order by c.cn_no asc "
+        let cnolistquery = "SELECT * FROM consignment as c left join out_for_delivery as o  on o.cn_no=c.cn_no where (DATE_FORMAT(o.datetime,'%Y-%m-%d') >= DATE('" + start_date + "') AND DATE_FORMAT(o.datetime,'%Y-%m-%d')  <= DATE('" + end_date + "')) and c.status = 'Close' and ( c.shipper_code='" + shipper_code + "' or c.receiver_code = '" + shipper_code + "') and c.is_billed = 0 and c.is_approved = 1 and c.bill_to!='' group by o.cn_no order by c.cn_no asc "
         let cndata=await commonFunction.getQueryResults(cnolistquery)
 console.log('skl',cnolistquery)
         if (cndata.length > 0 ) {
