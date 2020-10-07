@@ -554,7 +554,7 @@ console.log('prank goes wrong')
     defaultlist.push(element)
    }); 
 
-
+   var removed=removeduplicates(defaultlist)
 
    transactionitems.forEach(element => {
      
@@ -619,7 +619,7 @@ console.log('prank goes wrong')
         var final=[]
     
  var categorybalance={}
- transactionData.push(...defaultlist,...changedlist)
+ transactionData.push(...removed,...changedlist)
         transactionData.forEach(element => {
 
          
@@ -1632,4 +1632,8 @@ var currentlibiatydetails=_(expense)
     }
 }
 
+function removeduplicates(data)
+{
+    return [...new Set(data)]
+}
 

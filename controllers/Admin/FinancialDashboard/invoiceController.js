@@ -756,7 +756,7 @@ console.log('skl',cnolistquery)
 
                 var pointvalue=sub_amount + tax_amount
                 console.log('values',pointvalue)
-                var storepointvalue=getDecimal(pointvalue.length>0?pointvalue:0);
+                var storepointvalue=getDecimal(pointvalue>0?pointvalue:0);
 
                 total_amount =Math.round( sub_amount + tax_amount);
 
@@ -788,7 +788,7 @@ console.log('skl',cnolistquery)
                             invoice_no:invoice_number,
                             cnolist:cnoids.join(),
                             isNew:1,
-                            pointvalue:storepointvalue.length>0?storepointvalue:0
+                            pointvalue:storepointvalue>0?storepointvalue:0
                         };
 
                         let invoice_query = "INSERT INTO invoice SET ?"
