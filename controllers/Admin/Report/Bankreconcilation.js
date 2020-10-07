@@ -311,7 +311,31 @@ console.log('firstcondition',element.date,moment(element.date,'DD-MM-YYYY').form
         var startdate=req.body.startdate;
         var endate=req.body.endate
         var account=req.body.account
+        var statmentbalance=0;
+        var paymentbalance=0
+        var statementObject={}
+        var paymentObject={}
+        var statmentQuery="select *,SUM(cd.amount) AS totalamount from accountreconaltionlist as cd where cd.account in ('"+account+"') and cd.date >= '"+startdate+"' and cd.date <= '"+endate+"' ";
+        var statmentdata=await commonFunction.getQueryResults(statmentQuery);
+         if (statmentdata.length >0) {
+            statmentdata.forEach(element => {
+                statementObject[element.account]=element.totalamount
+             });
+         }
+
+
+         var paymentquery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id  group by cd.account"
+         var paymentdata=await commonFunction.getQueryResults(paymentquery);
+         console.log(paymentquery); 
+         if (paymentdata.length >0) {
+            paymentdata.forEach(element => {
+                paymentObject[element.account]=element.total
+              });
+          }
+          paymentbalance=paymentObject[account]?paymentObject[account]:0
+          statmentbalance=statementObject[account]?statementObject[account]:0
         //var statmentquery="select * from  accountreconaltionlist as ac where ac.date ?";
+       console.log(paymentObject);
         var query="select * from account_statements as cd where cd.account in ('"+account+"') and cd.created_on >= '"+startdate+"' and cd.created_on <= '"+endate+"' ";
         
           //var query="select * from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8)";
@@ -319,7 +343,7 @@ console.log('firstcondition',element.date,moment(element.date,'DD-MM-YYYY').form
  
  
             if (data.length>0) {
-                res.json({status:1,message:"Bank statment list successfully",data})
+                res.json({status:1,message:"Bank statment list successfully",statmentbalance,paymentbalance,data})
             }
             else
             {
@@ -377,7 +401,7 @@ var enddateObject={}
        let repsonse=[];
         //var statmentquery="select * from  accountreconaltionlist as ac where ac.date ?";
         var query="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8) group by cd.account"
-        
+        console.log(query);
           //var query="select * from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8)";
           var data=await commonFunction.getQueryResults(query)
  
