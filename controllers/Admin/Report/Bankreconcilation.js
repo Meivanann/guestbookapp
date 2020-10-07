@@ -373,6 +373,10 @@ var enddateObject={}
         // var deferred = q.defer();
        
         let amountObject={}
+<<<<<<< HEAD
+=======
+         
+>>>>>>> b140fe7aef59bf1969cea9981a83e45d728b769e
        let repsonse=[];
         //var statmentquery="select * from  accountreconaltionlist as ac where ac.date ?";
         var query="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8) group by cd.account"
