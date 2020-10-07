@@ -690,7 +690,7 @@ var order=req.body.order
                 Object.keys(rows).forEach(function(key) {
                     var row = rows[key];
                         
-                    var checkingQuery="select  * FROM out_for_delivery WHERE cn_no ='"+ row.id +"'"
+                    var checkingQuery="select  * FROM out_for_delivery WHERE cn_no ='"+ row.cn_no +"'"
                    
 
                     connection.query(checkingQuery, function(err,data){
@@ -821,7 +821,7 @@ console.log('name',consignmentQuery)
 
 
 
-                    var checkingQuery="select  * FROM out_for_delivery WHERE cn_no IN ("+ row.id +")"
+                    var checkingQuery="select  * FROM out_for_delivery WHERE cn_no IN ("+ row.cn_no +")"
                         
                     //updating the consignments
 

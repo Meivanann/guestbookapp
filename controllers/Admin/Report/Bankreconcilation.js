@@ -340,7 +340,7 @@ console.log('firstcondition',element.date,moment(element.date,'DD-MM-YYYY').form
 var enddateObject={}
         var paymentquery="select *,min(DATE_FORMAT(cd.created_on,'%Y-%m-%d')) as mindate from account_statements as cd where cd.account in ('"+account+"') group by cd.account order by cd.created_on asc ";
         var paymentdata=await commonFunction.getQueryResults(paymentquery)
-        var datequery=
+        var datequery
       console.log(paymentquery);
       if (paymentdata.length >0 ) {
 
@@ -359,6 +359,42 @@ var enddateObject={}
  
             if (data.length>0) {
                 res.json({status:1,message:" bank statment  status list successfully",data})
+            }
+            else
+            {
+                res.json({status:0,message:"No data found"})
+            } 
+                 
+        // });
+         
+     },
+
+     getindexlist: async(req, res) => {
+        // var deferred = q.defer();
+       
+        let amountObject={}
+         
+       let repsonse=[];
+        //var statmentquery="select * from  accountreconaltionlist as ac where ac.date ?";
+        var query="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8) group by cd.account"
+        
+          //var query="select * from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8)";
+          var data=await commonFunction.getQueryResults(query)
+ 
+ 
+            if (data.length>0) {
+
+                data.forEach(element => {
+                    amountObject[element.account]=element.total
+                    });
+                data.forEach(element => {
+                    repsonse.push({
+account:element.account,
+accountname:element.accountname,
+total:amountObject[element.account]?amountObject[element.account]:0
+                    })
+                });
+                res.json({status:1,message:" bank index   list successfully",repsonse})
             }
             else
             {
