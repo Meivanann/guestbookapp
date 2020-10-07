@@ -821,7 +821,7 @@ console.log('name',consignmentQuery)
 
 
 
-                    var checkingQuery="select  * FROM out_for_delivery WHERE cn_no IN ("+ row.cn_no +")"
+                    var checkingQuery="select  * FROM out_for_delivery WHERE cn_no ='"+ row.cn_no +"'"
                         
                     //updating the consignments
 
