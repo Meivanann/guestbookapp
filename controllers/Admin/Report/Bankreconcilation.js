@@ -150,48 +150,85 @@ else
     if (selecteddata.length > 0 &&   data.length > 0) {
         console.log('correct',data);
 
-       
-        selecteddata.forEach(row => {
+        const result = data.filter(f =>
 
-            data.forEach(element => {
-console.log('firstcondition',element.date,moment(element.date,'DD-MM-YYYY').format('YYYY-MM-DD'),moment(row.date).format("YYYY-MM-DD"))
-                if (element.debit!=row.debit && element.credit!=row.credit&&element.descripation!=row.descripation && moment(element.date,'DD-MM-YYYY').format('YYYY-MM-DD')!=moment(row.date).format("YYYY-MM-DD")) {
-                    bankstatment.push({ 
-                        descripation:element.descripation,
-                        debit:element.debit!=undefined?element.debit:0,
-                        credit:element.credit!=undefined?element.credit:0,
-                        transactionid:12,
-                        account:accountid!=undefined?accountid:0,
-                        createddate:element.date!=undefined?moment(element.date,'DD-MM-YYYY').format('YYYY-MM-DD'):''
-                    })
-                    account_statements.push
-                    ({ 
-                        descripation:element.descripation,
-                        debit:element.debit!=undefined?element.debit:0,
-                        credit:element.credit!=undefined?element.credit:0,
-                        transactionid:12,
-                        account:accountid!=undefined?accountid:0,
-                        amount:element.credit!=undefined&&element.credit>0&&element.credit!='' ?element.credit:0 ||element.debit!=undefined&&element.debit>0&&element.debit!=''?element.debit:0,
-                        type:element.credit!=undefined?'Income':'Expenses',  
-                        createddate:element.date!=undefined?moment(element.date,'DD-MM-YYYY').format('YYYY-MM-DD'):'',
-                        money_type:element.credit!=undefined?2:1,  
-                        category:element.credit!=undefined?53:89,
-                        isUpoad:1,
-                        ispayment: 1
-                    })
+           
+            !selecteddata.some(d =>moment(d.date).format("YYYY-MM-DD")==moment(f.date,'DD-MM-YYYY').format('YYYY-MM-DD')&& d.descripation==f.descripation&&d.credit==f.credit&&d.debit==f.debit)
+          );
+
+          console.log('acctualresult',result);
+
+          result.forEach(element => {
+
+            bankstatment.push({ 
+                                        descripation:element.descripation,
+                                        debit:element.debit!=undefined?element.debit:0,
+                                        credit:element.credit!=undefined?element.credit:0,
+                                        transactionid:12,
+                                        account:accountid!=undefined?accountid:0,
+                                        createddate:element.date!=undefined?moment(element.date,'DD-MM-YYYY').format('YYYY-MM-DD'):''
+                                    })
+                //              
+            account_statements.push
+                                ({ 
+                                    descripation:element.descripation,
+                                    debit:element.debit!=undefined?element.debit:0,
+                                    credit:element.credit!=undefined?element.credit:0,
+                                    transactionid:12,
+                                    account:accountid!=undefined?accountid:0,
+                                    amount:element.credit!=undefined&&element.credit>0&&element.credit!='' ?element.credit:0 ||element.debit!=undefined&&element.debit>0&&element.debit!=''?element.debit:0,
+                                    type:element.credit!=undefined &&element.credit>0&&element.credit!=''?'Income':'Expenses',  
+                                    createddate:element.date!=undefined?moment(element.date,'DD-MM-YYYY').format('YYYY-MM-DD'):'',
+                                    money_type:element.credit!=undefined&&element.credit>0&&element.credit!=''?2:1,  
+                                    category:element.credit!=undefined&&element.credit>0&&element.credit!=''?53:89,
+                                    isUpoad:1,
+                                    ispayment: 1
+                                })
+                               
+          });
+//         selecteddata.forEach(row => {
+
+//             data.forEach(element => {
+// console.log('firstcondition',element.date,moment(element.date,'DD-MM-YYYY').format('YYYY-MM-DD'),moment(row.date).format("YYYY-MM-DD"))
+// var elementdate=moment(element.date,'DD-MM-YYYY').format('YYYY-MM-DD')
+//                 if (row.debit!=element.debit && row.credit!=element.credit&&row.descripation!=element.descripation && moment(row.date).format("YYYY-MM-DD")!=elementdate) {
+//                     console.log('correct',element);
+//                     bankstatment.push({ 
+//                         descripation:element.descripation,
+//                         debit:element.debit!=undefined?element.debit:0,
+//                         credit:element.credit!=undefined?element.credit:0,
+//                         transactionid:12,
+//                         account:accountid!=undefined?accountid:0,
+//                         createddate:element.date!=undefined?moment(element.date,'DD-MM-YYYY').format('YYYY-MM-DD'):''
+//                     })
+//                     account_statements.push
+//                     ({ 
+//                         descripation:element.descripation,
+//                         debit:element.debit!=undefined?element.debit:0,
+//                         credit:element.credit!=undefined?element.credit:0,
+//                         transactionid:12,
+//                         account:accountid!=undefined?accountid:0,
+//                         amount:element.credit!=undefined&&element.credit>0&&element.credit!='' ?element.credit:0 ||element.debit!=undefined&&element.debit>0&&element.debit!=''?element.debit:0,
+//                         type:element.credit!=undefined?'Income':'Expenses',  
+//                         createddate:element.date!=undefined?moment(element.date,'DD-MM-YYYY').format('YYYY-MM-DD'):'',
+//                         money_type:element.credit!=undefined?2:1,  
+//                         category:element.credit!=undefined?53:89,
+//                         isUpoad:1,
+//                         ispayment: 1
+//                     })
                    
-                }
+//                 }
                
             
             
-            });   
-        });
+//             });   
+//         });
         var duplicateremovedbankstatment=new Set(bankstatment)
         var duplicationaccountstatment=new Set(account_statements)
         var removedbankstatment=[...duplicateremovedbankstatment];
         var removeaccountstatment=[...duplicationaccountstatment];
 
-        console.log(account_statements,bankstatment)
+        console.log(account_statements,result)
         let banking = removedbankstatment.map((m) => Object.values(m))
             var insterquery="insert into bank_statement(descripation,debit,credit,transactionid,account,date)values ?"
             connection.query(insterquery,[banking],function(err,data) {
@@ -211,6 +248,7 @@ console.log('firstcondition',element.date,moment(element.date,'DD-MM-YYYY').form
                             }
                             else
                             {
+                                console.log('future',row);
                                 res.json({status:1,message:'Saved successfully'})
                             }
                             
@@ -277,13 +315,14 @@ console.log('firstcondition',element.date,moment(element.date,'DD-MM-YYYY').form
                   if(data.insertId > 0)
                   {
                       let accountstatements = account_statements.map((m) => Object.values(m))
-                      var accountquery="insert into account_statements(description,debit,credit,from_id,account,amount,type,created_on,money_type,category,isUpoad)values ?"
+                      var accountquery="insert into account_statements(description,debit,credit,from_id,account,amount,type,created_on,money_type,category,isUpoad,ispayment)values ?"
                       connection.query(accountquery,[accountstatements],function(error,row) {
                           if (error) {
                              console.log(error) 
                           }
                           else
-                          {
+                          {console.clear();
+                              console.log('result',row);
                             res.json({status:1,message:'Saved successfully'})
                           }
                           
