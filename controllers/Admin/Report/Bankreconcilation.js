@@ -363,6 +363,19 @@ else
           let condition_to =  '';
          let  condition_string = ''
          var search=req.body.search
+         var sortby=req.body.sortby;
+var searchbar=req.body.searchbar
+var searchcondition=''
+         var sortcondition='order by cd.created_on desc'
+var order=req.body.order
+            if(sortby!=undefined && sortby!='' && order!=undefined && order!='')
+            {
+                sortcondition ="ORDER BY cd.created_on " + order + "";
+            }
+            if(searchbar!=undefined && searchbar!='')
+            {
+                searchcondition ="and (cd.description like '%"+searchbar+"%')";
+            }
         if(search != undefined)
         {
             condition_value = '';
@@ -441,7 +454,7 @@ else
          }
 
 
-         var paymentquery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id and isUpoad!=1 group by cd.account"
+         var paymentquery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id and cd.isUpoad!=1 and cd.created_on<='"+endate+"'  group by cd.account"
          var paymentdata=await commonFunction.getQueryResults(paymentquery);
          console.log(paymentquery); 
          if (paymentdata.length >0) {
@@ -453,7 +466,7 @@ else
           statmentbalance=statementObject[account]?statementObject[account]:0
         //var statmentquery="select * from  accountreconaltionlist as ac where ac.date ?";
        console.log('cons',condition);
-        var query="select * from account_statements as cd where cd.account in ('"+account+"') and cd.created_on >= '"+startdate+"' and cd.created_on <= '"+endate+"' "+condition+"  ";
+        var query="select * from account_statements as cd where cd.account in ('"+account+"') and cd.created_on >= '"+startdate+"' and cd.created_on <= '"+endate+"' "+condition+"  "+searchcondition+" "+sortcondition+" ";
         console.log('query',query);
           //var query="select * from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8)";
           var data=await commonFunction.getQueryResults(query)
