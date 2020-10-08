@@ -355,6 +355,83 @@ else
         var paymentbalance=0
         var statementObject={}
         var paymentObject={}
+
+        let condition=''
+        let vendorcondition=''
+        let condition_value = '';
+          let  condition_from = '';
+          let condition_to =  '';
+         let  condition_string = ''
+         var search=req.body.search
+        if(search != undefined)
+        {
+            condition_value = '';
+                    condition_from = '';
+                    condition_to =  '';
+            if(search.date != undefined)
+            {
+                condition_from = search.date.from;
+                condition_to =  search.date.to;
+                if(condition_string != undefined)
+                {
+                condition_string=condition_string + "and  DATE_FORMAT(cd.created_on,'%Y-%m-%d')  >= DATE('" + condition_from + "') AND DATE_FORMAT(cd.created_on,'%Y-%m-%d') <= DATE('" + condition_to + "')";
+                 } 
+                 if(search.date.from != ''&&search.date.to!= '' )
+                 {
+                condition=condition+condition_string
+               // vendorcondition=vendorcondition+condition_string
+                } 
+            } 
+
+            if(search.types != undefined)
+            {
+                                        //0--debit and 1--credit
+            
+                condition_value=search.types
+                if(condition_string != undefined && search.types != ''&& search.types.includes(0)==true )
+                {
+                condition_string= " and cd.credit=0";
+                 } 
+                 if(condition_string != undefined && search.types != ''&& search.types.includes(1)==true )
+                 {
+                 condition_string= " and cd.debit=0";
+                  } 
+
+                  if(condition_string != undefined && search.types != ''&& search.types.includes(1)==true && search.types.includes(0)==true )
+                 {
+                 condition_string= condition+"";
+                  } 
+                 if(search.types != '' )
+                {
+                condition=condition+ condition_string
+                //vendorcondition=vendorcondition+ condition_string
+               }
+            }
+            
+             if(search.status != undefined)
+             {
+                                    //0--unmatch,1--matched items
+                 condition_value=search.status
+                 if(condition_string != undefined && search.types != '' && search.status.includes(0)==true)
+                 {
+                 condition_string= " and cd.isbankreconcile!=1";
+                  } 
+                  if(condition_string != undefined && search.types != '' && search.status.includes(1)==true)
+                 {
+                 condition_string= " and cd.isbankreconcile=1";
+                  } 
+                  if(condition_string != undefined && search.types != '' && search.status.includes(1)==true&& search.status.includes(0)==true)
+                 {
+                 condition_string= condition+"";
+                  } 
+                  if(search.status != '' )
+                 {
+                 condition=condition+ condition_string
+                 //vendorcondition=vendorcondition+ condition_string
+                }
+                }
+        }
+
         var statmentQuery="select *,SUM(cd.amount) AS totalamount from accountreconaltionlist as cd where cd.account in ('"+account+"') and cd.date >= '"+startdate+"' and cd.date <= '"+endate+"' ";
         var statmentdata=await commonFunction.getQueryResults(statmentQuery);
          if (statmentdata.length >0) {
@@ -375,9 +452,9 @@ else
           paymentbalance=paymentObject[account]?paymentObject[account]:0
           statmentbalance=statementObject[account]?statementObject[account]:0
         //var statmentquery="select * from  accountreconaltionlist as ac where ac.date ?";
-       console.log(paymentObject);
-        var query="select * from account_statements as cd where cd.account in ('"+account+"') and cd.created_on >= '"+startdate+"' and cd.created_on <= '"+endate+"' ";
-        
+       console.log('cons',condition);
+        var query="select * from account_statements as cd where cd.account in ('"+account+"') and cd.created_on >= '"+startdate+"' and cd.created_on <= '"+endate+"' "+condition+"  ";
+        console.log('query',query);
           //var query="select * from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8)";
           var data=await commonFunction.getQueryResults(query)
  
@@ -512,7 +589,7 @@ total:amountObject[element.account]?amountObject[element.account]:0
          }
 
 
-         var paymentquery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id and isUpoad!=1 group by cd.account"
+         var paymentquery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id and isUpoad!=1 and cd.account in ('"+ account+"') and (DATE_FORMAT(cd.created_on,'%Y-%m-%d') >= DATE('" + startdate + "') and DATE_FORMAT(cd.created_on,'%Y-%m-%d') <= DATE('" + endate + "') )  group by cd.account"
          var paymentdata=await commonFunction.getQueryResults(paymentquery);
          console.log(paymentquery); 
          if (paymentdata.length >0) {
@@ -524,19 +601,13 @@ total:amountObject[element.account]?amountObject[element.account]:0
           statmentbalance=statementObject[account]?statementObject[account]:0
         //var statmentquery="select * from  accountreconaltionlist as ac where ac.date ?";
        console.log(paymentObject);
-        var query="select * from account_statements as cd where cd.account in ('"+account+"') and cd.created_on >= '"+startdate+"' and cd.created_on <= '"+endate+"' ";
-        
-          //var query="select * from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8)";
-          var data=await commonFunction.getQueryResults(query)
+        var difference=statmentbalance!=undefined && paymentbalance!=undefined? statmentbalance-paymentbalance:0
  
  
-            if (data.length>0) {
-                res.json({status:1,message:"Bank statment list successfully",statmentbalance,paymentbalance,data})
-            }
-            else
-            {
-                res.json({status:0,message:"No data found"})
-            } 
+            
+                res.json({status:1,message:"Bank  hover statment list successfully",statmentbalance,paymentbalance,difference})
+             
+           
               
         // });
          
