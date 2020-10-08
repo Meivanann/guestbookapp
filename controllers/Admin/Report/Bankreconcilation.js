@@ -459,13 +459,10 @@ else
           var data=await commonFunction.getQueryResults(query)
  
  
-            if (data.length>0) {
+             
                 res.json({status:1,message:"Bank statment list successfully",statmentbalance,paymentbalance,data})
-            }
-            else
-            {
-                res.json({status:0,message:"No data found"})
-            } 
+             
+            
                  
         // });
          
@@ -523,6 +520,11 @@ var enddateObject={}
  
  
             if (data.length>0) {
+            
+
+                data.forEach(element => {
+                    element.lastdate=lastdate
+                });
                 res.json({status:1,message:" bank statment  status list successfully",data,lastdate})
             }
             else
