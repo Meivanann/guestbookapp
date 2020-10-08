@@ -465,6 +465,7 @@ var startingbalance=0
           paymentbalance=paymentObject[account]?paymentObject[account]:0
           statmentbalance=statementObject[account]?statementObject[account]:0
           startingbalance=paymentObject[account]?paymentObject[account]:0
+          var difference=paymentbalance-statmentbalance
           //var statmentquery="select * from  accountreconaltionlist as ac where ac.date ?";
        console.log('cons',condition);
         var query="select * from account_statements as cd where cd.account in ('"+account+"') and cd.created_on >= '"+startdate+"' and cd.created_on <= '"+endate+"' "+condition+"  "+searchcondition+" "+sortcondition+" ";
@@ -480,7 +481,7 @@ var startingbalance=0
      
  }
              
-                res.json({status:1,message:"Bank statment list successfully",statmentbalance,paymentbalance,data})
+                res.json({status:1,message:"Bank statment list successfully",statmentbalance,paymentbalance,difference,data})
              
             
                  
