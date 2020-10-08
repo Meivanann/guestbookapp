@@ -453,7 +453,7 @@ var order=req.body.order
              });
          }
 
-
+var startingbalance=0
          var paymentquery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id and cd.isUpoad!=1 and cd.created_on<='"+endate+"'  group by cd.account"
          var paymentdata=await commonFunction.getQueryResults(paymentquery);
          console.log(paymentquery); 
@@ -464,16 +464,64 @@ var order=req.body.order
           }
           paymentbalance=paymentObject[account]?paymentObject[account]:0
           statmentbalance=statementObject[account]?statementObject[account]:0
-        //var statmentquery="select * from  accountreconaltionlist as ac where ac.date ?";
+          startingbalance=paymentObject[account]?paymentObject[account]:0
+          //var statmentquery="select * from  accountreconaltionlist as ac where ac.date ?";
        console.log('cons',condition);
         var query="select * from account_statements as cd where cd.account in ('"+account+"') and cd.created_on >= '"+startdate+"' and cd.created_on <= '"+endate+"' "+condition+"  "+searchcondition+" "+sortcondition+" ";
         console.log('query',query);
           //var query="select * from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8)";
           var data=await commonFunction.getQueryResults(query)
  
- 
+ if (data.length > 0) {
+    data.forEach(element => {
+          startingbalance= Number(startingbalance + Number((element.credit))-Number((element.debit)))
+          element.balance=startingbalance
+      });
+     
+ }
              
                 res.json({status:1,message:"Bank statment list successfully",statmentbalance,paymentbalance,data})
+             
+            
+                 
+        // });
+         
+     },
+     updatematchedlist: async(req, res) => {
+        // var deferred = q.defer();
+        var transactionid=req.body.transactionid;
+         var isMatch=req.body.match ///0--it for unmatched items 1-- it for matched items
+        var selectedquery="select * from account_statements as c where id='"+transactionid+"'";
+        var selecteddata=await commonFunction.getQueryResults(selectedquery)
+
+        if (selecteddata.length > 0) {
+            var selecteditems=selecteddata[0]
+            var updateQuery="update account_statements as c set c.isbankreconcile=1 where c.id='"+transactionid+"' ";
+            var insterQuery="insert into accountmatchlist(descripation,debit,credit,date,transactionid) values('"+selecteditems.description+"','"+selecteditems.debit+"','"+selecteditems.credit+"','"+selecteditems.created_on+"','"+transactionid+"')"
+            if(isMatch==0) {
+                updateQuery="update account_statements as c set c.isbankreconcile=0 where c.id='"+transactionid+"' "
+                insterQuery="update accountmatchlist as c set c.isdelete=1 where c.transactionid='"+transactionid+"' ";
+            }
+
+        console.log('query',updateQuery,insterQuery);
+            var updatedata=await commonFunction.getQueryResults(updateQuery)
+if (updatedata.affectedRows >0 ) {
+    var insterdata=await commonFunction.getQueryResults(insterQuery)
+    
+    res.json({status:1,message:"Update successfully"})
+}
+else
+{
+    res.json({status:0,message:"No updation done "})
+}
+
+            
+        }
+        else
+        {
+            res.json({status:0,message:"No data found "})
+        }
+                
              
             
                  
