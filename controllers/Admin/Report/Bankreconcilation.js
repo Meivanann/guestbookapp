@@ -459,7 +459,12 @@ total:amountObject[element.account]?amountObject[element.account]:0
         var date=req.body.date;
         var amount=req.body.amount;
         var account=req.body.account;
-          var query="insert into accountreconaltionlist(account,date,amount)values('"+account+"','"+date+"','"+amount+"')";
+        var checkingQuery="select * from accountreconaltionlist where account='"+account+"'and date='"+date+"'";
+        var checkingdata=await commonFunction.getQueryResults(checkingQuery) 
+        if(checkingdata.length==0)
+        {
+        
+        var query="insert into accountreconaltionlist(account,date,amount)values('"+account+"','"+date+"','"+amount+"')";
         var data=await commonFunction.getQueryResults(query)
  
  
@@ -468,9 +473,17 @@ total:amountObject[element.account]?amountObject[element.account]:0
 
                 res.json({status:1,message:"Account reconaltionlist statment successfully"})
             }
-            else
+
+        }
+            else if(checkingdata.length > 0)
             {
-                res.json({status:0,message:"No data found"})
+                var query="update accountreconaltionlist set amount='"+amount+"'where account ='"+account+"' and date='"+date+"' limit 1";
+                var data=await commonFunction.getQueryResults(query)
+                if (data.affectedRows>0) {
+
+
+                    res.json({status:1,message:"Account reconaltionlist updated  statment successfully"})
+                }
             } 
                  
         // });
