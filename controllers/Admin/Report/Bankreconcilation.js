@@ -437,6 +437,7 @@ var enddateObject={}
           });
       }
       console.log(startdateObject);
+      var lastdate=startdateObject[element.account]?startdateObject[element.account]:''
         //var statmentquery="select * from  accountreconaltionlist as ac where ac.date ?";
         var query="select * from accountreconaltionlist as cd where cd.account in ('"+account+"') order by cd.date asc ";
         
@@ -445,7 +446,7 @@ var enddateObject={}
  
  
             if (data.length>0) {
-                res.json({status:1,message:" bank statment  status list successfully",data})
+                res.json({status:1,message:" bank statment  status list successfully",data,lastdate})
             }
             else
             {
