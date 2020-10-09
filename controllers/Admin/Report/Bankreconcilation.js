@@ -690,6 +690,30 @@ console.log('endingblancequery',endingbalanceQuery);
          
      },
 
+     deletetransactionlist: async(req, res) => {
+        // var deferred = q.defer();
+       
+    
+var transactionid=req.body.transactionid;
+var checkingQuery="select * from account_statements as cd where cd.id="+transactionid+"";
+var checkingData=await commonFunction.getQueryResults(checkingQuery);
+
+if (checkingData.length>0) {
+    var checkdata=checkingData[0]
+    var deletetransactionlist="delete account_statements from account_statements where id="+transactionid+""
+    var deleteddata=await commonFunction.getQueryResults(deletetransactionlist)
+
+var updateQuery="update bank_statement as b set b.isdelete=1 where b.date='"+checkdata.created_on+"' and b.descripation='"+checkdata.description+"' and b.debit='"+checkdata.debit+"' and b.credit='"+checkdata.credit+"' and b.transactionid=12 and b.account='"+checkdata.account+"'"
+console.log('updatequery',updateQuery);
+var updatedata=await commonFunction.getQueryResults(updateQuery)
+res.json({status:1,message:" Deleted transaction successfully"})
+}
+                //res.json({status:1,message:" bank index   list successfully",repsonse,startdate,enddate,enddateObject,startdateObject,differencebalance})
+                        
+        // });
+         
+     },
+
      getindexhoverlist: async(req, res) => {
         // var deferred = q.defer();
        

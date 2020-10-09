@@ -105,6 +105,8 @@ module.exports = app => {
     app.get('/api/templatefile', bankreconcilationcontroller.gettemplatefile);
     app.post('/api/bankhoverlist', bankreconcilationcontroller.getindexhoverlist);
     app.post('/api/updatematchedlist', bankreconcilationcontroller.updatematchedlist);
+    app.post('/api/deletetransaction', bankreconcilationcontroller.deletetransactionlist);
+    
     //tracking
     app.post('/api/:id/tracking', trackingController.index);
     app.post('/uploaduserimage', userAuthenticationController.userupload);
