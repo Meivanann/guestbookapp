@@ -476,7 +476,7 @@ var startingbalance=0
  
  if (data.length > 0) {
     data.forEach(element => {
-          startingbalance= Number(startingbalance + Number((element.credit))-Number((element.debit)))
+          startingbalance= Number(startingbalance + Number((element.debit))-Number((element.credit)))
           element.balance=startingbalance
       });
      
