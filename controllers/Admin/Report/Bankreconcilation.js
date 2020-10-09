@@ -455,7 +455,7 @@ var order=req.body.order
          }
 
 var startingbalance=0
-         var paymentquery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id and cd.isUpoad!=1 and cd.created_on<='"+endate+"'  group by cd.account"
+         var paymentquery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id and cd.isUpoad!=1 and cd.created_on >= '"+startdate+"' and cd.created_on <= '"+endate+"'  group by cd.account"
          var paymentdata=await commonFunction.getQueryResults(paymentquery);
          console.log(paymentquery); 
          if (paymentdata.length >0) {
@@ -710,9 +710,28 @@ var enddateObject={};
     }
 
 
-    var endingbalanceQuery="select * from accountreconaltionlist as c where c.isdelete=0"
-    var endingbalanceData=await commonFunction.getQueryResults(endingbalanceQuery)
-       
+    var datebalanceQuery=`SELECT s.account, Max(s.date) Max_Date,(SELECT t.date 
+     FROM accountreconaltionlist t 
+    where s.account=t.account
+     ORDER BY date DESC 
+     LIMIT 1,1) seconddate
+    FROM  accountreconaltionlist s
+    
+    GROUP BY account
+    order by id,date desc`
+    var dateData=await commonFunction.getQueryResults(datebalanceQuery)
+
+    let startingObject={};
+    let endingObject={}
+
+    if (dateData.length > 0) {
+        dateData.forEach(element => {
+            startingObject[element.account]={ 
+                startdate:element.seconddate!=undefined?element.seconddate:element.Max_Date,
+                endate:element.Max_Date
+            }
+        });
+    }
         let amountObject={}
          
        let repsonse=[];
@@ -767,7 +786,7 @@ console.log('endingblancequery',endingbalanceQuery);
 }
 
                  
-                res.json({status:1,message:" bank index   list successfully",repsonse,startdate,enddate,enddateObject,startdateObject,differencebalance})
+                res.json({status:1,message:" bank index   list successfully",repsonse,startdate,enddate,enddateObject,startdateObject,differencebalance,startingObject})
             }
             else
             {
@@ -787,13 +806,19 @@ var checkingQuery="select * from account_statements as cd where cd.id="+transact
 var checkingData=await commonFunction.getQueryResults(checkingQuery);
 
 if (checkingData.length>0) {
-    var checkdata=checkingData[0]
-    var deletetransactionlist="delete account_statements from account_statements where id="+transactionid+""
-    var deleteddata=await commonFunction.getQueryResults(deletetransactionlist)
-
-var updateQuery="update bank_statement as b set b.isdelete=1 where b.date='"+checkdata.created_on+"' and b.descripation='"+checkdata.description+"' and b.debit='"+checkdata.debit+"' and b.credit='"+checkdata.credit+"' and b.transactionid=12 and b.account='"+checkdata.account+"'"
-console.log('updatequery',updateQuery);
-var updatedata=await commonFunction.getQueryResults(updateQuery)
+    var checkdata=checkingData
+     for (let index = 0; index < checkingData.length; index++) {
+         const element = array[index];
+         var deletetransactionlist="delete account_statements from account_statements where id="+element.id+""
+         var deleteddata=await commonFunction.getQueryResults(deletetransactionlist)
+     
+     var updateQuery="update bank_statement as b set b.isdelete=1 where b.date='"+element.created_on+"' and b.descripation='"+element.description+"' and b.debit='"+element.debit+"' and b.credit='"+element.credit+"' and b.transactionid=12 and b.account='"+element.account+"'"
+     console.log('updatequery',updateQuery);
+     var updatedata=await commonFunction.getQueryResults(updateQuery)
+     }
+       
+   // });
+    
 res.json({status:1,message:" Deleted transaction successfully"})
 }
                 //res.json({status:1,message:" bank index   list successfully",repsonse,startdate,enddate,enddateObject,startdateObject,differencebalance})
