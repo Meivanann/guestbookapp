@@ -714,6 +714,42 @@ res.json({status:1,message:" Deleted transaction successfully"})
          
      },
 
+     edittransactionlist: async(req, res) => {
+        // var deferred = q.defer();
+       
+    
+var transactionid=req.body.transactionid;
+var amount=req.body.amount
+var descripation=req.body.descripation
+
+var checkingQuery="select * from account_statements as cd where cd.id="+transactionid+"";
+var checkingData=await commonFunction.getQueryResults(checkingQuery);
+console.log(checkingQuery);
+if (checkingData.length>0) {
+    console.log('re');
+    var checkdata=checkingData[0]
+var condition=''
+
+    if (checkdata.debit!=undefined&& checkdata.debit>0) {
+        condition=",a.debit='"+amount+"'"
+    }
+    if (checkdata.credit!=undefined&& checkdata.credit>0) {
+        condition=",a.credit='"+amount+"'"
+    }
+    var edittransactionlist="update account_statements as a set a.amount='"+amount+"',a.description='"+descripation+"' "+condition+" where id="+transactionid+""
+    var editdata=await commonFunction.getQueryResults(edittransactionlist)
+
+var updateQuery="update bank_statement as a set a.descripation='"+descripation+"' "+condition+" where a.date='"+checkdata.created_on+"' and a.descripation='"+checkdata.description+"' and a.debit='"+checkdata.debit+"' and a.credit='"+checkdata.credit+"' and a.transactionid=12 and a.account='"+checkdata.account+"'"
+console.log('edit',updateQuery);
+var updatedata=await commonFunction.getQueryResults(updateQuery)
+res.json({status:1,message:" edit  transaction successfully"})
+}
+                //res.json({status:1,message:" bank index   list successfully",repsonse,startdate,enddate,enddateObject,startdateObject,differencebalance})
+                        
+        // });
+         
+     },
+
      getindexhoverlist: async(req, res) => {
         // var deferred = q.defer();
        
