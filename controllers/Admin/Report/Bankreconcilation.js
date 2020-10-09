@@ -573,6 +573,7 @@ var enddateObject={}
           });
       }
       console.log(startdateObject);
+      
       var lastdate=startdateObject[account]?startdateObject[account]:''
         //var statmentquery="select * from  accountreconaltionlist as ac where ac.date ?";
         var query="select * from accountreconaltionlist as cd where cd.account in ('"+account+"') order by cd.date asc ";
@@ -600,6 +601,29 @@ var enddateObject={}
 
      getindexlist: async(req, res) => {
         // var deferred = q.defer();
+       let accountids=[]
+var startdateObject={};
+var enddateObject={};
+
+        var paymentquery="select *,min(DATE_FORMAT(cd.created_on,'%Y-%m-%d')) as mindate from account_statements as cd  where  cd.isUpoad!=1  group by cd.account order by cd.created_on asc ";
+        var paymentdata=await commonFunction.getQueryResults(paymentquery)
+      var enddatequery="select *,max(DATE_FORMAT(c.date,'%Y-%m-%d')) as maxdate from accountreconaltionlist as c where c.isdelete=0"
+      var enddata=await commonFunction.getQueryResults(enddatequery)  
+      
+      if (paymentdata.length>0) {
+           paymentdata.forEach(element => {
+            startdateObject[element.account]=element.mindate 
+           });
+       }
+       if (enddata.length>0) {
+        enddata.forEach(element => {
+         enddateObject[element.account]=element.maxdate 
+        });
+    }
+
+
+    var endingbalanceQuery="select * from accountreconaltionlist as c where c.isdelete=0"
+    var endingbalanceData=await commonFunction.getQueryResults(endingbalanceQuery)
        
         let amountObject={}
          
@@ -615,6 +639,7 @@ var enddateObject={}
 
                 data.forEach(element => {
                     amountObject[element.account]=element.total
+                    accountids.push({account:element.account})
                     });
                 data.forEach(element => {
                     repsonse.push({
@@ -623,7 +648,38 @@ accountname:element.accountname,
 total:amountObject[element.account]?amountObject[element.account]:0
                     })
                 });
-                res.json({status:1,message:" bank index   list successfully",repsonse})
+
+                var startdate=[];
+                var enddate=[]
+                var finalstatmentbalance={};
+                var finalpaymentbalance={};
+                var differencebalance={};
+for (let index = 0; index < accountids.length; index++) {
+    const element = accountids[index];
+    var endingbalanceQuery="select *,sum(c.amount) as total from accountreconaltionlist as c where  DATE_FORMAT(c.date,'%Y-%m-%d')>=DATE('" + startdateObject[element.account] + "') and DATE_FORMAT(c.date,'%Y-%m-%d')<=DATE('" + enddateObject[element.account]+ "') and  c.account='"+element.account+"'  and c.isdelete=0 group by c.account" //it is statment balance query from start to end date
+    var endingbalanceData=await commonFunction.getQueryResults(endingbalanceQuery)
+console.log('endingblancequery',endingbalanceQuery);
+    
+    if (endingbalanceData.length >0) {
+
+    finalstatmentbalance[element.account]=endingbalanceData[0].total
+    
+    startdate.push(...endingbalanceData)
+    }
+    var startingbalanceQuery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8) and  DATE_FORMAT(c.created_on,'%Y-%m-%d')<=DATE('" + startdateObject[element.account] + "') and DATE_FORMAT(c.created_on,'%Y-%m-%d')<=DATE('" + enddateObject[element.account] + "')and  cd.account ='"+element.account+"' and cd.isUpoad!=1   group by cd.account"
+    var startingbalanceData=await commonFunction.getQueryResults(startingbalanceQuery)
+    if (startingbalanceData.length >0) {
+        finalpaymentbalance[element.account]=startingbalanceData[0].total
+        enddate.push(...startingbalanceData)
+    }
+
+
+    differencebalance[element.account]= (finalstatmentbalance[element.account]?finalstatmentbalance[element.account]:0)-(finalpaymentbalance[element.account]?finalpaymentbalance[element.account]:0)
+    
+}
+
+                 
+                res.json({status:1,message:" bank index   list successfully",repsonse,startdate,enddate,enddateObject,startdateObject,differencebalance})
             }
             else
             {
@@ -653,7 +709,7 @@ total:amountObject[element.account]?amountObject[element.account]:0
          }
 
 
-         var paymentquery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id and isUpoad!=1 and cd.account in ('"+ account+"') and (DATE_FORMAT(cd.created_on,'%Y-%m-%d') >= DATE('" + startdate + "') and DATE_FORMAT(cd.created_on,'%Y-%m-%d') <= DATE('" + endate + "') )  group by cd.account"
+         var paymentquery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id and isUpoad!=1 and cd.account in ('"+ account+"') and (DATE_FORMAT(cd.created_on,'%Y-%m-%d') >= DATE('" + startdate + "') and DATE_FORMAT(cd.created_on,'%Y-%m-%d') <= DATE('" + endate + "') ) and cd.isUpoad!=1  group by cd.account"
          var paymentdata=await commonFunction.getQueryResults(paymentquery);
          console.log(paymentquery); 
          if (paymentdata.length >0) {
