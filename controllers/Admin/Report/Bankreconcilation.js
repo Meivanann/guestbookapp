@@ -562,8 +562,13 @@ else
         
 
         var startdateObject={};
-var enddateObject={}
-        var paymentquery="select *,min(DATE_FORMAT(cd.created_on,'%Y-%m-%d')) as mindate from account_statements as cd where cd.account in ('"+account+"') group by cd.account order by cd.created_on asc ";
+var enddateObject={};
+
+
+console.log('duplicate');
+
+
+var paymentquery="select *,min(DATE_FORMAT(cd.created_on,'%Y-%m-%d')) as mindate from account_statements as cd where cd.account in ('"+account+"') group by cd.account order by cd.created_on asc ";
         var paymentdata=await commonFunction.getQueryResults(paymentquery)
         var datequery="select * from accountreconaltionlist as cd where cd.account in ('"+account+"') order by cd.date asc ";
      var endquerydata=await commonFunction.getQueryResults(datequery)
@@ -637,12 +642,17 @@ console.log('endingblancequery',endingbalanceQuery);
 
     console.log('paymentquery',startingbalanceQuery,finalpaymentbalance);
             //}
-            finalresponse.push({
+
+            var duplicateQuery="select c.*,COUNT(c.description),COUNT(c.created_on),COUNT(c.debit),COUNT(c.credit) from account_statements  as c    where  c.account='"+account+"'   and c.ispayment=1 and DATE_FORMAT(c.created_on,'%Y-%m-%d')>=DATE('" + startdates + "') and  DATE_FORMAT(c.created_on,'%Y-%m-%d')<=DATE('" + endates + "')  GROUP by c.description  having count(c.description) > 1 and count(c.created_on) > 1  and count(c.debit) > 1 and count(c.credit) > 1 ;";
+var duplicatedata=await commonFunction.getQueryResults(duplicateQuery)        
+         console.log('duplicatwquery',duplicateQuery);  
+finalresponse.push({
                 startingdate:startdates,
                 endingdate:endates,
                 account:account,
                 statmentbalance:finalstatmentbalance[el.account]!=undefined?finalstatmentbalance[el.account]:0,
-                systembalance:finalpaymentbalance[el.account]!=undefined?finalpaymentbalance[el.account]:0
+                systembalance:finalpaymentbalance[el.account]!=undefined?finalpaymentbalance[el.account]:0,
+                isduplicate:duplicatedata.length>0?true:false
             })
 
              
