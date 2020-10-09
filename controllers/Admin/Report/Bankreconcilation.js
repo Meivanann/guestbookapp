@@ -695,9 +695,9 @@ var enddateObject={};
 
         var paymentquery="select *,min(DATE_FORMAT(cd.created_on,'%Y-%m-%d')) as mindate from account_statements as cd  where  cd.isUpoad!=1  group by cd.account order by cd.created_on asc ";
         var paymentdata=await commonFunction.getQueryResults(paymentquery)
-      var enddatequery="select *,max(DATE_FORMAT(c.date,'%Y-%m-%d')) as maxdate from accountreconaltionlist as c where c.isdelete=0"
+      var enddatequery="select *,max(DATE_FORMAT(c.date,'%Y-%m-%d')) as maxdate from accountreconaltionlist as c where c.isdelete=0  group by c.account"
       var enddata=await commonFunction.getQueryResults(enddatequery)  
-      
+      console.log('end',enddatequery);
       if (paymentdata.length>0) {
            paymentdata.forEach(element => {
             startdateObject[element.account]=element.mindate 
@@ -773,7 +773,7 @@ console.log('endingblancequery',endingbalanceQuery);
     
     startdate.push(...endingbalanceData)
     }
-    var startingbalanceQuery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8) and  DATE_FORMAT(c.created_on,'%Y-%m-%d')<=DATE('" + startdateObject[element.account] + "') and DATE_FORMAT(c.created_on,'%Y-%m-%d')<=DATE('" + enddateObject[element.account] + "')and  cd.account ='"+element.account+"' and cd.isUpoad!=1   group by cd.account"
+    var startingbalanceQuery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8) and  DATE_FORMAT(c.created_on,'%Y-%m-%d')<=DATE('" + startdateObject[element.account] + "') and DATE_FORMAT(c.created_on,'%Y-%m-%d')<=DATE('" + enddateObject[element.account] + "')and  cd.account ='"+element.account+"' and cd.created_on!='' and cd.isUpoad!=1   group by cd.account"
     var startingbalanceData=await commonFunction.getQueryResults(startingbalanceQuery)
     if (startingbalanceData.length >0) {
         finalpaymentbalance[element.account]=startingbalanceData[0].total
