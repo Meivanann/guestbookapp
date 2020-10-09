@@ -808,7 +808,7 @@ var checkingData=await commonFunction.getQueryResults(checkingQuery);
 if (checkingData.length>0) {
     var checkdata=checkingData
      for (let index = 0; index < checkingData.length; index++) {
-         const element = array[index];
+         const element = checkingData[index];
          var deletetransactionlist="delete account_statements from account_statements where id="+element.id+""
          var deleteddata=await commonFunction.getQueryResults(deletetransactionlist)
      
