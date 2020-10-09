@@ -717,7 +717,7 @@ var enddateObject={};
          
        let repsonse=[];
         //var statmentquery="select * from  accountreconaltionlist as ac where ac.date ?";
-        var query="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8) and cd.isUpoad!=1 group by cd.account"
+        var query="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8) and cd.isUpoad!=1 and cd.created_on!='' group by cd.account"
         console.log(query);
           //var query="select * from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8)";
           var data=await commonFunction.getQueryResults(query)
