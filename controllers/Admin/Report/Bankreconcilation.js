@@ -469,7 +469,7 @@ var startingbalance=0
           var difference=paymentbalance-statmentbalance
           //var statmentquery="select * from  accountreconaltionlist as ac where ac.date ?";
        console.log('cons',condition);
-        var query="select * from account_statements as cd where cd.account in ('"+account+"') and cd.created_on >= '"+startdate+"' and cd.created_on <= '"+endate+"' "+condition+"  "+searchcondition+" "+sortcondition+" ";
+        var query="select * from account_statements as cd where cd.account in ('"+account+"') and DATE_FORMAT(cd.created_on,'%Y-%m-%d')>=DATE( '"+startdate+"') and DATE_FORMAT(cd.created_on,'%Y-%m-%d') <= DATE('"+endate+"') "+condition+"  "+searchcondition+" "+sortcondition+" ";
         console.log('query',query);
           //var query="select * from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8)";
           var data=await commonFunction.getQueryResults(query)
