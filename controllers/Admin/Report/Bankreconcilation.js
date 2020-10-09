@@ -455,12 +455,60 @@ var order=req.body.order
          }
 
 var startingbalance=0
-         var paymentquery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id and cd.isUpoad!=1 and DATE_FORMAT(cd.created_on,'%Y-%m-%d')>=DATE( '"+startdate+"') and DATE_FORMAT(cd.created_on,'%Y-%m-%d') <= DATE('"+endate+"')  group by cd.account"
+var changepaymentlist=[]
+         var paymentquery="select *,c.account_name as accountname from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id and cd.isUpoad!=1  and cd.from_id!=12 and DATE_FORMAT(cd.created_on,'%Y-%m-%d')>=DATE( '"+startdate+"') and DATE_FORMAT(cd.created_on,'%Y-%m-%d') <= DATE('"+endate+"') and cd.account='"+account+"'  group by cd.account"
          var paymentdata=await commonFunction.getQueryResults(paymentquery);
          console.log(paymentquery); 
+
+         var transactionpaymentlist="Select *,cd.type as actype,cd.created_on as accdate,ad.type as accountype,cd.account as account_id,cd.id as accountstatmentid from  account_statements as cd left join accounts as ac on ac.id=cd.account inner join account_types as ad on ac.account_type_id=ad.id where cd.from_id=12 and   DATE_FORMAT(cd.created_on,'%Y-%m-%d')>=DATE( '"+startdate+"') and DATE_FORMAT(cd.created_on,'%Y-%m-%d') <= DATE('"+endate+"') "+condition+"  "+searchcondition+"  group by cd.id  "+sortcondition+"   "
+         var transactionpaymentitems=await commonFunction.getQueryResults(transactionpaymentlist);
+         
+         
+         if (transactionpaymentitems.length > 0) {
+             
+         
+         console.log('prank goes wrong')
+              
+         
+         transactionpaymentitems.forEach(element => {
+              
+                  
+              //    element.credit=element.amount
+              //    element.debit=0
+              
+              
+              
+              // element.credit=0
+              // element.debit=element.amount
+          
+              if (element.actype=='Income') {
+                 element.credit=0
+                 element.debit=element.amount
+             }
+             if (element.actype=='Expenses') {
+              element.credit=element.amount
+              element.debit=0
+          }
+         
+          changepaymentlist.push(element)
+          
+         }); 
+         
+            //console.log('prank goes wrong',defaultlist)
+         
+             
+         }
          if (paymentdata.length >0) {
+paymentdata.push(...changepaymentlist)
+            
+
+var totalpaymentbalance=_.sumBy(paymentdata, function (day) {
+ 
+    return day.debit - day.credit;
+
+});
             paymentdata.forEach(element => {
-                paymentObject[element.account]=element.total
+                paymentObject[element.account]=totalpaymentbalance
               });
           }
           paymentbalance=paymentObject[account]?paymentObject[account]:0
@@ -469,12 +517,53 @@ var startingbalance=0
           var difference=paymentbalance-statmentbalance
           //var statmentquery="select * from  accountreconaltionlist as ac where ac.date ?";
        console.log('cons',condition);
-        var query="select * from account_statements as cd where cd.account in ('"+account+"') and DATE_FORMAT(cd.created_on,'%Y-%m-%d')>=DATE( '"+startdate+"') and DATE_FORMAT(cd.created_on,'%Y-%m-%d') <= DATE('"+endate+"') "+condition+"  "+searchcondition+" "+sortcondition+" ";
+        var query="select * from account_statements as cd where cd.from_id!=12 and cd.account in ('"+account+"') and DATE_FORMAT(cd.created_on,'%Y-%m-%d')>=DATE( '"+startdate+"') and DATE_FORMAT(cd.created_on,'%Y-%m-%d') <= DATE('"+endate+"') "+condition+"  "+searchcondition+" "+sortcondition+" ";
         console.log('query',query);
           //var query="select * from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8)";
           var data=await commonFunction.getQueryResults(query)
+
+          let defaultlist=[]
+let changedlist=[]
+var transactionlist="Select *,cd.type as actype,cd.created_on as accdate,ad.type as accountype,cd.account as account_id,cd.id as accountstatmentid from  account_statements as cd left join accounts as ac on ac.id=cd.account inner join account_types as ad on ac.account_type_id=ad.id where cd.from_id=12 and   DATE_FORMAT(cd.created_on,'%Y-%m-%d')>=DATE( '"+startdate+"') and DATE_FORMAT(cd.created_on,'%Y-%m-%d') <= DATE('"+endate+"') "+condition+"  "+searchcondition+"  group by cd.id  "+sortcondition+"   "
+var transactionitems=await commonFunction.getQueryResults(transactionlist);
+
+
+if (transactionitems.length > 0) {
+    
+
+console.log('prank goes wrong')
+     
+
+   transactionitems.forEach(element => {
+     
+         
+     //    element.credit=element.amount
+     //    element.debit=0
+     
+     
+     
+     // element.credit=0
+     // element.debit=element.amount
  
+     if (element.actype=='Income') {
+        element.credit=0
+        element.debit=element.amount
+    }
+    if (element.actype=='Expenses') {
+     element.credit=element.amount
+     element.debit=0
+ }
+
+ changedlist.push(element)
+ 
+}); 
+
+   //console.log('prank goes wrong',defaultlist)
+
+    
+}
  if (data.length > 0) {
+    data.push(...changedlist)
     data.forEach(element => {
           startingbalance= Number(startingbalance + Number((element.debit))-Number((element.credit)))
           element.balance=startingbalance
