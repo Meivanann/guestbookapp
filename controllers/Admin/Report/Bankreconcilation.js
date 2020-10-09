@@ -836,8 +836,13 @@ res.json({status:1,message:" edit  transaction successfully"})
         var date=req.body.date;
         var amount=req.body.amount;
        // var account=req.body.account;
-        var bankid=req.body.bankid
-          var query="update  accountreconaltionlist set date ='"+date+"',amount='"+amount+"' where id='"+bankid+"'";
+        var bankid=req.body.bankid;
+
+var condition=''
+        if (date!=''&&date!=undefined) {
+            condition=",date ='"+date+"'"
+        }
+          var query="update  accountreconaltionlist set amount='"+amount+"' "+condition+" where id='"+bankid+"'";
         var data=await commonFunction.getQueryResults(query)
  
  
