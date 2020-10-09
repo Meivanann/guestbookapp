@@ -802,7 +802,7 @@ console.log('endingblancequery',endingbalanceQuery);
        
     
 var transactionid=req.body.transactionid;
-var checkingQuery="select * from account_statements as cd where cd.id="+transactionid+"";
+var checkingQuery="select * from account_statements as cd where cd.id  in ("+transactionid.join(',')+")";
 var checkingData=await commonFunction.getQueryResults(checkingQuery);
 
 if (checkingData.length>0) {
