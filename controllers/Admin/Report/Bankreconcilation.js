@@ -6,6 +6,7 @@ var multer = require('multer');
 var COMMONURL=require('../../../common.json')
 var fileUpload = require('express-fileupload');
 var csvtojsonV2 = require("csvtojson");
+const { end } = require('pdfkit');
 var Validator = require('jsonschema').Validator;
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -559,19 +560,96 @@ else
         var endate=req.body.endate
         var account=req.body.account
         
+
         var startdateObject={};
 var enddateObject={}
         var paymentquery="select *,min(DATE_FORMAT(cd.created_on,'%Y-%m-%d')) as mindate from account_statements as cd where cd.account in ('"+account+"') group by cd.account order by cd.created_on asc ";
         var paymentdata=await commonFunction.getQueryResults(paymentquery)
-        var datequery
-      console.log(paymentquery);
+        var datequery="select * from accountreconaltionlist as cd where cd.account in ('"+account+"') order by cd.date asc ";
+     var endquerydata=await commonFunction.getQueryResults(datequery)
+        var startdates=''
+        var endates=''
+     console.log(paymentquery);
       if (paymentdata.length >0 ) {
 
         paymentdata.forEach(element => {
               
             startdateObject[element.account]=element.mindate
           });
+          startdates=startdateObject[account]
+          endates=endquerydata[0].date
+          console.log('ms');
+          var prevousdate=''
+
+          var startdate=[];
+          var enddate=[]
+          var finalstatmentbalance={};
+          var finalpaymentbalance={};
+          var differencebalance={};
+          var finalresponse=[]
+          var systembalance=0
+          for (let index = 0; index < endquerydata.length; index++) {
+              const el = endquerydata[index];
+              
+          
+           
+            // if (index==0) {
+                var intialenddate=index==0?el.date:''
+
+            console.log('cns',intialenddate);
+                //enddates=index==0?el.date:''
+                prevousdate=el.date
+                 
+            // }
+            
+             
+        if (index>0) {
+           var value=endquerydata[index-1].date
+                startdates=moment(value).add(1,'days').format('YYYY-MM-DD');
+                endates=el.date
+        }
+                
+        console.log('startdate',startdates,endates);
+           //console.log('correct',startdates);
+           var endingbalanceQuery="select *,sum(c.amount) as total from accountreconaltionlist as c where  DATE_FORMAT(c.date,'%Y-%m-%d')>=DATE('" + startdates + "') and DATE_FORMAT(c.date,'%Y-%m-%d')<=DATE('" + endates+ "') and  c.account='"+account+"'  and c.isdelete=0 group by c.account" //it is statment balance query from start to end date
+    var endingbalanceData=await commonFunction.getQueryResults(endingbalanceQuery)
+console.log('endingblancequery',endingbalanceQuery);
+    
+    if (endingbalanceData.length >0) {
+
+    finalstatmentbalance[el.account]=endingbalanceData[0].total
+    
+    startdate.push(...endingbalanceData)
+    }
+    var startingbalanceQuery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8) and  DATE_FORMAT(cd.created_on,'%Y-%m-%d')>=DATE('" + startdates + "') and DATE_FORMAT(cd.created_on,'%Y-%m-%d')<=DATE('" + endates + "')and  cd.account ='"+account+"' and cd.isUpoad!=1 and cd.created_on!=''  group by cd.account"
+    var startingbalanceData=await commonFunction.getQueryResults(startingbalanceQuery)
+    if (startingbalanceData.length > 0) {
+        finalpaymentbalance[el.account]=startingbalanceData[0].total
+        enddate.push(...startingbalanceData)
+        systembalance=startingbalanceData[0].total
+    }
+    if (startingbalanceData.length==0) {
+        finalpaymentbalance= {}
+    }
+    if (endingbalanceData.length==0) {
+        finalstatmentbalance= {}
+    }
+
+    console.log('paymentquery',startingbalanceQuery,finalpaymentbalance);
+            //}
+            finalresponse.push({
+                startingdate:startdates,
+                endingdate:endates,
+                account:account,
+                statmentbalance:finalstatmentbalance[el.account]!=undefined?finalstatmentbalance[el.account]:0,
+                systembalance:finalpaymentbalance[el.account]!=undefined?finalpaymentbalance[el.account]:0
+            })
+
+             
+          
       }
+    }
+console.log('result',enddate,startdate);
       console.log(startdateObject);
       
       var lastdate=startdateObject[account]?startdateObject[account]:''
@@ -588,7 +666,7 @@ var enddateObject={}
                 data.forEach(element => {
                     element.lastdate=lastdate
                 });
-                res.json({status:1,message:" bank statment  status list successfully",data,lastdate})
+                res.json({status:1,message:" bank statment  status list successfully",data,lastdate,finalresponse,enddate,startdate})
             }
             else
             {
@@ -769,7 +847,7 @@ res.json({status:1,message:" edit  transaction successfully"})
          }
 
 
-         var paymentquery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id and isUpoad!=1 and cd.account in ('"+ account+"') and (DATE_FORMAT(cd.created_on,'%Y-%m-%d') >= DATE('" + startdate + "') and DATE_FORMAT(cd.created_on,'%Y-%m-%d') <= DATE('" + endate + "') ) and cd.isUpoad!=1  group by cd.account"
+         var paymentquery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id  and cd.account in ('"+ account+"') and (DATE_FORMAT(cd.created_on,'%Y-%m-%d') >= DATE('" + startdate + "') and DATE_FORMAT(cd.created_on,'%Y-%m-%d') <= DATE('" + endate + "') ) and cd.isUpoad!=1  group by cd.account"
          var paymentdata=await commonFunction.getQueryResults(paymentquery);
          console.log(paymentquery); 
          if (paymentdata.length >0) {
