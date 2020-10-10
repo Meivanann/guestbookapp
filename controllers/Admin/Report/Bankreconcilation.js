@@ -831,7 +831,7 @@ var lastidObject={}
     if (dateData.length > 0) {
         dateData.forEach(element => {
             startingObject[element.account]={ 
-                startdate:element.seconddate!=undefined?moment(element.seconddate,'YYYY-MM-DD').add(1,'days'):element.Max_Date,
+                startdate:element.seconddate!=undefined?moment(element.seconddate,'YYYY-MM-DD').add(1,'days').format('YYYY-MM-DD'):element.Max_Date,
                 endate:element.Max_Date,
                 id:lastidObject[element.account]?lastidObject[element.account]:0
             }
