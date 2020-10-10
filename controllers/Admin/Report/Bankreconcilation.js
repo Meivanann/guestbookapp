@@ -817,7 +817,8 @@ var enddateObject={};
         dateData.forEach(element => {
             startingObject[element.account]={ 
                 startdate:element.seconddate!=undefined?element.seconddate:element.Max_Date,
-                endate:element.Max_Date
+                endate:element.Max_Date,
+                id:element.id
             }
         });
     }
