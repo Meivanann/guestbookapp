@@ -832,7 +832,7 @@ var lastidObject={}
             startingObject[element.account]={ 
                 startdate:element.seconddate!=undefined?element.seconddate:element.Max_Date,
                 endate:element.Max_Date,
-                id:lastidObject[element.account]
+                id:lastidObject[element.account]?lastidObject[element.account]:0
             }
         });
     }
