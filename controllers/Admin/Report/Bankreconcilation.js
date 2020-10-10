@@ -60,6 +60,7 @@ let extension=req.files.file.mimetype;
 let filename=req.files.file.name
 let filenames=filename.split('.');
 console.log(filenames[0]);
+console.log(req.files);
 if (extension=='text/csv') {
     if (req.body.account != undefined && req.body.account != '') {
 
