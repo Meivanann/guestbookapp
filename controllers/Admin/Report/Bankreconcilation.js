@@ -59,9 +59,9 @@ let files=req.files.file
 let extension=req.files.file.mimetype;
 let filename=req.files.file.name
 let filenames=filename.split('.');
-console.log(filenames[0]);
+console.log(filenames[1]);
 console.log(req.files);
-if (extension=='text/csv' || extension=='application/octet-stream' ) {
+if (filenames[1]=='csv') {
     if (req.body.account != undefined && req.body.account != '') {
 
         var account = req.body.account;
