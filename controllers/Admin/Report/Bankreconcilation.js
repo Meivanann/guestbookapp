@@ -781,13 +781,24 @@ console.log('result',enddate,startdate);
        let accountids=[]
 var startdateObject={};
 var enddateObject={};
+var lastidObject={}
 
         var paymentquery="select *,min(DATE_FORMAT(cd.created_on,'%Y-%m-%d')) as mindate from account_statements as cd  where  cd.isUpoad!=1  group by cd.account order by cd.created_on asc ";
         var paymentdata=await commonFunction.getQueryResults(paymentquery)
       var enddatequery="select *,max(DATE_FORMAT(c.date,'%Y-%m-%d')) as maxdate from accountreconaltionlist as c where c.isdelete=0  group by c.account"
       var enddata=await commonFunction.getQueryResults(enddatequery)  
       console.log('end',enddatequery);
-      if (paymentdata.length>0) {
+
+
+      var lastmaxdatequery="SELECT * FROM psa_staging.accountreconaltionlist as c INNER JOIN (SELECT id as iss,account, MAX(date) as TopDate from psa_staging.accountreconaltionlist group by account ) as a on a.TopDate=c.date and c.account=a.account"
+     var lastmaxdata=await commonFunction.getQueryResults(lastmaxdatequery)
+      
+     if (lastmaxdata.length >0 ) {
+        lastmaxdata.forEach(element => {
+             lastidObject[element.account]=element.id
+         });
+     }
+     if (paymentdata.length>0) {
            paymentdata.forEach(element => {
             startdateObject[element.account]=element.mindate 
            });
@@ -810,6 +821,9 @@ var enddateObject={};
     order by id,date desc`
     var dateData=await commonFunction.getQueryResults(datebalanceQuery)
 
+
+
+     
     let startingObject={};
     let endingObject={}
 
@@ -818,7 +832,7 @@ var enddateObject={};
             startingObject[element.account]={ 
                 startdate:element.seconddate!=undefined?element.seconddate:element.Max_Date,
                 endate:element.Max_Date,
-                id:element.id
+                id:lastidObject[element.account]
             }
         });
     }
