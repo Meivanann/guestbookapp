@@ -370,7 +370,7 @@ var searchbar=req.body.searchbar
 var searchcondition=''
          var sortcondition='order by cd.created_on desc'
 var order=req.body.order
-            if(sortby!=undefined && sortby!='' && order!=undefined && order!='')
+            if( order!=undefined && order!='')
             {
                 sortcondition ="ORDER BY cd.created_on " + order + "";
             }
