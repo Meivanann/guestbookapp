@@ -88,22 +88,42 @@ if (filenames[1]=='csv') {
                         // total_number_of_employees_given = data.length;
 
 
-                        jsonArray.forEach((d, index) => {
-                            var ValidatorResult = v.validate(d, employeeSchema);
-                            if (ValidatorResult.errors.length > 0) {
-                                rows.push(index + 1);
-                            }
-                            errors = errors.concat(ValidatorResult.errors);
+                        jsonArray.forEach((element,i) => {
+if (element.debit!=undefined && element.credit !=undefined && element.debit > 0 && element.credit>0 ) {
+    
+    vaildation.push({
+        index:i,
+        debit:element.debit,
+        credit:element.credit,
+        description:element.descripation
+    })
+}
                         });
 
-                        if (errors.length==0) {
-                            res.json({ status: 1, message: "data", jsonArray });
+                        if (vaildation.length > 0) {
+                            res.json({ status: 0, message: "Please enter values debit or credit ", vaildation }); 
                         }
-                        else
-                        {
-                            res.json({ status: 0, message: "validationerror", errors });
+
+
+                        if (vaildation.length==0) {
+                            jsonArray.forEach((d, index) => {
+                                var ValidatorResult = v.validate(d, employeeSchema);
+                                if (ValidatorResult.errors.length > 0) {
+                                    rows.push(index + 1);
+                                }
+                                errors = errors.concat(ValidatorResult.errors);
+                            });
+    
+                            if (errors.length==0) {
+                                res.json({ status: 1, message: "data", jsonArray });
+                            }
+                            else
+                            {
+                                res.json({ status: 0, message: "validationerror", errors });
+                            }
+                             
                         }
-                       
+                        
 
                     } else {
                         res.json({ status: 0, message: "No data to import" });
