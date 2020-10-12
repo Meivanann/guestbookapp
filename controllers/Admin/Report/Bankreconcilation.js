@@ -478,7 +478,7 @@ var order=req.body.order
 
 var startingbalance=0
 var changepaymentlist=[]
-         var paymentquery="select *,c.account_name as accountname from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id and cd.isUpoad!=1   and DATE_FORMAT(cd.created_on,'%Y-%m-%d')>=DATE( '"+startdate+"') and DATE_FORMAT(cd.created_on,'%Y-%m-%d') <= DATE('"+endate+"') and cd.account='"+account+"'  group by cd.id"
+         var paymentquery="select *,c.account_name as accountname from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id  and DATE_FORMAT(cd.created_on,'%Y-%m-%d')>=DATE( '"+startdate+"') and DATE_FORMAT(cd.created_on,'%Y-%m-%d') <= DATE('"+endate+"') and cd.account='"+account+"'  group by cd.id"
          var paymentdata=await commonFunction.getQueryResults(paymentquery);
          console.log(paymentquery); 
 
@@ -737,7 +737,7 @@ console.log('endingblancequery',endingbalanceQuery);
     
     startdate.push(...endingbalanceData)
     }
-    var startingbalanceQuery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8) and  DATE_FORMAT(cd.created_on,'%Y-%m-%d')>=DATE('" + startdates + "') and DATE_FORMAT(cd.created_on,'%Y-%m-%d')<=DATE('" + endates + "')and  cd.account ='"+account+"' and cd.isUpoad!=1 and cd.created_on!=''  group by cd.account"
+    var startingbalanceQuery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8) and  DATE_FORMAT(cd.created_on,'%Y-%m-%d')>=DATE('" + startdates + "') and DATE_FORMAT(cd.created_on,'%Y-%m-%d')<=DATE('" + endates + "')and  cd.account ='"+account+"' and cd.created_on!=''  group by cd.account"
     var startingbalanceData=await commonFunction.getQueryResults(startingbalanceQuery)
     if (startingbalanceData.length > 0) {
         finalpaymentbalance[el.account]=startingbalanceData[0].total
@@ -805,7 +805,7 @@ var startdateObject={};
 var enddateObject={};
 var lastidObject={}
 
-        var paymentquery="select *,min(DATE_FORMAT(cd.created_on,'%Y-%m-%d')) as mindate from account_statements as cd  where  cd.isUpoad!=1  group by cd.account order by cd.created_on asc ";
+        var paymentquery="select *,min(DATE_FORMAT(cd.created_on,'%Y-%m-%d')) as mindate from account_statements as cd    group by cd.account order by cd.created_on asc ";
         var paymentdata=await commonFunction.getQueryResults(paymentquery)
       var enddatequery="select *,max(DATE_FORMAT(c.date,'%Y-%m-%d')) as maxdate from accountreconaltionlist as c where c.isdelete=0  group by c.account"
       var enddata=await commonFunction.getQueryResults(enddatequery)  
@@ -862,7 +862,7 @@ var lastidObject={}
          
        let repsonse=[];
         //var statmentquery="select * from  accountreconaltionlist as ac where ac.date ?";
-        var query="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8) and cd.isUpoad!=1 and cd.created_on!='' group by cd.account"
+        var query="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8) and cd.created_on!='' group by cd.account"
         console.log(query);
           //var query="select * from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8)";
           var data=await commonFunction.getQueryResults(query)
@@ -899,7 +899,7 @@ console.log('endingblancequery',endingbalanceQuery);
     
     startdate.push(...endingbalanceData)
     }
-    var startingbalanceQuery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8) and  DATE_FORMAT(c.created_on,'%Y-%m-%d')<=DATE('" + startdateObject[element.account] + "') and DATE_FORMAT(c.created_on,'%Y-%m-%d')<=DATE('" + enddateObject[element.account] + "')and  cd.account ='"+element.account+"' and cd.created_on!='' and cd.isUpoad!=1   group by cd.account"
+    var startingbalanceQuery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8) and  DATE_FORMAT(c.created_on,'%Y-%m-%d')<=DATE('" + startdateObject[element.account] + "') and DATE_FORMAT(c.created_on,'%Y-%m-%d')<=DATE('" + enddateObject[element.account] + "')and  cd.account ='"+element.account+"' and cd.created_on!=''   group by cd.account"
     var startingbalanceData=await commonFunction.getQueryResults(startingbalanceQuery)
     if (startingbalanceData.length >0) {
         finalpaymentbalance[element.account]=startingbalanceData[0].total
@@ -1008,7 +1008,7 @@ res.json({status:1,message:" edit  transaction successfully"})
          }
 
 
-         var paymentquery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id  and cd.account in ('"+ account+"') and (DATE_FORMAT(cd.created_on,'%Y-%m-%d') >= DATE('" + startdate + "') and DATE_FORMAT(cd.created_on,'%Y-%m-%d') <= DATE('" + endate + "') ) and cd.isUpoad!=1  group by cd.account"
+         var paymentquery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id  and cd.account in ('"+ account+"') and (DATE_FORMAT(cd.created_on,'%Y-%m-%d') >= DATE('" + startdate + "') and DATE_FORMAT(cd.created_on,'%Y-%m-%d') <= DATE('" + endate + "') )   group by cd.account"
          var paymentdata=await commonFunction.getQueryResults(paymentquery);
          console.log(paymentquery); 
          if (paymentdata.length >0) {
