@@ -61,6 +61,7 @@ let filename=req.files.file.name
 let filenames=filename.split('.');
 console.log(filenames[1]);
 console.log(req.files);
+var vaildation=[]
 if (filenames[1]=='csv') {
     if (req.body.account != undefined && req.body.account != '') {
 
