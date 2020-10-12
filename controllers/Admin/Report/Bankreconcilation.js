@@ -751,7 +751,7 @@ console.log('endingblancequery',endingbalanceQuery);
         finalstatmentbalance= {}
     }
 
-    console.log('paymentquery',startingbalanceQuery,finalpaymentbalance);
+    console.log('paymentquery',finalstatmentbalance,finalpaymentbalance);
             //}
 
             var duplicateQuery="select c.*,COUNT(c.description),COUNT(c.created_on),COUNT(c.debit),COUNT(c.credit) from account_statements  as c    where  c.account='"+account+"'   and c.ispayment=1 and DATE_FORMAT(c.created_on,'%Y-%m-%d')>=DATE('" + startdates + "') and  DATE_FORMAT(c.created_on,'%Y-%m-%d')<=DATE('" + endates + "')  GROUP by c.description  having count(c.description) > 1 and count(c.created_on) > 1  and count(c.debit) > 1 and count(c.credit) > 1 ;";
@@ -899,13 +899,13 @@ console.log('endingblancequery',endingbalanceQuery);
     
     startdate.push(...endingbalanceData)
     }
-    var startingbalanceQuery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8) and  DATE_FORMAT(c.created_on,'%Y-%m-%d')<=DATE('" + startdateObject[element.account] + "') and DATE_FORMAT(c.created_on,'%Y-%m-%d')<=DATE('" + enddateObject[element.account] + "')and  cd.account ='"+element.account+"' and cd.created_on!=''   group by cd.account"
+    var startingbalanceQuery="select *,c.account_name as accountname,sum(cd.debit-cd.credit) as total from  accounts  as c  inner join account_statements as cd  on c.id=cd.account  inner join account_types as ad on ad.id=c.account_type_id where c.account_type_id in (1,2,8) and  DATE_FORMAT(cd.created_on,'%Y-%m-%d')>=DATE('" + startdateObject[element.account] + "') and DATE_FORMAT(cd.created_on,'%Y-%m-%d')<=DATE('" + enddateObject[element.account] + "')and  cd.account ='"+element.account+"' and cd.created_on!=''   group by cd.account"
     var startingbalanceData=await commonFunction.getQueryResults(startingbalanceQuery)
     if (startingbalanceData.length >0) {
         finalpaymentbalance[element.account]=startingbalanceData[0].total
         enddate.push(...startingbalanceData)
     }
-
+console.log('syst',startingbalanceQuery,finalpaymentbalance,'s;s',finalstatmentbalance);
 
     differencebalance[element.account]= (finalstatmentbalance[element.account]?finalstatmentbalance[element.account]:0)-(finalpaymentbalance[element.account]?finalpaymentbalance[element.account]:0)
     
