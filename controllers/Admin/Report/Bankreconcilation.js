@@ -176,7 +176,7 @@ else
         const result = data.filter(f =>
 
            
-            !selecteddata.some(d =>moment(d.date).format("YYYY-MM-DD")==moment(f.date,'DD-MM-YYYY').format('YYYY-MM-DD')&& d.descripation==f.descripation&&d.credit==f.credit&&d.debit==f.debit)
+            !selecteddata.some(d =>moment(d.date).format("YYYY-MM-DD")==moment(f.date,'DD-MM-YYYY').format('YYYY-MM-DD')&& d.descripation==f.descripation&&d.credit==f.credit&&d.debit==f.debit&&d.account==accountid)
           );
 
           console.log('acctualresult',result);
