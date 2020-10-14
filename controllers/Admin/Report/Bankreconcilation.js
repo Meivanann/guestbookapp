@@ -200,7 +200,7 @@ else
                                     transactionid:12,
                                     account:accountid!=undefined?accountid:0,
                                     amount:element.credit!=undefined&&element.credit>0&&element.credit!='' ?element.credit:0 ||element.debit!=undefined&&element.debit>0&&element.debit!=''?element.debit:0,
-                                    type:element.credit!=undefined &&element.credit>0&&element.credit!=''?'Income':'Expenses',  
+                                    type:element.credit!=undefined &&element.credit>0&&element.credit!=''?'Expense':'Income',  
                                     createddate:element.date!=undefined?moment(element.date,'DD-MM-YYYY').format('YYYY-MM-DD'):'',
                                     money_type:element.credit!=undefined&&element.credit>0&&element.credit!=''?2:1,  
                                     category:element.credit!=undefined&&element.credit>0&&element.credit!=''?53:89,
@@ -671,14 +671,39 @@ else
         var endate=req.body.endate
         var account=req.body.account
         
-
+var lastcountObject={}
         var startdateObject={};
 var enddateObject={};
 
-
+var lastmaxaccoutndate=''
+var lastaccountreconcilationdate=''
 console.log('duplicate');
 
 
+var maxdatequery="select *,max(DATE_FORMAT(cd.created_on,'%Y-%m-%d')) as maxdateacc from account_statements as cd where cd.account in ('"+account+"') group by cd.account order by cd.created_on asc ";
+var maxdata=await commonFunction.getQueryResults(maxdatequery);
+if (maxdata.length > 0) {
+    lastmaxaccoutndate=moment(maxdata[0].maxdateacc).format("YYYY-MM-DD")
+}
+
+var maxaccountdatequery="select *,max(DATE_FORMAT(cd.date,'%Y-%m-%d')) as maxdateaccount from accountreconaltionlist as cd where cd.account in ('"+account+"') group by cd.account order by cd.date asc ";
+var maxaccountdata=await commonFunction.getQueryResults(maxaccountdatequery);
+
+if (maxaccountdata.length >0) {
+    lastaccountreconcilationdate=moment(maxaccountdata[0].maxdateaccount).format("YYYY-MM-DD")
+}
+
+if (lastaccountreconcilationdate < lastmaxaccoutndate) {            //add preroid date less than system max date of particular account 
+    var countQuery="select count(*) as totalcount from account_statements as cd where DATE_FORMAT(cd.created_on,'%Y-%m-%d')>DATE('"+ lastaccountreconcilationdate+"','%Y-%m-%d')  and DATE_FORMAT(cd.created_on,'%Y-%m-%d')<=DATE('"+ lastmaxaccoutndate+"','%Y-%m-%d') cd.account in ('"+account+"') group by cd.account order by cd.created_on asc "
+    var countdata=await commonFunction.getQueryResults(countQuery);
+    if (countdata.length>0) {
+        lastcountObject[account]={
+            lastaccoutdate:lastmaxaccoutndate,
+            count:countdata[0].totalcount
+        }
+    }
+}
+console.log('accountre',lastaccountreconcilationdate,'payment',lastmaxaccoutndate);
 var paymentquery="select *,min(DATE_FORMAT(cd.created_on,'%Y-%m-%d')) as mindate from account_statements as cd where cd.account in ('"+account+"') group by cd.account order by cd.created_on asc ";
         var paymentdata=await commonFunction.getQueryResults(paymentquery)
         var datequery="select * from accountreconaltionlist as cd where cd.account in ('"+account+"') order by cd.date asc ";
@@ -787,7 +812,7 @@ console.log('result',enddate,startdate);
                 data.forEach(element => {
                     element.lastdate=lastdate
                 });
-                res.json({status:1,message:" bank statment  status list successfully",data,lastdate,finalresponse,enddate,startdate})
+                res.json({status:1,message:" bank statment  status list successfully",lastcountObject,data,lastdate,finalresponse,enddate,startdate})
             }
             else
             {
