@@ -222,6 +222,8 @@ module.exports = app => {
     app.get('/api/paymentaccountlist', reportController.getpaymentaccount);
     app.post('/api/balancesheet', reportController.BalanceSheetreport);
     app.post('/api/generalledger', reportController.Generalledger);
+
+    app.post('/api/purchasebyvendor', reportController.Purchasebyvendor);
     app.post('/api/incomebycutomer', reportController.Incomebycustomer);
     app.get('/api/accountslist', reportController.getallAccounts);
     app.get('/api/accountslisttransaction', reportController.getaccountstransaction);

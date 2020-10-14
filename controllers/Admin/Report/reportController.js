@@ -177,6 +177,140 @@ res.json({ status: 1, message: 'Income list successfully',paidobject,meragearray
 
     },
 
+    Purchasebyvendor: async (req, res) => {
+        let { start_date, end_date } = req.body
+        let accountObject = {};
+        let accountNameObject = {}
+        let consignmentObject = {};
+        let billObject = {};
+        var bill = [];
+        let incomes = [];
+        let expense = []
+        let incomepaymentObject=[];
+        let expensepaymentObject=[];
+        let expenseObject = {}
+        let costofgoodsexpense=[];
+        let operatingexpensetransaction=[];
+        let costofgoodsexpensepayment=[];
+        let operatingexpensepayment=[]
+        var paymentdetails;
+
+var condition=''
+
+let reponse=[]
+         
+        var finalResponse = [];
+        let accounttypeQuery = "Select *,at.id as accountypeid,at.name as accounttypename,a.id as accountid,a.account_name as accountname from accounts as a left join account_types as at on at.id=a.account_type_id ";
+
+        let accountdata = await commonFunction.getQueryResults(accounttypeQuery);
+
+        accountdata.forEach(element => {
+            accountObject[element.accountypeid] = element.accounttypename;
+            accountNameObject[element.accountid] = element.accountname
+        });
+ 
+
+let balancpaid={}
+
+let paidobject={}
+         
+        let unpaidincomequery = "SELECT *,ac.vendor_id as vendor_id FROM  account_statements as ac  left join vendors as c on c.id=ac.vendor_id WHERE  DATE_FORMAT(ac.created_on, '%Y-%m-%d')>= '" + start_date + "' AND DATE_FORMAT(ac.created_on, '%Y-%m-%d')  <= '" + end_date + "'  and ac.ispayment=0  and ac.from_id=3 "; //unpayment list of bill details
+        //let transactionQuery = " Select *,ad.type as accountype,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  and a.from_id NOT IN (6,7,8,9,10,11) " + condition + " group by a.id ";
+        let unpaidincomedata = await commonFunction.getQueryResults(unpaidincomequery);
+        
+console.log(unpaidincomequery);
+        let paidincomequery = "SELECT *,ac.vendor_id as vendor_id FROM  account_statements as ac  left join vendors as c on c.id=ac.vendor_id WHERE DATE_FORMAT(ac.created_on, '%Y-%m-%d') >= '" + start_date + "' AND DATE_FORMAT(ac.created_on, '%Y-%m-%d')  <= '" + end_date + "'  and ac.ispayment!=0 and ac.from_id=5"; //payment list of bill
+        //let transactionQuery = " Select *,ad.type as accountype,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  and a.from_id NOT IN (6,7,8,9,10,11) " + condition + " group by a.id ";
+        let paidincomedata = await commonFunction.getQueryResults(paidincomequery);
+
+                 
+console.log(creditquery);
+    if (unpaidincomedata.length > 0 ||paidincomedata.length > 0 ) {
+      
+        creditdata.forEach(element => {
+            element.debit=0
+            element.credit=element.amount
+    
+});
+uncreditdata.forEach(element => {
+    element.debit=element.amount
+    element.credit=0
+
+});
+console.log(paidincomedata.length);
+paidincomedata.push(...creditdata);
+unpaidincomedata.push(...uncreditdata);
+console.log('combined',paidincomedata.length);
+
+        paidincomedata.forEach(element => {
+            balancpaid[element.vendor_id]= (balancpaid[element.vendor_id]? balancpaid[element.vendor_id] : 0 ) + Number(element.amount)
+            paidobject[element.vendor_id]=balancpaid[element.vendor_id]
+        });
+        reponse.push(...unpaidincomedata,...paidincomedata)
+        
+        var unpaid=_(unpaidincomedata)
+        .groupBy('vendor_id')
+        .map((objs, key) => ({
+            'vendor_id': key,
+            'vendor_name': _.get(objs[0], 'vendor_name'),
+            'totalbill':  _.sumBy(objs, function (day) {
+ 
+                return day.debit-day.credit//Math.abs(Number(day.credit)-Number(day.debit));
+         
+            }),
+
+            
+ 
+             
+        }))
+
+
+        var paid=_(paidincomedata)
+        .groupBy('vendor_id')
+        .map((objs, key) => ({
+            'vendor_id': key,
+            'vendor_name': _.get(objs[0], 'vendor_name'),
+            'totalpaid': _.sumBy(objs, function (day) {
+ 
+                return Math.abs(Number(day.credit)-Number(day.debit)) ;
+         
+            }),
+
+            
+ 
+             
+        }))
+
+var meragearray=[...unpaid,...paid]
+
+var meragegrouping=_(meragearray)
+.groupBy('vendor_id')
+.map((objs, key) => ({
+    'vendor_id': key,
+    'vendor_name': _.get(objs[0], 'vendor_name'),
+    'totalpaid':paidobject[key]?paidobject[key]:0,
+    'totalinvoice':_.get(objs[0],'totalinvoice')!=undefined?_.get(objs[0],'totalinvoice'):0
+}))
+
+
+
+
+res.json({ status: 1, message: 'Purchase vendor list successfully',paidobject,meragearray,unpaidincomedata,paid,unpaid,meragegrouping})
+
+    }
+         else
+
+         {
+
+            res.json({ status: 0, message: 'No data found' })
+        }
+
+       
+
+
+
+    },
+
     //sep17backup
 //     Incomebycustomer: async (req, res) => {
 //         let { start_date, end_date } = req.body
