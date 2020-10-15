@@ -144,12 +144,12 @@ job.start();
 
 
 //var job = new CronJob('59 59 23 * * *', function() {
-    var trackingjob = new CronJob('0 */5 * * * *', function() {
+   
+ var trackingjob = new CronJob('0 */5 * * * *', function() {
     //cron job for moving the consignments which is in out for delivery back to cosignments
     consignmentcontroller.trackingcronjob()
 }, null, true, 'Asia/Singapore');
 trackingjob.start();
-
 app.listen(PORT, () => {
      
     console.log('Server started on the port 8011' )
