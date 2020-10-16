@@ -214,7 +214,9 @@ let balancpaid={}
 
 let paidobject={}
 let restructure=[]
-let vendorobject={}
+let vendorobject={};
+
+var unpaidbillarray=[]
          let vendorquery="select * from vendors as v "
          let vendordata=await commonFunction.getQueryResults(vendorquery)
         
@@ -245,20 +247,35 @@ let paidincomequery = "select *,at.type as acctype,a.account_name as account_nam
 // unpaidincomedata.push(...uncreditdata);
 console.log('combined',paidincomedata.length);
 
+unpaidincomedata.forEach(element => {
+    if (element.vendor_id!=undefined&&element.vendor_id!='') {
+    if (element.acctype=='Expenses') {
+        unpaidbillarray.push(element)
+    }
+    if (element.acctype=='Assets') {
+        unpaidbillarray.push(element) 
+    }
+
+}
+});
+
         paidincomedata.forEach(element => {
+            if (element.vendor_id!=undefined&&element.vendor_id!='') {
+                if (element.acctype=='Expenses') {
+                    restructure.push(element)
+                }
+                if (element.acctype=='Assets') {
+                    restructure.push(element) 
+                }
+            }
              
-            if (element.acctype=='Expenses') {
-                restructure.push(element)
-            }
-            if (element.acctype=='Assets') {
-                restructure.push(element) 
-            }
+            
         });
 
 
 
         var seperateunpaid=
-        _(unpaidincomedata)
+        _(unpaidbillarray)
         .groupBy('acctype')
         .map((objs, key) => ({
             'acctype': key,
@@ -280,7 +297,7 @@ console.log('combined',paidincomedata.length);
              var val=sepearttypepaid[item]
              _.forEach(val, function(value, key,arr) { 
 
-                if (value.billid==value.paymentbillid && value.vendor_id!=undefined) {
+                if (value.billid==value.paymentbillid && value.vendor_id!=undefined && value.vendor_id!='') {
                   var values=Number(value.itemamount/value.totalbillamount * value.paymentamount) //Number((value.itemamount/value.totalbillamount )* value.paymentamount).toFixed(2)
                     
                     value.amountvalue=Number(values).toFixed(2)
@@ -390,7 +407,11 @@ var unpaidarray=[]
         paidarray.forEach(element => {
             element.allpurchase=0
         });
+
+
+        let vendormerage=[]
 var meragearray=[...unpaidarray,...paidarray]
+
 
 var sepearttypemerage=_(meragearray)
         .groupBy('acctype')
@@ -403,8 +424,8 @@ var sepearttypemerage=_(meragearray)
         }))
 
         var meragegroupingarray=[]
-       let meragegroupping= [sepearttypemerage.reduce(function(acc, curr) {
-        meragegroupingarray.push(..._(meragearray)
+ let meragegroupping= [sepearttypemerage.reduce(function(acc, curr) {
+        meragegroupingarray.push(..._(curr.values)
 .groupBy('vendor_id')
 .map((objs, key) => ({
     'vendor_id': key,
@@ -434,8 +455,7 @@ var sepearttypemerage=_(meragearray)
 // }))
 
 
-res.json({ status: 1, message: 'Purchase vendor list successfully',unpaidarray,
-sepearttypemerage,sepearttypepaid,paidobject,meragearray,restructure})
+res.json({ status: 1, message: 'Purchase vendor list successfully',meragegroupingarray,sepearttypemerage })
 
     }
          else
