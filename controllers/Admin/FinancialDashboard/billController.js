@@ -795,7 +795,7 @@ let newobject={ }
                         var accountpayable={type:'Expense',account:21,amount:total_amount,description:'bill from create bill',debit:0,credit:total_amount,bill_no:bill_id,types:'Bill',created_on:bill_date,from_id:2,vendor_id:vendor_id}
                         var array=[accountpayable]
                         let accountdetailsbill = array.map((m) => Object.values(m))
-                        let acc_query = "update  account_statements set ?  where id="+billid+""
+                        let acc_query = "update  account_statements set ?  where bill_no="+billid+""
                         connection.query(acc_query, accountpayable, function (err, data) {
                             if (err) {
                                 console.log(err)
