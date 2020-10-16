@@ -835,7 +835,7 @@ console.log('skl',cnolistquery)
                                     }
                                 });
 
-                                var incomeobject={type:'Income',account:20,amount:Math.round(total_amount),description:'invoice from create invoice',debit:0,credit:total_amount,invoice_number:invoice_number,types:'Invoice',created_on:invoice_date,from_id:1,shipper_code:shipper_code}
+                                var incomeobject={type:'Income',account:20,amount:total_amount,description:'invoice from create invoice',debit:0,credit:total_amount,invoice_number:invoice_number,types:'Invoice',created_on:invoice_date,from_id:1,shipper_code:shipper_code}
                                 var accountReacivable={type:'Income',account:22,amount:total_amount,description:'invoice from create invoice',debit:total_amount,credit:0,invoice_number:invoice_number,types:'Invoice',created_on:invoice_date,from_id:1,shipper_code:shipper_code}
                                 var array=[incomeobject,accountReacivable]
                                 let accountdetailsinvoice = array.map((m) => Object.values(m))
@@ -1647,6 +1647,20 @@ payment.push(paymentObject,accountobject,salesbjectpayment)
                                         console.log(lgerr)
                                     }else{
                                         console.log("Shippin account statement  added successfully");
+                                    }
+                                });
+
+
+                                var incomeobject={type:'Income',account:20,amount:rows[0].total_amount,description:'invoice from direct invoice',debit:0,credit:rows[0].total_amount,invoice_number:invoice_number,types:'Invoice',created_on:req.body.invoice_date,from_id:1,shipper_code:rows[0].shipper_code}
+                                var accountReacivable={type:'Income',account:22,amount:rows[0].total_amount,description:'invoice from direct invoice',debit:rows[0].total_amount,credit:0,invoice_number:invoice_number,types:'Invoice',created_on:req.body.invoice_date,from_id:1,shipper_code:rows[0].shipper_code}
+                                var array=[incomeobject,accountReacivable]
+                                let accountdetailsinvoice = array.map((m) => Object.values(m))
+                                let acc_query = "INSERT INTO account_statements(type,account,amount,description,debit,credit,invoice_number,types,created_on,from_id,shipper_code) values ? "
+                                connection.query(acc_query, [accountdetailsinvoice], function (err, data) {
+                                    if (err) {
+                                        console.log(err)
+                                    }else{
+                                        console.log("account statement  added successfully");
                                     }
                                 });
 
