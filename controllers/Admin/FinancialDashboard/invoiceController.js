@@ -758,7 +758,7 @@ console.log('skl',cnolistquery)
                 console.log('values',pointvalue)
                 var storepointvalue=getDecimal(pointvalue>0?pointvalue:0);
 
-                total_amount =Math.round( sub_amount + tax_amount);
+                total_amount =Number( sub_amount + tax_amount);
 
                 // getting the shipper details
                 let shipper_query = "select * from shipping where shipper_code = ?"
@@ -1594,7 +1594,7 @@ payment.push(paymentObject,accountobject,salesbjectpayment)
                             "shipper_name"      : shipper_details.shipper_name,
                             "inv_sub_amount"    : rows[0].sub_amount,
                             "inv_tax_amount"    : rows[0].tax_amount,
-                            "inv_total_amount"  : Math.round(pointvalue),
+                            "inv_total_amount"  : pointvalue,
                             "status"            : "Unpaid",
                             "pdf_name"          : "test",
                             "payment_due_date"  : req.body.payment_due,

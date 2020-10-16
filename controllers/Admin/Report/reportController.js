@@ -218,14 +218,18 @@ let vendorobject={}
          let vendorquery="select * from vendors as v "
          let vendordata=await commonFunction.getQueryResults(vendorquery)
         
-        
-         let unpaidincomequery = "SELECT *,ac.vendor_id as vendor_id FROM  account_statements as ac  left join vendors as c on c.id=ac.vendor_id WHERE  DATE_FORMAT(ac.created_on, '%Y-%m-%d')>= '" + start_date + "' AND DATE_FORMAT(ac.created_on, '%Y-%m-%d')  <= '" + end_date + "'  and ac.ispayment=0  and ac.from_id=3 "; //unpayment list of bill details
+        if (vendordata.length > 0) {
+            vendordata.forEach(element => {
+                vendorobject[element.id]=element.name
+            });
+        }
+         let unpaidincomequery = "SELECT *,ad.type as acctype,a.account_name as account_name ,a.id as account_id,ac.vendor_id as vendor_id FROM  account_statements as ac  left join vendors as c on c.id=ac.vendor_id left join accounts as a on a.id=ac.account inner join  account_types  as ad on a.account_type_id=ad.id WHERE  DATE_FORMAT(ac.created_on, '%Y-%m-%d')>= '" + start_date + "' AND DATE_FORMAT(ac.created_on, '%Y-%m-%d')  <= '" + end_date + "'  and ac.ispayment=0  and ac.from_id=3 "; //unpayment list of bill details
         //let transactionQuery = " Select *,ad.type as accountype,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  and a.from_id NOT IN (6,7,8,9,10,11) " + condition + " group by a.id ";
         let unpaidincomedata = await commonFunction.getQueryResults(unpaidincomequery);
         
 console.log(unpaidincomequery);
 
-let paidincomequery = "select *,p.bill_id as paymentbillid,at.type as acctype,b.id as billid,bd.item_name,bd.total_amount as itemamount,bd.id as billdetailsid,p.amount as paymentamount,b.amount as totalbillamount  from psa_staging.bill  as b inner join psa_staging.bill_details as bd on b.id=bd.bill_id inner join  psa_staging.payments as p on p.bill_id=b.id left join psa_staging.accounts as a on a.id=bd.expense_category inner join psa_staging.account_types as at on a.account_type_id=at.id where p.type=2  and DATE_FORMAT(p.created_date,'%Y-%m-%d') >= DATE('"+start_date+"')  and DATE_FORMAT(p.created_date,'%Y-%m-%d') <= DATE('"+end_date+"') and  p.account not in (20,22,21) group by bd.id,p.id"; //payment list of bill
+let paidincomequery = "select *,at.type as acctype,a.account_name as account_name ,a.id as account_id, bd.expense_category as expenseaccount,p.bill_id as paymentbillid,at.type as acctype,b.id as billid,bd.item_name,bd.total_amount as itemamount,bd.id as billdetailsid,p.amount as paymentamount,b.amount as totalbillamount  from bill  as b inner join bill_details as bd on b.id=bd.bill_id inner join payments as p on p.bill_id=b.id left join accounts as a on a.id=bd.expense_category inner join account_types as at on a.account_type_id=at.id where p.type=2  and DATE_FORMAT(p.created_date,'%Y-%m-%d') >= DATE('"+start_date+"')  and DATE_FORMAT(p.created_date,'%Y-%m-%d') <= DATE('"+end_date+"') and  p.account not in (20,22,21) group by bd.id,p.id"; //payment list of bill
       //  let paidincomequery = "SELECT *,ac.vendor_id as vendor_id FROM  account_statements as ac  left join vendors as c on c.id=ac.vendor_id WHERE DATE_FORMAT(ac.created_on, '%Y-%m-%d') >= '" + start_date + "' AND DATE_FORMAT(ac.created_on, '%Y-%m-%d')  <= '" + end_date + "'  and ac.ispayment!=0 and ac.from_id=5"; //payment list of bill
         //let transactionQuery = " Select *,ad.type as accountype,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  and a.from_id NOT IN (6,7,8,9,10,11) " + condition + " group by a.id ";
        
@@ -250,66 +254,188 @@ console.log('combined',paidincomedata.length);
                 restructure.push(element) 
             }
         });
-        _.forEach(restructure, function(value, key,arr) { 
 
-            if (value.billid==value.paymentbillid) {
-              
-                
-                value.amountvalue=Number((value.itemamount/value.totalbillamount) * value.paymentamount).toFixed(2)
-            }
-            // value.amountvalue=
-          });
 
-       // reponse.push(...unpaidincomedata,...paidincomedata)
-        
-        var unpaid=_(unpaidincomedata)
-        .groupBy('vendor_id')
+
+        var seperateunpaid=
+        _(unpaidincomedata)
+        .groupBy('acctype')
         .map((objs, key) => ({
-            'vendor_id': key,
-            'vendor_name': _.get(objs[0], 'vendor_name'),
-            'totalbill':  _.sumBy(objs, function (day) {
+            'acctype': key,
+             
+            'values':   objs 
  
-                return day.debit-day.credit//Math.abs(Number(day.credit)-Number(day.debit));
+             
+        }))
+        var sepearttypepaid=_(restructure)
+        .groupBy('acctype')
+        .map((objs, key) => ({
+            'acctype': key,
+             
+            'values':   objs 
+ 
+             
+        }))
+        Object.keys(sepearttypepaid).forEach(function (item) {
+             var val=sepearttypepaid[item]
+             _.forEach(val, function(value, key,arr) { 
+
+                if (value.billid==value.paymentbillid && value.vendor_id!=undefined) {
+                  var values=Number(value.itemamount/value.totalbillamount * value.paymentamount) //Number((value.itemamount/value.totalbillamount )* value.paymentamount).toFixed(2)
+                    
+                    value.amountvalue=Number(values).toFixed(2)
+                    console.log('value',parseFloat(values));
+    
+                    balancpaid[value.vendor_id]= (balancpaid[value.vendor_id]? balancpaid[value.vendor_id] : 0 ) + Number(values) 
+                paidobject[value.vendor_id]=Number(balancpaid[value.vendor_id]).toFixed(2)
+                }
+                // value.amountvalue=
+              });
+    
+          
+        });
+var paidarray=[];
+var unpaidarray=[]
+         // reponse.push(...unpaidincomedata,...paidincomedata)
+        
+
+         let newMappedunpaid = [seperateunpaid.reduce(function(acc, curr) {
+            
+            unpaidarray.push (... _(curr.values)
+             .groupBy('vendor_id')
+             .map((objs, key) => ({
+                 'vendor_id': key,
+                 acctype:_.get(objs[0], 'acctype'),
+                 'accountname':_.get(objs[0], 'account_name'),
+                 account:_.get(objs[0], 'account_id'),
+                 'vendor_name':  vendorobject[key]?vendorobject[key]:'',
+                 'allpurchase':  _.sumBy(objs, function (day) {
+      
+                      return day.amount;
+              
+                 }),
+     
+                 
+      
+                  
+             })))
+             //return acc;
+           }, {})];
+
+         let newMappedpaid = [sepearttypepaid.reduce(function(acc, curr) {
+            
+           paidarray.push (... _(curr.values)
+            .groupBy('vendor_id')
+            .map((objs, key) => ({
+                'vendor_id': key,
+                acctype:_.get(objs[0], 'acctype'),
+                'accountname':_.get(objs[0], 'account_name'),
+                account:_.get(objs[0], 'account_id'),
+                'vendor_name':  vendorobject[key]?vendorobject[key]:'',
+                'paidpurchase':  _.sumBy(objs, function (day) {
+     
+                     return     Number(day.amountvalue)//Math.abs(Number(day.credit)-Number(day.debit));
+             
+                }),
+    
+                
+     
+                 
+            })))
+            //return acc;
+          }, {})];
+        // var unpaid=_(unpaidincomedata)
+        // .groupBy('vendor_id')
+        // .map((objs, key) => ({
+        //     'vendor_id': key,
+        //     acctype:_.get(objs[0], 'acctype'),
+        //     'accountname':_.get(objs[0], 'account_name'),
+        //     account:_.get(objs[0], 'account_id'),
+        //     'vendor_name':  vendorobject[key]?vendorobject[key]:'',
+        //     'totalbill':  _.sumBy(objs, function (day) {
+ 
+        //         return day.itemamount//Math.abs(Number(day.credit)-Number(day.debit));
          
-            }),
+        //     }),
 
             
+ 
+             
+        // }))
+
+
+        // var paid=_(restructure)
+        // .groupBy('vendor_id')
+        // .map((objs, key) => ({
+        //     'vendor_id': key,
+        //     acctype:_.get(objs[0], 'acctype'),
+        //     'accountname':_.get(objs[0], 'account_name'),
+        //     account:_.get(objs[0], 'account_id'),
+        //     'vendor_name':  vendorobject[key]?vendorobject[key]:'',
+        //     'totalpaid': _.sumBy(objs, function (day) {
+ 
+        //         return Number(day.amountvalue) ;
+         
+        //     }),
+
+            
+ 
+             
+        // }))
+
+        unpaidarray.forEach(element => {
+            element.paidpurchase=0
+        });
+
+        paidarray.forEach(element => {
+            element.allpurchase=0
+        });
+var meragearray=[...unpaidarray,...paidarray]
+
+var sepearttypemerage=_(meragearray)
+        .groupBy('acctype')
+        .map((objs, key) => ({
+            'acctype': key,
+             
+            'values':   objs 
  
              
         }))
 
-
-//         var paid=_(paidincomedata)
-//         .groupBy('vendor_id')
-//         .map((objs, key) => ({
-//             'vendor_id': key,
-//             'vendor_name': _.get(objs[0], 'vendor_name'),
-//             'totalpaid': _.sumBy(objs, function (day) {
+        var meragegroupingarray=[]
+       let meragegroupping= [sepearttypemerage.reduce(function(acc, curr) {
+        meragegroupingarray.push(..._(meragearray)
+.groupBy('vendor_id')
+.map((objs, key) => ({
+    'vendor_id': key,
+    acctype:_.get(objs[0], 'acctype'),
+            'accountname':_.get(objs[0], 'account_name'),
+            account:_.get(objs[0], 'account_id'),
+            'vendor_name':  vendorobject[_.get(objs[0], 'vendor_id')]?vendorobject[_.get(objs[0], 'vendor_id')]:'',
+    'paidpurchase':_.sumBy(objs, function (day) {
  
-//                 return Math.abs(Number(day.credit)-Number(day.debit)) ;
+                 return Number(day.paidpurchase) ;
          
-//             }),
-
-            
+             }),
+    'allpurchase':_.sumBy(objs, function (day) {
  
-             
-//         }))
+                return Number(day.allpurchase) ;
+         
+             })
+})))
+}, {})];
 
-// var meragearray=[...unpaid,...paid]
 
-// var meragegrouping=_(meragearray)
-// .groupBy('vendor_id')
+// var sepertetype=_(meragegrouping)
+// .groupBy('acctype')
 // .map((objs, key) => ({
-//     'vendor_id': key,
-//     'vendor_name': _.get(objs[0], 'vendor_name'),
-//     'totalpaid':paidobject[key]?paidobject[key]:0,
-//     'totalinvoice':_.get(objs[0],'totalinvoice')!=undefined?_.get(objs[0],'totalinvoice'):0
+//     'acctype': key,
+//      values:objs
 // }))
 
 
-
-
-res.json({ status: 1, message: 'Purchase vendor list successfully',unpaidincomedata, restructure})
+res.json({ status: 1, message: 'Purchase vendor list successfully',unpaidarray,
+sepearttypemerage,sepearttypepaid,paidobject,meragearray,restructure})
 
     }
          else
