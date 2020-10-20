@@ -231,13 +231,13 @@ var unpaidbillarray=[]
         
 console.log(unpaidincomequery);
 
-let paidincomequery = "select *,at.type as acctype,a.account_name as account_name ,a.id as account_id, bd.expense_category as expenseaccount,p.bill_id as paymentbillid,at.type as acctype,b.id as billid,bd.item_name,bd.total_amount as itemamount,bd.id as billdetailsid,p.amount as paymentamount,b.amount as totalbillamount  from bill  as b inner join bill_details as bd on b.id=bd.bill_id inner join payments as p on p.bill_id=b.id left join accounts as a on a.id=bd.expense_category inner join account_types as at on a.account_type_id=at.id where p.type=2  and DATE_FORMAT(p.created_date,'%Y-%m-%d') >= DATE('"+start_date+"')  and DATE_FORMAT(p.created_date,'%Y-%m-%d') <= DATE('"+end_date+"') and  p.account not in (20,22,21) group by bd.id,p.id"; //payment list of bill
+let paidincomequery = "select *,at.type as acctype,a.account_name as account_name ,a.id as account_id, bd.expense_category as expenseaccount,p.bill_id as paymentbillid,at.type as acctype,b.id as billid,bd.item_name,bd.total_amount as itemamount,bd.id as billdetailsid,p.amount as paymentamount,b.amount as totalbillamount  from bill  as b inner join bill_details as bd on b.id=bd.bill_id inner join payments as p on p.bill_id=b.id left join accounts as a on a.id=bd.expense_category inner join account_types as at on a.account_type_id=at.id where p.type=2  and DATE_FORMAT(p.paymentdate,'%Y-%m-%d') >= DATE('"+start_date+"')  and DATE_FORMAT(p.paymentdate,'%Y-%m-%d') <= DATE('"+end_date+"') and  p.account not in (20,22,21) group by bd.id,p.id"; //payment list of bill
       //  let paidincomequery = "SELECT *,ac.vendor_id as vendor_id FROM  account_statements as ac  left join vendors as c on c.id=ac.vendor_id WHERE DATE_FORMAT(ac.created_on, '%Y-%m-%d') >= '" + start_date + "' AND DATE_FORMAT(ac.created_on, '%Y-%m-%d')  <= '" + end_date + "'  and ac.ispayment!=0 and ac.from_id=5"; //payment list of bill
         //let transactionQuery = " Select *,ad.type as accountype,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  and a.from_id NOT IN (6,7,8,9,10,11) " + condition + " group by a.id ";
        
         let paidincomedata = await commonFunction.getQueryResults(paidincomequery);
 
-                 
+                 console.log('paid',paidincomequery)
  
     if (unpaidincomedata.length > 0 ||paidincomedata.length > 0 ) {
       
