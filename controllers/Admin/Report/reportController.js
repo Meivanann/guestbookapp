@@ -194,6 +194,7 @@ res.json({ status: 1, message: 'Income list successfully',paidobject,meragearray
         let costofgoodsexpensepayment=[];
         let operatingexpensepayment=[]
         var paymentdetails;
+       
 
 var condition=''
 
@@ -233,7 +234,7 @@ var unpaidbillarray=[]
              SUM(IF(DATEDIFF(CURDATE(), payment_due_date ) > 90, amount-amount_paid, 0)) AS agegt90,
               (amount-amount_paid) AS totalBalance
          FROM psa_staging.bill   
-         where isdelete=0
+         where isdelete=0 and bill_date<='`+end_date+`'
          
          GROUP BY id  
           `; //unpayment list of bill details
@@ -279,7 +280,7 @@ if (unpaidincomedata.length > 0) {
     
 
 
-   res.json({status:1,message:'Aged payables list',meragegrouping}) 
+   res.json({status:1,message:'Aged payables list',meragegrouping,unpaidincomedata}) 
 }
  
       //  let paidincomequery = "SELECT *,ac.vendor_id as vendor_id FROM  account_statements as ac  left join vendors as c on c.id=ac.vendor_id WHERE DATE_FORMAT(ac.created_on, '%Y-%m-%d') >= '" + start_date + "' AND DATE_FORMAT(ac.created_on, '%Y-%m-%d')  <= '" + end_date + "'  and ac.ispayment!=0 and ac.from_id=5"; //payment list of bill
@@ -289,7 +290,7 @@ if (unpaidincomedata.length > 0) {
         else
         {
 
-                 console.log('paid',paidincomequery)
+                 
  
      
 
