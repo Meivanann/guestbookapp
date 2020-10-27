@@ -244,6 +244,16 @@ var unpaidbillarray=[]
 console.log(unpaidincomequery);
 
 if (unpaidincomedata.length > 0) {
+
+    unpaidincomedata.forEach(element => {
+        element.notyetdue=Math.abs(element.notyetdue);
+        element.age1to30=Math.abs(element.age1to30);
+        element.age31to60=Math.abs(element.age31to60);
+        element.age61to90=Math.abs(element.age61to90);
+        element.agegt90=Math.abs(element.agegt90);
+     
+ });
+
     var meragegrouping=_(unpaidincomedata)
     .groupBy('vendor_id')
     .map((objs, key) => ({
@@ -379,7 +389,7 @@ var unpaidbillarray=[]
             SUM(IF(DATEDIFF(CURDATE(), payment_due_date ) > 90, amount-amount_paid, 0)) AS agegt90,
              (amount-amount_paid) AS totalBalance
         FROM credit_note   
-        where  credit_date<='`+end_date+`'
+        where  DATE_FORMAT(credit_date,'%Y-%m-%d')<=DATE_FORMAT('`+end_date+`','%Y-%m-%d')
         
         GROUP BY id     
           `; //unpayment list of bill details
@@ -396,7 +406,7 @@ var unpaidbillarray=[]
             SUM(IF(DATEDIFF(CURDATE(), payment_due_date ) > 90, amount-amount_paid, 0)) AS agegt90,
              (amount-amount_paid) AS totalBalance
         FROM debit_note   
-        where  debit_date<='`+end_date+`'
+        where  DATE_FORMAT(debit_date,'%Y-%m-%d')<=DATE_FORMAT('`+end_date+`','%Y-%m-%d')
         
         GROUP BY id  
           `; //unpayment list of bill details
