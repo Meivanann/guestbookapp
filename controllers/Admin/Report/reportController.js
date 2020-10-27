@@ -303,6 +303,193 @@ if (unpaidincomedata.length > 0) {
 
     },
 
+    agedRecivables: async (req, res) => {
+        let { start_date, end_date } = req.body
+        let accountObject = {};
+        let accountNameObject = {}
+        let consignmentObject = {};
+        let billObject = {};
+        var bill = [];
+        let incomes = [];
+        let expense = []
+        let incomepaymentObject=[];
+        let expensepaymentObject=[];
+        let expenseObject = {}
+        let costofgoodsexpense=[];
+        let operatingexpensetransaction=[];
+        let costofgoodsexpensepayment=[];
+        let operatingexpensepayment=[]
+        var paymentdetails;
+       
+
+var condition=''
+
+let reponse=[]
+         
+        var finalResponse = [];
+        let accounttypeQuery = "Select *,at.id as accountypeid,at.name as accounttypename,a.id as accountid,a.account_name as accountname from accounts as a left join account_types as at on at.id=a.account_type_id ";
+
+        let accountdata = await commonFunction.getQueryResults(accounttypeQuery);
+
+        accountdata.forEach(element => {
+            accountObject[element.accountypeid] = element.accounttypename;
+            accountNameObject[element.accountid] = element.accountname
+        });
+ 
+
+let balancpaid={}
+
+let paidobject={}
+let restructure=[]
+let vendorobject={};
+
+var unpaidbillarray=[]
+         let vendorquery="select * from vendors as v "
+         let vendordata=await commonFunction.getQueryResults(vendorquery)
+        
+        if (vendordata.length > 0) {
+            vendordata.forEach(element => {
+                vendorobject[element.id]=element.name
+            });
+        }
+         let invoiceQuery = ` SELECT id,invoice_no,shipper_code,
+         SUM(IF(DATEDIFF(CURDATE(), payment_due_date )<=0, inv_total_amount-amount_paid, 0)) as notyetdue,
+             SUM(IF(DATEDIFF(CURDATE(), payment_due_date ) BETWEEN 1 AND 30, inv_total_amount-amount_paid, 0)) AS age1to30,
+             SUM(IF(DATEDIFF(CURDATE(), payment_due_date ) BETWEEN 31 AND 60, inv_total_amount-amount_paid, 0)) AS age31to60,
+             SUM(IF(DATEDIFF(CURDATE(), payment_due_date ) BETWEEN 61 AND 90, inv_total_amount-amount_paid, 0)) AS age61to90,
+             SUM(IF(DATEDIFF(CURDATE(), payment_due_date ) > 90, inv_total_amount-amount_paid, 0)) AS agegt90,
+              (inv_total_amount-amount_paid) AS totalBalance
+         FROM invoice   
+         where  invoice_date<='`+end_date+`'
+         
+         GROUP BY invoice_no   
+          `; //unpayment list of bill details
+        //let transactionQuery = " Select *,ad.type as accountype,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  and a.from_id NOT IN (6,7,8,9,10,11) " + condition + " group by a.id ";
+        let invoiceData = await commonFunction.getQueryResults(invoiceQuery);
+        
+
+
+     
+        
+        let creditQuery = `SELECT id as creditid,shipper_code,
+        SUM(IF(DATEDIFF(CURDATE(), payment_due_date )<=0, amount-amount_paid, 0)) as notyetdue,
+            SUM(IF(DATEDIFF(CURDATE(), payment_due_date ) BETWEEN 1 AND 30, amount-amount_paid, 0)) AS age1to30,
+            SUM(IF(DATEDIFF(CURDATE(), payment_due_date ) BETWEEN 31 AND 60, amount-amount_paid, 0)) AS age31to60,
+            SUM(IF(DATEDIFF(CURDATE(), payment_due_date ) BETWEEN 61 AND 90, amount-amount_paid, 0)) AS age61to90,
+            SUM(IF(DATEDIFF(CURDATE(), payment_due_date ) > 90, amount-amount_paid, 0)) AS agegt90,
+             (amount-amount_paid) AS totalBalance
+        FROM credit_note   
+        where  credit_date<='`+end_date+`'
+        
+        GROUP BY id     
+          `; //unpayment list of bill details
+        //let transactionQuery = " Select *,ad.type as accountype,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  and a.from_id NOT IN (6,7,8,9,10,11) " + condition + " group by a.id ";
+        let creditData = await commonFunction.getQueryResults(creditQuery);
+        
+
+
+        let debitQuery = `SELECT id as debitid,shipper_code,
+        SUM(IF(DATEDIFF(CURDATE(), payment_due_date )<=0, amount-amount_paid, 0)) as notyetdue,
+            SUM(IF(DATEDIFF(CURDATE(), payment_due_date ) BETWEEN 1 AND 30, amount-amount_paid, 0)) AS age1to30,
+            SUM(IF(DATEDIFF(CURDATE(), payment_due_date ) BETWEEN 31 AND 60, amount-amount_paid, 0)) AS age31to60,
+            SUM(IF(DATEDIFF(CURDATE(), payment_due_date ) BETWEEN 61 AND 90, amount-amount_paid, 0)) AS age61to90,
+            SUM(IF(DATEDIFF(CURDATE(), payment_due_date ) > 90, amount-amount_paid, 0)) AS agegt90,
+             (amount-amount_paid) AS totalBalance
+        FROM debit_note   
+        where  debit_date<='`+end_date+`'
+        
+        GROUP BY id  
+          `; //unpayment list of bill details
+        //let transactionQuery = " Select *,ad.type as accountype,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  and a.from_id NOT IN (6,7,8,9,10,11) " + condition + " group by a.id ";
+        let debitData = await commonFunction.getQueryResults(debitQuery);
+        
+
+
+
+
+if (invoiceData.length > 0 || creditData.length > 0 || debitData.length > 0) {
+   
+   
+   var response=[]
+
+   response.push(...invoiceData,...creditData,...debitData)
+
+
+   response.forEach(element => {
+       element.notyetdue=Math.abs(element.notyetdue);
+       element.age1to30=Math.abs(element.age1to30);
+       element.age31to60=Math.abs(element.age31to60);
+       element.age61to90=Math.abs(element.age61to90);
+       element.agegt90=Math.abs(element.agegt90);
+    
+});
+    var meragegrouping=_(response)
+    .groupBy('shipper_code')
+    .map((objs, key) => ({
+        'shipper_code': key,
+         
+        'Notyetoverdueyet': _.sumBy(objs, function (day) {
+ 
+            return Math.abs(day.notyetdue) ;
+     
+        }),
+        'LessequalOverdue30days': _.sumBy(objs, function (day) {
+ 
+            return Math.abs(day.age1to30) ;
+     
+        }),
+        'UntilOverdue60days': _.sumBy(objs, function (day) {
+ 
+            return Math.abs(day.age31to60) ;
+     
+        }),
+        'UntilOverdue90days': _.sumBy(objs, function (day) {
+ 
+            return Math.abs(day.age61to90) ;
+     
+        }),
+        'GreaterOverdue90days': _.sumBy(objs, function (day) {
+ 
+            return Math.abs(day.agegt90) ;
+     
+        })
+        // 'GreaterOverdue90dayscount': _.filter(objs, function (day) {
+ 
+        //     if(day.agegt90 > 0)
+        //     {
+        //         return day
+        //     }
+     
+        // }).length,
+
+
+    }))
+    
+
+
+   res.json({status:1,message:'Aged recivables list',meragegrouping,response}) 
+}
+ 
+      //  let paidincomequery = "SELECT *,ac.vendor_id as vendor_id FROM  account_statements as ac  left join vendors as c on c.id=ac.vendor_id WHERE DATE_FORMAT(ac.created_on, '%Y-%m-%d') >= '" + start_date + "' AND DATE_FORMAT(ac.created_on, '%Y-%m-%d')  <= '" + end_date + "'  and ac.ispayment!=0 and ac.from_id=5"; //payment list of bill
+        //let transactionQuery = " Select *,ad.type as accountype,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  and a.from_id NOT IN (6,7,8,9,10,11) " + condition + " group by a.id ";
+       
+        
+        else
+        {
+
+                 
+ 
+     
+
+            res.json({ status: 0, message: 'No data found' })
+        
+        }
+       
+
+
+
+    },
+
     Purchasebyvendor: async (req, res) => {
         let { start_date, end_date } = req.body
         let accountObject = {};
@@ -596,6 +783,9 @@ res.json({ status: 1, message: 'Purchase vendor list successfully',meragegroupin
 
 
     },
+
+
+    
 
     //sep17backup
 //     Incomebycustomer: async (req, res) => {

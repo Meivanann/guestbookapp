@@ -197,6 +197,9 @@ module.exports = app => {
     app.post('/api/:id/getaccountstatement', accStatementController.getAccountStatement);
     app.post('/getimage', userAuthenticationController.getimageurl);
     // Expense
+
+
+    app.post('/api/agedreciveables', reportController.agedRecivables);
     app.get('/api/:id/getallvendors', billController.getAllVendors);
     app.get('/api/:id/deletevendor/:vendor_id', billController.destroyVendor);
     app.post('/api/:id/postnewvendor', billController.postNewVendor);
