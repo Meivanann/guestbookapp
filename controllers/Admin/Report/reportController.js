@@ -2,7 +2,7 @@ var connection = require('../../../config');
 var commonFunction = require('../../commonFunction');
 var _ = require('lodash');
 var moment=require('moment');
-const { forEach } = require('lodash');
+ 
 module.exports = {
 
     getaccountstransaction: async (req, res) => {
