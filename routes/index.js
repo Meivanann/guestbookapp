@@ -230,6 +230,7 @@ module.exports = app => {
     app.post('/api/agedpayables', reportController.agedpayables);
 
     app.post('/api/accountbalances', reportController.AccountBalance);
+    app.post('/api/trialbalance', reportController.trialBalance);
     app.post('/api/purchasebyvendor', reportController.Purchasebyvendor);
     app.post('/api/incomebycutomer', reportController.Incomebycustomer);
     app.get('/api/accountslist', reportController.getallAccounts);
