@@ -1451,6 +1451,10 @@ var s=closingbalanceObject[element.accountid]
         var accounttypeidObject = {}
         var accountnameObject = {}
 
+        if(report_type==1)      //1--accural 2-- cash paid only
+        {
+            condition=" and (a.from_id!=4 and a.account!=20)"
+        }
         var finalResponse = [];
         let accounttypeQuery = "Select *,at.id as accountypeid,at.name as accounttypename,a.id as accountid,a.account_name as accountname from accounts as a left join account_types as at on at.id=a.account_type_id ";
 
@@ -1730,7 +1734,7 @@ var s=closingbalanceObject[element.accountid]
 
 
 
-        let transactionQuery = " Select *,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id!=12 and  a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  " + condition + " " + account_condition + "  " + filter_condition + " group by a.id order by a.created_on ";
+        let transactionQuery = " Select *,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id!=12 and  a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  " + condition + " group by a.id order by a.created_on ";
         let transactionData = await commonFunction.getQueryResults(transactionQuery);
 
 
@@ -1786,9 +1790,45 @@ var s=closingbalanceObject[element.accountid]
             .groupBy('type')
             .map((objs, key) => ({
                 'type': key,
+
                 'values': objs,
 
-            }))
+            })).value()
+
+
+            finalresponse.forEach(element => {
+                if (element.type!=''&&element.type!=undefined) {
+                    
+                    var value=element.values
+                element.totalstartingbalance= _.sumBy(value, function (day) {
+
+                    return Number(day.startingbalance);
+
+                })
+                element.totaldebit=_.sumBy(value, function (day) {
+
+                    return Number(day.debit);
+
+                })
+
+                element.totalcredit=_.sumBy(value, function (day) {
+
+                    return Number(day.credit);
+
+                })
+                element.totalnetmovement=_.sumBy(value, function (day) {
+
+                    return Number(day.netmovement);
+
+                })
+                element.totalendingbalance=_.sumBy(value, function (day) {
+
+                    return Number(day.endingbalance);
+
+                })
+                }
+                
+            });
 
 
 
@@ -2244,7 +2284,7 @@ if (paidincomedata.length > 0) {
         console.log('fin', finalopeningbalanceObject);
 
 
-        const transactionlist = "Select *,a.account as paccount,a.type as actype,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id=12 and  a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  " + condition + " " + account_condition + "  " + filter_condition + " group by a.id order by a.created_on "
+        const transactionlist = "Select *,a.account as paccount,a.type as actype,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id=12 and   a.created_on  <= '" + end_date + "'  " + condition + " " + account_condition + "  " + filter_condition + " group by a.id order by a.created_on "
         const transactionitems = await commonFunction.getQueryResults(transactionlist);
         console.log('transquery', transactionlist);
         var removed = []
@@ -2309,7 +2349,7 @@ if (paidincomedata.length > 0) {
 
 
 
-        let transactionQuery = " Select *,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id!=12 and  a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "' and a.from_id!=8   " + filter_condition + "  " + condition + " group by a.id order by a.created_on ";
+        let transactionQuery = " Select *,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id!=12 and  a.created_on  <= '" + end_date + "' and a.from_id!=8   " + filter_condition + "  " + condition + " group by a.id order by a.created_on ";
         let transactionData = await commonFunction.getQueryResults(transactionQuery);
 
 
