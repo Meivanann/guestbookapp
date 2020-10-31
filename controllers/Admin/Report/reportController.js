@@ -1452,7 +1452,7 @@ var s=closingbalanceObject[element.accountid]
         var accountnameObject = {}
 
         
-            condition=" and (a.from_id!=4 and a.account!=20)"
+            condition=" and (a.from_id!=4 or a.account not in (20) )"
          
         var finalResponse = [];
         let accounttypeQuery = "Select *,at.id as accountypeid,at.name as accounttypename,a.id as accountid,a.account_name as accountname from accounts as a left join account_types as at on at.id=a.account_type_id ";
@@ -1472,7 +1472,7 @@ var s=closingbalanceObject[element.accountid]
         var finalreponse = [];
         var defaultopeningbalance = {}
         var changeopeingbalance = {}
-        var opeingbalance = "select *,sum(a.debit-a.credit) as balance   from account_statements as a where from_id!=12 and    DATE_FORMAT(a.created_on, '%Y-%m-%d')  <  DATE_FORMAT('" + start_date + "','%Y-%m-%d')  " + condition + " " + account_condition + " " + filter_condition + " group by a.account";
+        var opeingbalance = "select *,sum(a.debit-a.credit) as balance   from account_statements as a where from_id!=12 and    DATE_FORMAT(a.created_on, '%Y-%m-%d')  <  DATE_FORMAT('" + start_date + "','%Y-%m-%d')  " + condition + " group by a.account";
         var openingtotalbalance = await commonFunction.getQueryResults(opeingbalance);
 
 
@@ -1552,7 +1552,7 @@ var s=closingbalanceObject[element.accountid]
         var closingtotalbalance = await commonFunction.getQueryResults(closingbalance);
 
 
-        var transactionclosingbalance = "select *,a.type as actype from account_statements as a where a.from_id=12 and DATE_FORMAT(a.created_on, '%Y-%m-%d')  >=  DATE_FORMAT('" + start_date + "','%Y-%m-%d') and   DATE_FORMAT(a.created_on, '%Y-%m-%d')  <=  DATE_FORMAT('" + end_date + "','%Y-%m-%d') " + condition + "  " + account_condition + " " + filter_condition + " group by a.account"
+        var transactionclosingbalance = "select *,a.type as actype from account_statements as a where a.from_id=12 and DATE_FORMAT(a.created_on, '%Y-%m-%d')  >=  DATE_FORMAT('" + start_date + "','%Y-%m-%d') and   DATE_FORMAT(a.created_on, '%Y-%m-%d')  <=  DATE_FORMAT('" + end_date + "','%Y-%m-%d') " + condition + "   group by a.account"
         var transactionclosingdata = await commonFunction.getQueryResults(transactionclosingbalance)
 
 
@@ -1668,7 +1668,7 @@ var s=closingbalanceObject[element.accountid]
         console.log('fin', finalopeningbalanceObject);
 
 
-        const transactionlist = "Select *,a.account as paccount,a.type as actype,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id=12 and  a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  " + condition + " " + account_condition + "  " + filter_condition + " group by a.id order by a.created_on "
+        const transactionlist = "Select *,a.account as paccount,a.type as actype,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id=12 and  a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'   group by a.id order by a.created_on "
         const transactionitems = await commonFunction.getQueryResults(transactionlist);
         console.log('transquery', transactionlist);
         var removed = []
@@ -1989,7 +1989,7 @@ var s=closingbalanceObject[element.accountid]
         let filter = req.body.filterid
         console.log(req.body)
         var condition = ''
-        var sepearttypepaid=''
+        var sepearttypepaid=[]
         var account_condition = ''
         var defaultlist = []
         var changedlist = []
@@ -2004,7 +2004,7 @@ var s=closingbalanceObject[element.accountid]
 
         if(report_type==1)      //1--accural 2-- cash paid only
         {
-            condition=" and (a.from_id!=4 and a.account!=20)"
+            condition=" and (a.from_id!=4 or a.account not in (20) )"
         }
         if(report_type==2)      //1--accural 2-- cash paid only
         {
@@ -2014,7 +2014,7 @@ var s=closingbalanceObject[element.accountid]
 
 
         //getting the credit notes record payment 
-        let creditpaymentQuery = " Select *,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id!=12 and  a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "' and a.from_id=8      group by a.id order by a.created_on ";
+        let creditpaymentQuery = " Select *,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id!=12 and   a.created_on  <= '" + end_date + "' and a.from_id=8      group by a.id order by a.created_on ";
         let creditData = await commonFunction.getQueryResults(creditpaymentQuery);
 
         //this is query for split the payment amount to particular bill account 
@@ -2044,7 +2044,7 @@ if (paidincomedata.length > 0) {
         'values':   objs 
 
          
-    }))
+    })).value()
     Object.keys(sepearttypepaid).forEach(function (item) {
          var val=sepearttypepaid[item]
          _.forEach(val, function(value, key,arr) { 
@@ -2167,7 +2167,7 @@ if (paidincomedata.length > 0) {
         var closingtotalbalance = await commonFunction.getQueryResults(closingbalance);
 
 
-        var transactionclosingbalance = "select *,a.type as actype from account_statements as a where a.from_id=12 and DATE_FORMAT(a.created_on, '%Y-%m-%d')  >=  DATE_FORMAT('" + start_date + "','%Y-%m-%d') and   DATE_FORMAT(a.created_on, '%Y-%m-%d')  <=  DATE_FORMAT('" + end_date + "','%Y-%m-%d') " + condition + "  " + account_condition + " " + filter_condition + " group by a.account"
+        var transactionclosingbalance = "select *,a.type as actype from account_statements as a where a.from_id=12 and DATE_FORMAT(a.created_on, '%Y-%m-%d')  >=  DATE_FORMAT('" + start_date + "','%Y-%m-%d') and   DATE_FORMAT(a.created_on, '%Y-%m-%d')  <=  DATE_FORMAT('" + end_date + "','%Y-%m-%d')  " + filter_condition + " group by a.account"
         var transactionclosingdata = await commonFunction.getQueryResults(transactionclosingbalance)
 
 
@@ -2283,7 +2283,7 @@ if (paidincomedata.length > 0) {
         console.log('fin', finalopeningbalanceObject);
 
 
-        const transactionlist = "Select *,a.account as paccount,a.type as actype,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id=12 and   a.created_on  <= '" + end_date + "'  " + condition + " " + account_condition + "  " + filter_condition + " group by a.id order by a.created_on "
+        const transactionlist = "Select *,a.account as paccount,a.type as actype,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id=12 and   a.created_on  <= '" + end_date + "'    " + filter_condition + " group by a.id order by a.created_on "
         const transactionitems = await commonFunction.getQueryResults(transactionlist);
         console.log('transquery', transactionlist);
         var removed = []
@@ -2377,6 +2377,14 @@ if (report_type==2) {
 }
 
 
+var total=0
+transactionData.forEach(element => {
+    if (element.account_name='Sales') {
+        total=Number(total + Number(element.debit))
+    }
+});
+
+
 
         var details = _(transactionData)
             .groupBy('account_id')
@@ -2418,7 +2426,7 @@ if (report_type==2) {
         
 
 
-        return res.send(details) 
+        
 
 
         var finalresponse = _(details)
@@ -2430,7 +2438,7 @@ if (report_type==2) {
             }))
 
 
-
+           
 
 
 
