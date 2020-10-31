@@ -1451,10 +1451,9 @@ var s=closingbalanceObject[element.accountid]
         var accounttypeidObject = {}
         var accountnameObject = {}
 
-        if(report_type==1)      //1--accural 2-- cash paid only
-        {
+        
             condition=" and (a.from_id!=4 and a.account!=20)"
-        }
+         
         var finalResponse = [];
         let accounttypeQuery = "Select *,at.id as accountypeid,at.name as accounttypename,a.id as accountid,a.account_name as accountname from accounts as a left join account_types as at on at.id=a.account_type_id ";
 
