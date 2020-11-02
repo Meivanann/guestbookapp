@@ -2457,7 +2457,7 @@ transactionData.forEach(element => {
 
 
 
-        res.json({ status: 1, message: 'trial  balances', removed, changedarray, details, finalresponse })
+        res.json({ status: 1, message: 'trial  balances',  finalresponse })
 
 
 
