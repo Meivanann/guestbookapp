@@ -2060,6 +2060,7 @@ if (paidincomedata.length > 0) {
                 value.amountvalue=Number(values).toFixed(2)
                 value.debit=Number(values).toFixed(2)
                 value.credit=0
+                value.accountype=value.acctype
                 console.log('value',parseFloat(values));
 
                // balancpaid[value.vendor_id]= (balancpaid[value.vendor_id]? balancpaid[value.vendor_id] : 0 ) + Number(values) 
@@ -2382,7 +2383,7 @@ if (report_type==2) {
         });
         transactionData.push(...creditData);
 }
-
+ 
 
 var total=0
 transactionData.forEach(element => {
