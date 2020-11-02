@@ -1958,7 +1958,7 @@ var s=closingbalanceObject[element.accountid]
 
 
 
-        res.json({ status: 1, message: 'accoutn balances', removed, changedarray, details, finalresponse })
+        res.json({ status: 1, message: 'accoutn balances',finalresponse })
 
 
 
@@ -2018,7 +2018,7 @@ var s=closingbalanceObject[element.accountid]
         let creditData = await commonFunction.getQueryResults(creditpaymentQuery);
 
         //this is query for split the payment amount to particular bill account 
-        let paidincomequery = "select *,at.type as acctype,a.account_name as account_name ,a.id as account_id, bd.expense_category as expenseaccount,p.bill_id as paymentbillid,at.type as acctype,b.id as billid,bd.item_name,bd.total_amount as itemamount,bd.id as billdetailsid,p.amount as paymentamount,b.amount as totalbillamount  from bill  as b inner join bill_details as bd on b.id=bd.bill_id inner join payments as p on p.bill_id=b.id left join accounts as a on a.id=bd.expense_category inner join account_types as at on a.account_type_id=at.id where p.type=2  and DATE_FORMAT(p.paymentdate,'%Y-%m-%d') >= DATE('"+start_date+"')  and DATE_FORMAT(p.paymentdate,'%Y-%m-%d') <= DATE('"+end_date+"') and  p.account not in (20,22,21) and bd.isdelete=0 and b.isdelete=0 group by bd.id,p.id"; //payment list of bill
+        let paidincomequery = "select *,at.type as acctype,a.account_name as account_name ,a.id as account_id, bd.expense_category as expenseaccount,p.bill_id as paymentbillid,at.type as acctype,b.id as billid,bd.item_name,bd.total_amount as itemamount,bd.id as billdetailsid,p.amount as paymentamount,b.amount as totalbillamount  from bill  as b inner join bill_details as bd on b.id=bd.bill_id inner join payments as p on p.bill_id=b.id left join accounts as a on a.id=bd.expense_category inner join account_types as at on a.account_type_id=at.id where p.type=2  and DATE_FORMAT(p.paymentdate,'%Y-%m-%d') <= DATE('"+end_date+"')  and DATE_FORMAT(p.paymentdate,'%Y-%m-%d') <= DATE('"+end_date+"') and  p.account not in (20,22,21) and bd.isdelete=0 and b.isdelete=0 group by bd.id,p.id"; //payment list of bill
       
        
         let paidincomedata = await commonFunction.getQueryResults(paidincomequery);
@@ -2045,12 +2045,17 @@ if (paidincomedata.length > 0) {
 
          
     })).value()
-    Object.keys(sepearttypepaid).forEach(function (item) {
-         var val=sepearttypepaid[item]
-         _.forEach(val, function(value, key,arr) { 
 
+    
+    Object.keys(sepearttypepaid).forEach(function (key,item) {
+         var val=sepearttypepaid[item].values
+      
+         _.forEach(val,function(el,index,arr) { 
+           
+            var value=el
             if (value.billid==value.paymentbillid && value.vendor_id!=undefined && value.vendor_id!='') {
-              var values=Number(value.itemamount/value.totalbillamount * value.paymentamount) //Number((value.itemamount/value.totalbillamount )* value.paymentamount).toFixed(2)
+               
+                var values=Number(value.itemamount/value.totalbillamount * value.paymentamount) //Number((value.itemamount/value.totalbillamount )* value.paymentamount).toFixed(2)
                 
                 value.amountvalue=Number(values).toFixed(2)
                 value.debit=Number(values).toFixed(2)
@@ -2065,9 +2070,10 @@ if (paidincomedata.length > 0) {
 
       
     });
+    
+    
 }
-
-
+ 
 
        
         let accounttypeQuery = "Select *,at.id as accountypeid,at.name as accounttypename,a.id as accountid,a.account_name as accountname from accounts as a left join account_types as at on at.id=a.account_type_id ";
@@ -2363,6 +2369,7 @@ if (paidincomedata.length > 0) {
 
 
 
+         
 
         transactionData.push(...removed,...changedarray);
 
