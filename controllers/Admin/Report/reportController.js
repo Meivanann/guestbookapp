@@ -2355,7 +2355,7 @@ if (paidincomedata.length > 0) {
 
 
 
-        let transactionQuery = " Select *,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id!=12 and a.created_on!='' and  a.created_on  <= '" + end_date + "' and a.from_id!=8   " + filter_condition + "  " + condition + " group by a.id order by a.created_on ";
+        let transactionQuery = " Select *,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id!=12 and a.created_on!='' and  DATE_FORMAT(a.created_on,'%Y-%m-%d') >= DATE('" + end_date  + "') and a.from_id!=8   " + filter_condition + "  " + condition + " group by a.id order by a.created_on ";
         let transactionData = await commonFunction.getQueryResults(transactionQuery);
 
 
