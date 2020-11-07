@@ -2008,13 +2008,13 @@ var s=closingbalanceObject[element.accountid]
         }
         if(report_type==2)      //1--accural 2-- cash paid only
         {
-            filter_condition=" and a.ispayment=1"
+            filter_condition=" and a.ispayment=1 and a.account not in (21,22)"
         }
 
 
 
         //getting the credit notes record payment 
-        let creditpaymentQuery = " Select *,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id!=12 and   a.created_on  <= '" + end_date + "' and a.from_id=8      group by a.id order by a.created_on ";
+        let creditpaymentQuery = " Select *,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id!=12 and   a.created_on  <= '" + end_date + "' and a.from_id=8  and a.account not in (21,22)    group by a.id order by a.created_on ";
         let creditData = await commonFunction.getQueryResults(creditpaymentQuery);
 
         //this is query for split the payment amount to particular bill account 
