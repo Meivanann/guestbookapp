@@ -2102,7 +2102,7 @@ if (paidincomedata.length > 0) {
         //opening balance for transaction
         var transactionopeingbalance = "select *,a.account as paccount,a.type as actype from account_statements as a where a.from_id=12 and DATE_FORMAT(a.created_on, '%Y-%m-%d')  <  DATE_FORMAT('" + start_date + "','%Y-%m-%d')"
         var transactionopeingdata = await commonFunction.getQueryResults(transactionopeingbalance)
-        console.log('trans', transactionopeingbalance);
+        
 
         openingtotalbalance.forEach(element => {
             opeingbalanceObject[element.account] = element.balance
@@ -2124,7 +2124,7 @@ if (paidincomedata.length > 0) {
         });
 
         transactionopeingdata.forEach(element => {
-            console.log('e', element);
+          
             defaultopeningbalance[element.account] = element.debit - element.credit
 
 
@@ -2133,7 +2133,7 @@ if (paidincomedata.length > 0) {
         });
 
         transactionopeingdata.forEach(element => {
-            console.log('e', element);
+            
             element.account = element.paccount
             if (element.actype == 'Income') {
                 element.credit = 0
@@ -2153,7 +2153,7 @@ if (paidincomedata.length > 0) {
 
 
         transactionopeingdata.forEach(element => {
-            console.log('e', element);
+             
             changeopeingbalance[element.account] = element.debit - element.credit
 
 
@@ -2163,7 +2163,7 @@ if (paidincomedata.length > 0) {
 
 
 
-        console.log('ope', defaultopeningbalance);
+        
 
         var lastclosingbalance = {}
 
@@ -2415,9 +2415,22 @@ transactionData.forEach(element => {
             })).value()
 
 
-
+//balanceing credit and debit balance if total debit is greater than total credit mean diffenece amount should come under  debit side otherwise if credit total is greater than debit total it come under credit section
            
 
+
+
+_.map(details,function (el,index,arr) {
+    
+
+   var debit=el.debit>el.credit?el.debit-el.credit:0
+   var credit=el.credit>el.debit?el.credit-el.debit:0
+    el.debit=debit
+
+    el.credit=credit
+     
+    console.log('el',el.debit,el.credit,el.account_id_name);
+})
             
 
 
@@ -2771,6 +2784,7 @@ var condition=''
 
     },
 
+ 
 
     BalanceSheetreport: async (req, res) => {
         let { start_date, end_date, report_type } = req.body
@@ -3301,5 +3315,25 @@ var currentlibiatydetails=_(expense)
 function removeduplicates(data)
 {
     return [...new Set(data)]
+}
+
+async function comporedata(cstart_date,cend_date)
+{
+
+
+    try {
+        let transactionQuery = " Select *,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id!=12 and  DATE_FORMAT(a.created_on,'%Y-%m-%d') >= DATE('" + cstart_date  + "') AND DATE_FORMAT(a.created_on,'%Y-%m-%d') <= DATE('" + cend_date  + "') and a.ispayment=1  group by a.id order by a.created_on ";
+        let transactionData = await commonFunction.getQueryResults(transactionQuery);
+       
+        if (transactionData.length > 0) {
+
+            return transactionData
+            
+        }
+        
+    } catch (error) {
+        return (error)
+    }
+    
 }
 
