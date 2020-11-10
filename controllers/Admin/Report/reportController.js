@@ -2987,6 +2987,9 @@ console.log('jsl',transactionQuery);
         var paymentdetails;
 
 var condition=''
+var accounttypeobject= {}
+var accounttypeidObject={}
+var accountnameObject= {}
         if(report_type==2)
         {
             condition=" and a.ispayment=1"
@@ -2999,7 +3002,75 @@ var condition=''
         accountdata.forEach(element => {
             accountObject[element.accountypeid] = element.accounttypename;
             accountNameObject[element.accountid] = element.accountname
+            accounttypeobject[element.accountid] = element.type
+            accounttypeidObject[element.accountid] = element.accountypeid
+            accountnameObject[element.accountid] = element.accounttypename
         });
+
+
+
+        const transactionlist = "Select *,a.account as paccount,a.type as actype,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id=12 and  a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'   group by a.id order by a.created_on "
+        const transactionitems = await commonFunction.getQueryResults(transactionlist);
+        console.log('transquery', transactionlist);
+        var removed = []
+        var changedarray = []
+        var newarray = []
+        if (transactionitems.length > 0) {
+
+
+            //overridden the account as category for getting the catgory id belong record to show in report when it comes from add income/expenses
+            //swapping account to category id
+            newarray = transactionitems.map((item) => {
+                const account_name = accountNameObject[item.category] ? accountNameObject[item.category] : ''
+                const accountype = accounttypeobject[item.category] ? accounttypeobject[item.category] : ''
+
+                return {
+                    ...item, account: item.category, account_name: account_name, accountype: accountype, account_id: item.category, account_type_id: accounttypeidObject[item.category] ? accounttypeidObject[item.category] : 0,
+                    account_type_name: accountnameObject[item.category] ? accountnameObject[item.category] : '',actype:accounttypeobject[item.category]?accounttypeobject[item.category]: 0
+
+                }
+            });
+
+
+
+
+            removed = await removeduplicates(newarray)
+
+            //when transaction list for payment account if type is income account is payment account amount should come under the debit and type expenses mean account may be payment account amount should come under credit this is only for payment account
+
+            changedarray = transactionitems.map((item) => {
+
+                var credit = 0
+                var debit = 0
+
+                //Expense if dbit >0
+
+                if (item.actype == "Expenses" || item.actype == "Expense") {
+
+                    credit = item.debit > 0 ? item.debit : item.credit;
+                    debit = 0
+
+                }
+
+                //Expense if dbit >0
+
+                if (item.actype == "Income") {
+
+                    debit = item.credit > 0 ? item.credit : item.debit;
+
+                    credit = 0
+                }
+
+
+                return { ...item, credit: credit, debit: debit }
+            });
+
+
+
+
+        }
+
+        
         //paymentQuery
         // let paymentQuery = "Select *,p.account as account_id from payments as p left join accounts as a on p.account=a.id  inner join account_types as at on at.id=a.account_type_id where p.created_date >= '" + start_date + "' AND p.created_date  <= '" + end_date + "' group by p.id"
         // let paymentData = await commonFunction.getQueryResults(paymentQuery);
@@ -3010,9 +3081,14 @@ var condition=''
         // //billdetailsQuery
         // let billDetailsQuery = "Select * from bill as b inner join  bill_details as bd on b.id=bd.bill_id inner join accounts as ac on ac.id=bd.expense_category where b.bill_date >= '" + start_date + "' AND b.bill_date  <= '" + end_date + "' and b.isdelete = 0 ";
         // let billDetailsdata = await commonFunction.getQueryResults(billDetailsQuery);
-        let transactionQuery = " Select *,ad.type as accountype,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where DATE_FORMAT(a.created_on,'%Y-%m-%d') >=DATE('" + start_date + "') AND DATE_FORMAT(a.created_on,'%Y-%m-%d') <=DATE('" + end_date + "')  " + condition + " group by a.id ";
+        let transactionQuery = " Select *,ad.type as accountype,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id!=12 and DATE_FORMAT(a.created_on,'%Y-%m-%d') >=DATE('" + start_date + "') AND DATE_FORMAT(a.created_on,'%Y-%m-%d') <=DATE('" + end_date + "')  " + condition + " group by a.id ";
         //let transactionQuery = " Select *,ad.type as accountype,a.account as account_id from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  and a.from_id NOT IN (6,7,8,9,10,11) " + condition + " group by a.id ";
         let transactionData = await commonFunction.getQueryResults(transactionQuery);
+        
+        
+             
+                transactionData.push(...removed);
+                
         // paymentData.forEach(element => {
 
         //     if(element.type=='Income')
@@ -3216,23 +3292,7 @@ var condition=''
             }))
             .value();
 
-        // if (paymentData.length > 0) {
-        //     paymentdetails =
-        //         _(incomepaymentObject)
-        //             .groupBy('account_id')
-        //             .map((objs, key) => ({
-        //                 'account_id': key,
-        //                 'account_type_id': _.get(objs[0], 'account_type_id'),
-        //                 'account_type_name': accountObject[_.get(objs[0], 'account_type_id')] ? accountObject[_.get(objs[0], 'account_type_id')] : '',
-        //                 'account_id_name': accountNameObject[key] ? accountNameObject[key] : '',
-        //                 'total': _.sumBy(objs, function (day) {
-
-        //                     return day.credit - day.debit;
-
-        //                 })
-        //             }))
-        //             .value();
-        // }
+         
 
 
         let incomearray = [];
