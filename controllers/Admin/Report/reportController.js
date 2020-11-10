@@ -991,6 +991,7 @@ console.log(req.body)
 var condition=''
 var account_condition=''
 var filter_condition=''
+
 if (filter!=undefined && filter!='') {
     filter_condition="and(( a.shipper_code='"+filter+"') or (vendor_id='"+filter+"') and a.vendor_id!='')"
 }
@@ -1007,31 +1008,106 @@ var closingbalanceObject={}
         let accounttypeQuery = "Select *,at.id as accountypeid,at.name as accounttypename,a.id as accountid,a.account_name as accountname from accounts as a left join account_types as at on at.id=a.account_type_id ";
 
         let accountdata = await commonFunction.getQueryResults(accounttypeQuery);
-
+var accounttypeobject={}
+var accounttypeidObject={}
+var accountnameObject={}
         accountdata.forEach(element => {
             accountObject[element.accountypeid] = element.accounttypename;
             accountNameObject[element.accountid] = element.accountname
+            accounttypeobject[element.accountid] = element.type
+            accounttypeidObject[element.accountid] = element.accountypeid
+            accountnameObject[element.accountid] = element.accounttypename
         });
         //paymentQuery
         // let paymentQuery = "Select *,p.account as account_id from payments as p left join accounts as a on p.account=a.id  inner join account_types as at on at.id=a.account_type_id where p.created_date >= '" + start_date + "' AND p.created_date  <= '" + end_date + "' group by p.id"
         // let paymentData = await commonFunction.getQueryResults(paymentQuery);
 
-        var opeingbalanceObject={}
+        var opeingbalanceObject = {}
+        var finalreponse = [];
+        var defaultopeningbalance = {}
+        var changeopeingbalance = {}
+    
         var finalreponse=[];
 
-        var  opeingbalance="select *,sum(a.debit-a.credit) as balance   from account_statements as a where     DATE_FORMAT(a.created_on, '%Y-%m-%d')  <  DATE_FORMAT('" + start_date + "','%Y-%m-%d')  " + condition + " "+account_condition+" "+filter_condition+" group by a.account";
-        var openingtotalbalance=await commonFunction.getQueryResults(opeingbalance);
-    //     if(is_reconcile==1)
-    //     {
-    //        opeingbalance="select *    from importedbanklist as c where c.client_id=" +client_id+ " and c.bankid=" +bank_id+ "  and c.status=0  and  is_bank_reconcile=1 DATE_FORMAT(date, '%Y-%m-%d')  <  DATE_FORMAT('" + from_date + "','%Y-%m-%d') group by c.id  ";
-    //    }
+        var opeingbalance = "select *,sum(a.debit-a.credit) as balance   from account_statements as a where from_id!=12 and    DATE_FORMAT(a.created_on, '%Y-%m-%d')  <  DATE_FORMAT('" + start_date + "','%Y-%m-%d')  " + condition + " group by a.account";
+        var openingtotalbalance = await commonFunction.getQueryResults(opeingbalance);
+   
+        var transactionopeingbalance = "select *,a.account as paccount,a.type as actype from account_statements as a where a.from_id=12 and DATE_FORMAT(a.created_on, '%Y-%m-%d')  <  DATE_FORMAT('" + start_date + "','%Y-%m-%d')"
+        var transactionopeingdata = await commonFunction.getQueryResults(transactionopeingbalance)
+        console.log('trans', transactionopeingbalance);
+
+
+
+    
+
     openingtotalbalance.forEach(element => {
         opeingbalanceObject[element.account]=element.balance
     });
+
+
+    transactionopeingdata.forEach(element => {
+        if (element.actype == 'Income') {
+            element.account = element.category != undefined && element.category > 0 ? element.category : element.account
+
+        }
+        if (element.actype == "Expenses" || element.actype == "Expense") {
+            element.account = element.category != undefined && element.category > 0 ? element.category : element.account
+
+        }
+
+
+
+
+
+    });
+
+    transactionopeingdata.forEach(element => {
+        console.log('e', element);
+        defaultopeningbalance[element.account] = element.debit - element.credit
+
+
+
+
+    });
+
+    transactionopeingdata.forEach(element => {
+        console.log('e', element);
+        element.account = element.paccount
+        if (element.actype == 'Income') {
+            element.credit = 0
+            element.debit = element.amount
+        }
+        if (element.actype == 'Expense' || element.actype == 'Expenses') {
+            element.credit = element.amount
+            element.debit = 0
+
+        }
+
+
+
+
+    });
+
+
+
+    transactionopeingdata.forEach(element => {
+        console.log('e', element);
+        changeopeingbalance[element.account] = element.debit - element.credit
+
+
+
+
+    });
+
+
+
+
+
     var lastclosingbalance={}
     
 console.log(opeingbalance)
 let defaultclosingbalance=[];
+var finalopeningbalanceObject={}
 let changedlistclosingbalance=[];
 var  closingbalance="select *,sum(a.debit-a.credit) as balance,sum(a.debit) as totaldebit,sum(a.credit) as totalcredit from account_statements as a where a.from_id!=12 and DATE_FORMAT(a.created_on, '%Y-%m-%d')  >=  DATE_FORMAT('" + start_date + "','%Y-%m-%d') and   DATE_FORMAT(a.created_on, '%Y-%m-%d')  <=  DATE_FORMAT('" + end_date + "','%Y-%m-%d') " + condition + "  "+account_condition+" "+filter_condition+" group by a.account"
 //var  closingbalance="select *,sum(a.debit-a.credit) as balance,sum(a.debit) as totaldebit,sum(a.credit) as totalcredit from account_statements as a where     DATE_FORMAT(a.created_on, '%Y-%m-%d')  <=  DATE_FORMAT('" + end_date + "','%Y-%m-%d') " + condition + "  "+account_condition+" group by a.account"
@@ -1151,68 +1227,77 @@ Object.assign(closingbalanceObject, changedlistobject)
 Object.assign(closingbalanceObject, deafultlistObject)
 //closingbalanceObject ={...changedlistobject,...deafultlistObject};
 //closingbalanceObject=deafultlistObject
-let defaultlist=[]
-let changedlist=[]
-var transactionlist="Select *,a.type as actype,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id=12 and  a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  " + condition + " "+account_condition+"  "+filter_condition+" group by a.id order by a.created_on "
-var transactionitems=await commonFunction.getQueryResults(transactionlist);
-
-
-if (transactionitems.length > 0) {
-    
-
-console.log('prank goes wrong')
-    transactionitems.forEach(element => {
-       if (element.actype=='Income') {
-           element.account=element.category!=undefined && element.category > 0 ?element.category:element.account
-        //    element.credit=element.amount
-        //    element.debit=0
-       }
-       if (element.actype=='Expenses') {
-        element.account=element.category!=undefined && element.category > 0 ?element.category:element.account
-        // element.credit=0
-        // element.debit=element.amount
-    }
-
-    defaultlist.push(element)
-   }); 
-
-   var removed=removeduplicates(defaultlist)
-
-   transactionitems.forEach(element => {
-     
-         
-     //    element.credit=element.amount
-     //    element.debit=0
-     
-     
-     element.account=element.account
-     // element.credit=0
-     // element.debit=element.amount
- 
-
- 
-}); 
-
-   //console.log('prank goes wrong',defaultlist)
-
-   transactionitems.forEach(element => {
-    if (element.actype=='Income') {
-        element.credit=0
-        element.debit=element.amount
-    }
-    if (element.actype=='Expenses') {
-     element.credit=element.amount
-     element.debit=0
- }
-
- changedlist.push(element)
+accountdata.forEach(element => {
+    finalopeningbalanceObject[element.accountid] = (opeingbalanceObject[element.accountid] ? opeingbalanceObject[element.accountid] : 0) + (changeopeingbalance[element.accountid] ? changeopeingbalance[element.accountid] : 0) + (defaultopeningbalance[element.accountid] ? defaultopeningbalance[element.accountid] : 0)
 });
-}
+ 
+console.log('fin', finalopeningbalanceObject);
+const transactionlist = "Select *,a.account as paccount,a.type as actype,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id=12 and  a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'   group by a.id order by a.created_on "
+        const transactionitems = await commonFunction.getQueryResults(transactionlist);
+        console.log('transquery', transactionlist);
+        var removed = []
+        var changedarray = []
+        var newarray = []
+        if (transactionitems.length > 0) {
+
+
+            //overridden the account as category for getting the catgory id belong record to show in report when it comes from add income/expenses
+            //swapping account to category id
+            newarray = transactionitems.map((item) => {
+                const account_name = accountNameObject[item.category] ? accountNameObject[item.category] : ''
+                const accountype = accounttypeobject[item.category] ? accounttypeobject[item.category] : ''
+
+                return {
+                    ...item, account: item.category, account_name: account_name, accountype: accountype, account_id: item.category, account_type_id: accounttypeidObject[item.category] ? accounttypeidObject[item.category] : 0,
+                    account_type_name: accountnameObject[item.category] ? accountnameObject[item.category] : '',actype:accounttypeobject[item.category]?accounttypeobject[item.category]: 0
+
+                }
+            });
+
+
+
+
+            removed = await removeduplicates(newarray)
+
+            //when transaction list for payment account if type is income account is payment account amount should come under the debit and type expenses mean account may be payment account amount should come under credit this is only for payment account
+
+            changedarray = transactionitems.map((item) => {
+
+                var credit = 0
+                var debit = 0
+
+                //Expense if dbit >0
+
+                if (item.actype == "Expenses" || item.actype == "Expense") {
+
+                    credit = item.debit > 0 ? item.debit : item.credit;
+                    debit = 0
+
+                }
+
+                //Expense if dbit >0
+
+                if (item.actype == "Income") {
+
+                    debit = item.credit > 0 ? item.credit : item.debit;
+
+                    credit = 0
+                }
+
+
+                return { ...item, credit: credit, debit: debit }
+            });
+
+
+
+
+        }
+
+
+ 
 //console.log('prank goes change',changedlist)
 
-        // //billdetailsQuery
-        // let billDetailsQuery = "Select * from bill as b inner join  bill_details as bd on b.id=bd.bill_id inner join accounts as ac on ac.id=bd.expense_category where b.bill_date >= '" + start_date + "' AND b.bill_date  <= '" + end_date + "' and b.isdelete = 0 ";
-        // let billDetailsdata = await commonFunction.getQueryResults(billDetailsQuery);
+         
         
         
         let transactionQuery = " Select *,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id!=12 and  a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'  " + condition + " "+account_condition+"  "+filter_condition+" group by a.id order by a.created_on ";
@@ -1241,7 +1326,7 @@ console.log('prank goes wrong')
         var final=[]
     
  var categorybalance={}
- transactionData.push(...removed,...changedlist)
+ transactionData.push(...removed,...changedarray)
         transactionData.forEach(element => {
 
          
@@ -1293,7 +1378,7 @@ console.log('prank goes wrong')
         var val = categoryObject[key];
 
 
-        categorybalance[key]=opeingbalanceObject[key]?opeingbalanceObject[key]:0
+        categorybalance[key]=finalopeningbalanceObject[key]?finalopeningbalanceObject[key]:0
 
 
         val.forEach(element => {
@@ -1397,7 +1482,7 @@ console.log('ssss',lastclosingbalance,'s',closingbalanceObject)
             type:element.type,
             account_name: accountNameObject[element.accountid],
             accounttype:accountObject[element.account_type_id],
-            startingbalance:opeingbalanceObject[element.accountid]?opeingbalanceObject[element.accountid]:0,
+            startingbalance:finalopeningbalanceObject[element.accountid]?finalopeningbalanceObject[element.accountid]:0,
             data:categoryObject[element.accountid]?categoryObject[element.accountid]:[],
             total_and_ending_balance:closingbalanceObject[element.accountid]?closingbalanceObject[element.accountid]:'',
             //balancechange:Number((opeingbalanceObject[element.accountid]!=undefined?opeingbalanceObject[element.accountid]:0)-(closingbalanceObject[element.accountid].totalbalance!=undefined?closingbalanceObject[element.accountid].totalbalance:0))
