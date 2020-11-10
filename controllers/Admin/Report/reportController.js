@@ -2,6 +2,7 @@ var connection = require('../../../config');
 var commonFunction = require('../../commonFunction');
 var _ = require('lodash');
 var moment=require('moment');
+const { map } = require('lodash');
  
 module.exports = {
 
@@ -2519,18 +2520,22 @@ var accountnameObject={}
         });
 
 
-
+let creditopeingbalance={}
 
         //getting the credit notes record payment opeing balance
-        let creditpaymentQueryopeingbalance = " Select *,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id!=12 and  DATE_FORMAT(a.created_on,'%Y-%m-%d') >= DATE('"+start_date+"') and  DATE_FORMAT(a.created_on,'%Y-%m-%d') <= DATE('"+end_date+"')  and a.from_id=8  and a.account not in (21,22)    group by a.id order by a.created_on ";
+        let creditpaymentQueryopeingbalance = " Select *,sum(a.debit-a.credit) as balance,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id and ad.id=1 where a.from_id!=12  and  DATE_FORMAT(a.created_on,'%Y-%m-%d') <= DATE('"+start_date+"')  and a.from_id=8  and a.account not in (21,22)    group by a.id order by a.created_on ";
         let creditopeingData = await commonFunction.getQueryResults(creditpaymentQueryopeingbalance);
 
+        creditopeingData.forEach(element => {
+            creditopeingbalance[element.account]=element.balance
+        });
+
         //getting the credit notes record payment 
-        let creditpaymentQuery = " Select *,ad.id as accountypeid,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id!=12 and   a.created_on  <= '" + end_date + "' and a.from_id=8  and a.account not in (21,22)    group by a.id order by a.created_on ";
+        let creditpaymentQuery = " Select *,ad.id as accountypeid,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id  where a.from_id!=12 and   a.created_on  <= '" + end_date + "' and a.from_id=8  and a.account not in (21,22)    group by a.id order by a.created_on ";
         let creditData = await commonFunction.getQueryResults(creditpaymentQuery);
 
         //this is query for split the payment amount to particular bill account 
-        let paidincomequery = "select *,at.id as accountypeid,at.type as acctype,a.account_name as account_name ,a.id as account_id, bd.expense_category as expenseaccount,p.bill_id as paymentbillid,at.type as acctype,b.id as billid,bd.item_name,bd.total_amount as itemamount,bd.id as billdetailsid,p.amount as paymentamount,b.amount as totalbillamount  from bill  as b inner join bill_details as bd on b.id=bd.bill_id inner join payments as p on p.bill_id=b.id left join accounts as a on a.id=bd.expense_category inner join account_types as at on a.account_type_id=at.id where p.type=2  and DATE_FORMAT(p.paymentdate,'%Y-%m-%d') <= DATE('"+end_date+"')  and DATE_FORMAT(p.paymentdate,'%Y-%m-%d') <= DATE('"+end_date+"') and  p.account not in (20,22,21) and bd.isdelete=0 and b.isdelete=0 group by bd.id,p.id"; //payment list of bill
+        let paidincomequery = "select *,at.id as accountypeid,at.type as acctype,a.account_name as account_name ,a.id as account_id, bd.expense_category as expenseaccount,p.bill_id as paymentbillid,at.type as acctype,b.id as billid,bd.item_name,bd.total_amount as itemamount,bd.id as billdetailsid,p.amount as paymentamount,b.amount as totalbillamount  from bill  as b inner join bill_details as bd on b.id=bd.bill_id inner join payments as p on p.bill_id=b.id left join accounts as a on a.id=bd.expense_category inner join account_types as at on a.account_type_id=at.id where p.type=2  and DATE_FORMAT(p.paymentdate,'%Y-%m-%d') <= DATE('"+end_date+"')  and DATE_FORMAT(p.paymentdate,'%Y-%m-%d') <= DATE('"+end_date+"') and DATE_FORMAT(p.paymentdate,'%Y-%m-%d') >= DATE('"+start_date+"')  and DATE_FORMAT(p.paymentdate,'%Y-%m-%d') <= DATE('"+end_date+"') and  p.account not in (20,22,21) and bd.isdelete=0 and b.isdelete=0 group by bd.id,p.id"; //payment list of bill
       
        
         let paidincomedata = await commonFunction.getQueryResults(paidincomequery);
@@ -2573,7 +2578,7 @@ if (paidincomedata.length > 0) {
                 value.debit=Number(values).toFixed(2)
                 value.credit=0
                 value.accountype=value.acctype
-                value.categorytype='Purchase'
+                value.categorytype='Purchases'
                 console.log('value',parseFloat(values));
 
                // balancpaid[value.vendor_id]= (balancpaid[value.vendor_id]? balancpaid[value.vendor_id] : 0 ) + Number(values) 
@@ -2597,13 +2602,13 @@ console.log('array',comporedetails);
         var finalreponse = [];
         var defaultopeningbalance = {}
         var changeopeingbalance = {}
-        var opeingbalance = "select *,sum(a.debit-a.credit) as balance,ad.id as accountypeid,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid   from account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id  where from_id!=12 and    DATE_FORMAT(a.created_on, '%Y-%m-%d')  <  DATE_FORMAT('" + start_date + "','%Y-%m-%d')   " + condition + " group by a.account";
+        var opeingbalance = "select *,sum(a.debit-a.credit) as balance,ad.id as accountypeid,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid   from account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id and ad.id=1 where from_id!=12 and    DATE_FORMAT(a.created_on, '%Y-%m-%d')  <  DATE_FORMAT('" + start_date + "','%Y-%m-%d')   " + condition + " group by a.account";
         var openingtotalbalance = await commonFunction.getQueryResults(opeingbalance);
 
 
 
         //opening balance for transaction
-        var transactionopeingbalance = "select *,ad.id as accountypeid,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid,a.account as paccount,a.type as actype from account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id  where a.from_id=12 and DATE_FORMAT(a.created_on, '%Y-%m-%d')  <  DATE_FORMAT('" + start_date + "','%Y-%m-%d')"
+        var transactionopeingbalance = "select *,ad.id as accountypeid,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid,a.account as paccount,a.type as actype from account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id  and ad.id=1 where a.from_id=12 and DATE_FORMAT(a.created_on, '%Y-%m-%d')  <  DATE_FORMAT('" + start_date + "','%Y-%m-%d')"
         var transactionopeingdata = await commonFunction.getQueryResults(transactionopeingbalance)
         
 
@@ -2789,8 +2794,14 @@ var finalopeningbalanceObject={}
         //adding opeing blance
 
         accountdata.forEach(element => {
-            finalopeningbalanceObject[element.accountid] = (opeingbalanceObject[element.accountid] ? opeingbalanceObject[element.accountid] : 0) + (changeopeingbalance[element.accountid] ? changeopeingbalance[element.accountid] : 0) + (defaultopeningbalance[element.accountid] ? defaultopeningbalance[element.accountid] : 0)
-        });
+            finalopeningbalanceObject[element.accountid] = {
+            startingbal: (opeingbalanceObject[element.accountid] ? opeingbalanceObject[element.accountid] : 0) + (changeopeingbalance[element.accountid] ? changeopeingbalance[element.accountid] : 0) + (defaultopeningbalance[element.accountid] ? defaultopeningbalance[element.accountid] : 0) + (creditopeingbalance[element.accountid] ? creditopeingbalance[element.accountid] : 0),
+            accountname:accountNameObject[element.accountid]?accountNameObject[element.accountid]: '',
+            accountid: element.accountid,
+            account_type_id:element.account_type_id,
+            accounttypename:accountObject[element.account_type_id]?accountObject[element.account_type_id]: 0,
+        }
+            });
          
 
 
@@ -2901,34 +2912,34 @@ console.log('jsl',transactionQuery);
                 element.categorytype='Sales'
             }
             
-            if (element.account==21 && element.from_id==12 ) {
-                element.categorytype='Purchases'
+            if ((element.account==21 && element.from_id==12)|| (element.accountypeid==24 && element.from_id==12) || (element.accountypeid==25 && element.from_id==12) ||(element.accountypeid==28 && element.from_id==12) || (element.accountypeid==29 && element.from_id==12) ) {
+                element.categorytype='Purchases' //assigned  Expenses account type under  Purchases
             } 
 
             if (element.account==22 && element.from_id==12 ) {
-                element.categorytype='Sales'
+                element.categorytype='Sales' //assigned  Income account type under  Sales
             } 
             
         if (element.accountypeid==1) {
-            element.categorytype='Overview'
+            element.categorytype='Overview' //assigned  Cash on hand account type under  Overview
         }
         if (element.accountypeid==4) {
-            element.categorytype='Inventory'
+            element.categorytype='Inventory' // assigned  Inventory account type under  Inventory
         }
         if (element.accountypeid==27) {
-            element.categorytype='Payroll Expense'
+            element.categorytype='Payroll Expense' // assigned  Payroll Expense account type under  Payroll Expense
         }
         if (element.accountypeid==11) {
-            element.categorytype='Loan and Line of Credit'
+            element.categorytype='Loan and Line of Credit' // assigned  Loan and Line of Credit account type under  Loan and Line of Credit
         }
 
         if (element.accountypeid==30||element.accountypeid==15 ||element.accountypeid==31) {
-            element.categorytype='Owners and Shareholders'
+            element.categorytype='Owners and Shareholders'  //assigned account type under  Owners and Shareholders
         }
 
         });
        
-
+ 
         //sepeter by category type
 
 
@@ -2952,7 +2963,7 @@ console.log('jsl',transactionQuery);
      
 
         
-        res.json({ status: 1, message: 'Cashflow list',typeresponse,transactionData })
+        res.json({ status: 1, message: 'Cashflow list',typeresponse,transactionData,finalopeningbalanceObject })
 
 
 
