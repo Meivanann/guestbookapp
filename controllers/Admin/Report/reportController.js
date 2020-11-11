@@ -2643,6 +2643,7 @@ _.map(details,function (el,index,arr) {
         console.log('aa0');
         let { start_date, end_date,cstart_date,cend_date} = req.body
         let accountObject = {};
+        var finalresponseobject={};
         let accountNameObject = {}
         let consignmentObject = {};
         let billObject = {};
@@ -3086,10 +3087,14 @@ console.log('jsl',transactionQuery);
             element.categorytype='Inventory' // assigned  Inventory account type under  Inventory
         }
         if (element.accountypeid==27) {
-            element.categorytype='Payroll Expense' // assigned  Payroll Expense account type under  Payroll Expense
+            element.categorytype='Payroll' // assigned  Payroll Expense account type under  Payroll Expense
         }
         if (element.accountypeid==11) {
-            element.categorytype='Loan and Line of Credit' // assigned  Loan and Line of Credit account type under  Loan and Line of Credit
+            element.categorytype='Loans and Lines of Credit' // assigned  Loan and Line of Credit account type under  Loan and Line of Credit
+        }
+
+        if (element.accountypeid==5 && element.from_id==12) {
+            element.categorytype='PropertyPlantEquipment' // assigned  PropertyPlantEquipment account type under  PropertyPlantEquipment
         }
 
         if (element.accountypeid==30||element.accountypeid==15 ||element.accountypeid==31) {
@@ -3105,9 +3110,9 @@ console.log('jsl',transactionQuery);
 
      
 //return res.send(details)
-
+var typeresponse=[]
          
-        var typeresponse=_(details)
+    typeresponse=_(details)
     .groupBy('categorytype')
     .map((objs, key) => ({
         'acctype': key,
@@ -3117,8 +3122,118 @@ console.log('jsl',transactionQuery);
          
     })).value()
 
+var response=[]
+    // finalresponseobject={
+
+    //     Sales:{
+    //          'acctype': 'Sales',
+         
+    //         'values': typeresponse.filter(
+    //             item => {
+    //               return item.acctype == 'Sales'
+    //             }
+    //           ) 
+    
+    //     },
+    //     Purchases:{
+    //         'acctype': 'Purchases',
+         
+    //         'values': typeresponse.filter(
+    //             item => {
+    //               return item.acctype == 'Purchases'
+    //             }
+    //           ) 
+    //     },
+    //     Inventory:{
+    //         'acctype': 'Inventory',
+         
+    //         'values': typeresponse.filter(
+    //             item => {
+    //               return item.acctype =='Inventory'
+    //             }
+    //           ) 
+    //     },
+    //     Payroll:{
+    //         'acctype': 'Payroll',
+         
+    //         'values': typeresponse.filter(
+    //             item => {
+    //               return item.acctype =='Payroll'
+    //             }
+    //           ) 
+    //     },
+    //     SalesTaxes:{
+    //         'acctype': 'Sales Taxes',
+         
+    //         'values': typeresponse.filter(
+    //             item => {
+    //               return item.acctype == 'Sales Taxes'
+    //             }
+    //           ) 
+    //     },
+    //     InvestingOther:{
+    //         'acctype': 'InvestingOther',
+         
+    //         'values': typeresponse.filter(
+    //             item => {
+    //               return item.acctype == 'InvestingOther'
+    //             }
+    //           ) 
+    //     },
+    //     OperatingOther:{
+    //         'acctype': 'OperatingOther',
+         
+    //         'values': typeresponse.filter(
+    //             item => {
+    //               return item.acctype == 'OperatingOther'
+    //             }
+    //           ) 
+    //     },
+    //     PropertyPlantEquipment:{
+    //         'acctype': 'PropertyPlantEquipment',
+         
+    //         'values': typeresponse.filter(
+    //             item => {
+    //               return item.acctype == 'PropertyPlantEquipment'
+    //             }
+    //           ) 
+    //     },
+
+    //     LoansandLinesofCredit:{
+    //         'acctype': 'Loans and Lines of Credit',
+         
+    //         'values': typeresponse.filter(
+    //             item => {
+    //               return item.acctype == 'Loans and Lines of Credit'
+    //             }
+    //           ) 
+    //     },
+    //     OwnersandShareholders:{
+    //         'acctype': 'Owners and Shareholders',
+         
+    //         'values': typeresponse.filter(
+    //             item => {
+    //               return item.acctype == 'Owners and Shareholders'
+    //             }
+    //           ) 
+    //     },
+    //     Finacingother:{
+    //         'acctype': 'Finacingother',
+         
+    //         'values': typeresponse.filter(
+    //             item => {
+    //               return item.acctype == 'Finacingother'
+    //             }
+    //           ) 
+    //     }
 
 
+
+
+
+
+    // }
+    //response.push(finalresponseobject.LoansandLinesofCredit,finalresponseobject.Sales[0],finalresponseobject.Purchases,finalresponseobject.Inventory,finalresponseobject.Payroll,finalresponseobject.SalesTaxes,finalresponseobject.InvestingOther,finalresponseobject.OperatingOther,finalresponseobject.OwnersandShareholders,finalresponseobject.PropertyPlantEquipment,finalresponseobject.Finacingother)
      
 
         
