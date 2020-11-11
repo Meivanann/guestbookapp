@@ -1938,7 +1938,7 @@ var s=closingbalanceObject[element.accountid]
             var netmovement = Number(el.debit - el.credit).toFixed(2)
             el.startingbalance = finalopeningbalanceObject[el.account_id] ? finalopeningbalanceObject[el.account_id] : 0
             el.netmovement = Number(netmovement);
-            el.endingbalance = finalopeningbalanceObject[el.account_id] ? (finalopeningbalanceObject[el.account_id]?finalopeningbalanceObject[el.account_id]:0) + Number(netmovement)  : 0
+            el.endingbalance =  (finalopeningbalanceObject[el.account_id]?finalopeningbalanceObject[el.account_id]:0) + (netmovement!=undefined&&netmovement!=''?Number(netmovement):0) 
         });
 
 
