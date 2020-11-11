@@ -2758,6 +2758,7 @@ if (paidincomedata.length > 0) {
 
 var comporedetails=await comporedata(cstart_date,cend_date)
 console.log('array',comporedetails);
+ 
         var opeingbalanceObject = {}
         var finalreponse = [];
         var defaultopeningbalance = {}
@@ -3047,6 +3048,20 @@ console.log('jsl',transactionQuery);
                 });
                 transactionData.push(...creditData);
                 var details=[]
+                transactionData.forEach(element => {
+    element.account_id_name=accountNameObject[element.account] ? accountNameObject[element.account] : ''
+    element.balance=element.credit>0?'-'+element.credit:element.debit
+})
+                var inventorygrouping=[]
+                 inventorygrouping = transactionData.filter(
+                    item => {
+                      return item.accountypeid==4
+                    }
+                  )
+                  var inventory={
+                    'acctype': 'Inventory',
+                    'values': inventorygrouping 
+                  }
                  details = _(transactionData)
                 .groupBy('account_id')
                 .map((objs, key) => ({
@@ -3122,7 +3137,14 @@ var typeresponse=[]
          
     })).value()
 
+    const filteredPeople = typeresponse.filter((item) => item.acctype !== inventory.acctype);
+//     typeresponse.forEach(element => {
+//         typeresponse.push(inventory)
+// });
+filteredPeople.push(inventory)
+
 var response=[]
+
     // finalresponseobject={
 
     //     Sales:{
@@ -3237,7 +3259,7 @@ var response=[]
      
 
         
-        res.json({ status: 1, message: 'Cashflow list',typeresponse,transactionData,finalopeningbalanceObject })
+        res.json({ status: 1, message: 'Cashflow list',typeresponse:filteredPeople,transactionData,finalopeningbalanceObject })
 
 
 
@@ -4222,13 +4244,198 @@ async function comporedata(cstart_date,cend_date)
 
 
     try {
-        let transactionQuery = " Select *,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id!=12 and  DATE_FORMAT(a.created_on,'%Y-%m-%d') >= DATE('" + cstart_date  + "') AND DATE_FORMAT(a.created_on,'%Y-%m-%d') <= DATE('" + cend_date  + "') and a.ispayment=1  group by a.id order by a.created_on ";
+        var finalcomporeobject={}
+        var details=[]
+        var restructure=[]
+        var sepearttypepaid=[]
+        var accountObject={}
+        var accountNameObject={}
+        var accounttypeobject={}
+        var accounttypeidObject={}
+        var accountnameObject={}
+
+        let accounttypeQuery = "Select *,at.id as accountypeid,at.name as accounttypename,a.id as accountid,a.account_name as accountname from accounts as a left join account_types as at on at.id=a.account_type_id ";
+
+        let accountdata = await commonFunction.getQueryResults(accounttypeQuery);
+
+        accountdata.forEach(element => {
+            accountObject[element.accountypeid] = element.accounttypename;
+            accountNameObject[element.accountid] = element.accountname
+            accounttypeobject[element.accountid] = element.type
+            accounttypeidObject[element.accountid] = element.accountypeid
+            accountnameObject[element.accountid] = element.accounttypename
+        });
+        let transactionQuery = " Select *,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id!=12 and  a.created_on >='" + cstart_date  + "' AND a.created_on <='" + cend_date  + "' and a.ispayment=1  group by a.id order by a.created_on ";
         let transactionData = await commonFunction.getQueryResults(transactionQuery);
+        let creditpaymentQuery = " Select *,ad.id as accountypeid,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id  where a.from_id!=12 and  a.created_on  >= '" + cstart_date + "'  and  a.created_on  <= '" + cend_date + "' and a.from_id=8  and a.account not in (21,22)    group by a.id order by a.created_on ";
+        let creditData = await commonFunction.getQueryResults(creditpaymentQuery);
+        let paidincomequery = "select *,at.id as accountypeid,at.type as acctype,a.account_name as account_name ,a.id as account_id, bd.expense_category as expenseaccount,p.bill_id as paymentbillid,at.type as acctype,b.id as billid,bd.item_name,bd.total_amount as itemamount,bd.id as billdetailsid,p.amount as paymentamount,b.amount as totalbillamount  from bill  as b inner join bill_details as bd on b.id=bd.bill_id inner join payments as p on p.bill_id=b.id left join accounts as a on a.id=bd.expense_category inner join account_types as at on a.account_type_id=at.id where p.type=2 and DATE_FORMAT(p.paymentdate,'%Y-%m-%d') <= DATE('"+cend_date+"') and DATE_FORMAT(p.paymentdate,'%Y-%m-%d') >= DATE('"+cstart_date+"')  and  p.account not in (20,22,21) and bd.isdelete=0 and b.isdelete=0 group by bd.id,p.id"; //payment list of bill
+      
        
+        let paidincomedata = await commonFunction.getQueryResults(paidincomequery);
         if (transactionData.length > 0) {
 
-            return transactionData
+           
             
+       
+        //this is query for split the payment amount to particular bill account 
+       
+
+        
+if (paidincomedata.length > 0) {
+    paidincomedata.forEach(element => {
+        if (element.vendor_id!=undefined&&element.vendor_id!='') {
+            if (element.acctype=='Expenses' ) {
+                restructure.push(element)
+            }
+            if (element.acctype=='Assets') {
+                restructure.push(element) 
+            }
+        }
+         
+        
+    });
+     sepearttypepaid=_(restructure)
+    .groupBy('acctype')
+    .map((objs, key) => ({
+        'acctype': key,
+         
+        'values':   objs 
+
+         
+    })).value()
+
+    
+    Object.keys(sepearttypepaid).forEach(function (key,item) {
+         var val=sepearttypepaid[item].values
+      
+         _.forEach(val,function(el,index,arr) { 
+           
+            var value=el
+            if (value.billid==value.paymentbillid && value.vendor_id!=undefined && value.vendor_id!='') {
+               
+                var values=Number(value.itemamount/value.totalbillamount * value.paymentamount) //Number((value.itemamount/value.totalbillamount )* value.paymentamount).toFixed(2)
+                
+                value.amountvalue=Number(values).toFixed(2)
+                value.debit=Number(values).toFixed(2)
+                value.credit=0
+                value.accountype=value.acctype
+                value.categorytype='Purchases'
+                console.log('value',parseFloat(values));
+
+               // balancpaid[value.vendor_id]= (balancpaid[value.vendor_id]? balancpaid[value.vendor_id] : 0 ) + Number(values) 
+           // paidobject[value.vendor_id]=Number(balancpaid[value.vendor_id]).toFixed(2)
+            }
+            // value.amountvalue=
+          });
+
+      
+    });
+    
+
+
+    
+    
+}
+const transactionlist = "Select *,ad.id as accountypeid,a.account as paccount,a.type as actype,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id=12 and  a.created_on >= '" + cstart_date + "' AND a.created_on  <= '" + cend_date + "'   group by a.id order by a.created_on "
+const transactionitems = await commonFunction.getQueryResults(transactionlist);
+
+var removed = []
+var changedarray = []
+var newarray = []
+if (transactionitems.length > 0) {
+
+    
+    //overridden the account as category for getting the catgory id belong record to show in report when it comes from add income/expenses
+    //swapping account to category id
+    
+    newarray = transactionitems.map((item) => {
+        const account_name = accountNameObject[item.category] ? accountNameObject[item.category] : ''
+        const accountype = accounttypeobject[item.category] ? accounttypeobject[item.category] : ''
+
+        return {
+            ...item, account: item.category, account_name: account_name, accountype: accountype, account_id: item.category, account_type_id: accounttypeidObject[item.category] ? accounttypeidObject[item.category] : 0,
+            account_type_name: accountnameObject[item.category] ? accountnameObject[item.category] : '',accountypeid:accounttypeidObject[item.category] ? accounttypeidObject[item.category] : 0
+
+        }
+    });
+    console.log('sss');
+    console.log(newarray)
+    
+
+
+
+    removed = await removeduplicates(newarray)
+
+    //when transaction list for payment account if type is income account is payment account amount should come under the debit and type expenses mean account may be payment account amount should come under credit this is only for payment account
+
+    changedarray = transactionitems.map((item) => {
+
+        var credit = 0
+        var debit = 0
+
+        //Expense if dbit >0
+
+        if (item.actype == "Expenses" || item.actype == "Expense") {
+
+            credit = item.debit > 0 ? item.debit : item.credit;
+            debit = 0
+
+        }
+
+        //Expense if dbit >0
+
+        if (item.actype == "Income") {
+
+            debit = item.credit > 0 ? item.credit : item.debit;
+
+            credit = 0
+        }
+
+
+        return { ...item, credit: credit, debit: debit }
+    });
+
+   
+} 
+transactionData.push(...removed,...changedarray);
+sepearttypepaid.forEach(element => {
+    var values=element.values
+
+    transactionData.push(...values);
+        
+    });
+    transactionData.push(...creditData);
+
+
+    
+    details = _(transactionData)
+   .groupBy('account_id')
+   .map((objs, key) => ({
+       'account_id': key,
+       'account': key,
+       'account_type_id': _.get(objs[0], 'accountypeid'),
+       'accountypeid': _.get(objs[0], 'accountypeid'),
+       'account_type_name': accountObject[_.get(objs[0], 'account_type_id')] ? accountObject[_.get(objs[0], 'account_type_id')] : '',
+       'account_id_name': accountNameObject[key] ? accountNameObject[key] : '',
+       'type': _.get(objs[0], 'accountype'),
+       'balance': _.sumBy(objs, function (day) {
+
+           return Number(day.debit)-Number(day.credit);
+
+       }),
+       from_id:_.get(objs[0], 'from_id'),
+       categorytype:_.get(objs[0], 'categorytype')
+   })).value()
+   
+   console.log('det',details);
+   details.forEach(element => {
+    finalcomporeobject[element.account]=element.balance
+});
+
+   
+   return finalcomporeobject
+
         }
         
     } catch (error) {
