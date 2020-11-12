@@ -1304,7 +1304,7 @@ accountdata.forEach(element => {
 });
  
 console.log('fin', finalopeningbalanceObject);
-const transactionlist = "Select *,a.account as paccount,a.type as actype,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id=12 and  a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'   group by a.id order by a.created_on "
+const transactionlist = "Select *,a.account as paccount,a.type as actype,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id=12 and  a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'    " + condition + "  "+account_condition+" "+filter_condition+" group by a.id order by a.created_on "
         const transactionitems = await commonFunction.getQueryResults(transactionlist);
         console.log('transquery', transactionlist);
         var removed = []
