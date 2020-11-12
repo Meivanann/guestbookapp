@@ -1307,6 +1307,7 @@ console.log('fin', finalopeningbalanceObject);
 const transactionlist = "Select *,a.account as paccount,a.type as actype,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id=12 and  a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'    " + condition + "  "+account_condition+" "+filter_condition+" group by a.id order by a.created_on "
         const transactionitems = await commonFunction.getQueryResults(transactionlist);
         console.log('transquery', transactionlist);
+       
         var removed = []
         var changedarray = []
         var newarray = []
@@ -1379,7 +1380,7 @@ const transactionlist = "Select *,a.account as paccount,a.type as actype,a.creat
         let transactionData = await commonFunction.getQueryResults(transactionQuery);
      
         
-        console.log(transactionQuery)
+        console.log( 'kala',transactionQuery)
         // var costoofgoodsdetails = _(costofgoodsexpense)
         //     .groupBy('account_id')
         //     .map((objs, key) => ({
@@ -1396,12 +1397,23 @@ const transactionlist = "Select *,a.account as paccount,a.type as actype,a.creat
 
 
         var final=[]
-    
+    var filtereddata=[]
  var categorybalance={}
  
  transactionData.push(...removed,...changedarray)
  
-        transactionData.forEach(element => {
+ if (account_id!=undefined && account_id!='') {
+     filtereddata = transactionData.filter(
+        item => {
+          return item.acctype == account_id
+        }
+      )
+}
+if (account_id==undefined && account_id=='') {
+filtereddata.push(...transactionData)
+}
+ 
+filtereddata.forEach(element => {
 
          
              if(categoryObject[element.account]==undefined)
@@ -1550,7 +1562,7 @@ console.log('ssss',lastclosingbalance,'s',closingbalanceObject)
     //   });
 
 
-
+return res.send(categoryObject)
     accountdata.forEach(element => {
         finalResponse.push({
             type:element.type,
