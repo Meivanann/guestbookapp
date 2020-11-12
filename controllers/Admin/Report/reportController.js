@@ -1409,7 +1409,7 @@ const transactionlist = "Select *,a.account as paccount,a.type as actype,a.creat
         }
       )
 }
-if (account_id==undefined && account_id=='') {
+if (account_id==undefined || account_id=='') {
 filtereddata.push(...transactionData)
 }
  
