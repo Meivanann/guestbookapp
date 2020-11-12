@@ -3281,11 +3281,12 @@ var response=[]
         let costofgoodsexpensepayment=[];
         let operatingexpensepayment=[]
         var paymentdetails;
-
+var sepearttypepaid=[]
 var condition=''
 var accounttypeobject= {}
 var accounttypeidObject={}
 var accountnameObject= {}
+var restructure=[]
         if(report_type==2)
         {
             condition=" and a.ispayment=1"
@@ -3303,6 +3304,68 @@ var accountnameObject= {}
             accountnameObject[element.accountid] = element.accounttypename
         });
 
+
+
+
+        let paidincomequery = "select *,at.id as accountypeid,at.type as acctype,a.account_name as account_name ,a.id as account_id, bd.expense_category as expenseaccount,p.bill_id as paymentbillid,at.type as acctype,b.id as billid,bd.item_name,bd.total_amount as itemamount,bd.id as billdetailsid,p.amount as paymentamount,b.amount as totalbillamount  from bill  as b inner join bill_details as bd on b.id=bd.bill_id inner join payments as p on p.bill_id=b.id left join accounts as a on a.id=bd.expense_category inner join account_types as at on a.account_type_id=at.id where p.type=2  and DATE_FORMAT(p.paymentdate,'%Y-%m-%d') <= DATE('"+end_date+"')  and DATE_FORMAT(p.paymentdate,'%Y-%m-%d') <= DATE('"+end_date+"') and DATE_FORMAT(p.paymentdate,'%Y-%m-%d') >= DATE('"+start_date+"')  and DATE_FORMAT(p.paymentdate,'%Y-%m-%d') <= DATE('"+end_date+"') and  p.account not in (20,22,21) and bd.isdelete=0 and b.isdelete=0 group by bd.id,p.id"; //payment list of bill
+      
+       
+        let paidincomedata = await commonFunction.getQueryResults(paidincomequery);
+
+if (paidincomedata.length > 0) {
+    paidincomedata.forEach(element => {
+        if (element.vendor_id!=undefined&&element.vendor_id!='') {
+            if (element.acctype=='Expenses' ) {
+                restructure.push(element)
+            }
+            if (element.acctype=='Assets') {
+                restructure.push(element) 
+            }
+        }
+         
+        
+    });
+     sepearttypepaid=_(restructure)
+    .groupBy('acctype')
+    .map((objs, key) => ({
+        'acctype': key,
+         
+        'values':   objs 
+
+         
+    })).value()
+
+    
+    Object.keys(sepearttypepaid).forEach(function (key,item) {
+         var val=sepearttypepaid[item].values
+      
+         _.forEach(val,function(el,index,arr) { 
+           
+            var value=el
+            if (value.billid==value.paymentbillid && value.vendor_id!=undefined && value.vendor_id!='') {
+               
+                var values=Number(value.itemamount/value.totalbillamount * value.paymentamount) //Number((value.itemamount/value.totalbillamount )* value.paymentamount).toFixed(2)
+                
+                value.amountvalue=Number(values).toFixed(2)
+                value.debit=Number(values).toFixed(2)
+                value.credit=0
+                value.accountype=value.acctype
+                value.account_type_id=value.accountypeid
+                value.account_id_name=accountNameObject[value.expenseaccount] ? accountNameObject[value.expenseaccount] : '',
+                // value.categorytype='Purchases'
+                console.log('value',parseFloat(values));
+value.account_type_name=accountObject[value.accountypeid]? accountObject[value.accountypeid] : ''
+               // balancpaid[value.vendor_id]= (balancpaid[value.vendor_id]? balancpaid[value.vendor_id] : 0 ) + Number(values) 
+           // paidobject[value.vendor_id]=Number(balancpaid[value.vendor_id]).toFixed(2)
+            }
+            // value.amountvalue=
+          });
+
+      
+    });
+    
+    
+}
 
 
         const transactionlist = "Select *,a.account as paccount,a.type as actype,a.created_on as accdate,ad.type as accountype,a.account as account_id,a.id as accountstatmentid from  account_statements as a left join accounts as ac on ac.id=a.account inner join account_types as ad on ac.account_type_id=ad.id where a.from_id=12 and  a.created_on >= '" + start_date + "' AND a.created_on  <= '" + end_date + "'   group by a.id order by a.created_on "
@@ -3384,6 +3447,15 @@ var accountnameObject= {}
         
              
                 transactionData.push(...removed);
+                if (report_type==2) {
+                    sepearttypepaid.forEach(element => {
+                        var values=element.values
+                
+                        transactionData.push(...values);
+                            
+                        });
+                        
+                }
                 
         // paymentData.forEach(element => {
 
@@ -3425,7 +3497,7 @@ var accountnameObject= {}
             if (element.accountype =='Income') {
                 incomes.push(element)
             }
-            if (element.accountype =='Expenses') {
+            if (element.accountype =='Expenses'||element.accountype =='Expense') {
                 expense.push(element)
             }
         });
