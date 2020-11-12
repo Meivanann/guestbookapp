@@ -1405,7 +1405,7 @@ const transactionlist = "Select *,a.account as paccount,a.type as actype,a.creat
  if (account_id!=undefined && account_id!='') {
      filtereddata = transactionData.filter(
         item => {
-          return item.acctype == account_id
+          return item.account == account_id
         }
       )
 }
@@ -1562,7 +1562,7 @@ console.log('ssss',lastclosingbalance,'s',closingbalanceObject)
     //   });
 
 
-return res.send(categoryObject)
+ 
     accountdata.forEach(element => {
         finalResponse.push({
             type:element.type,
