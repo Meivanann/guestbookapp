@@ -2,7 +2,7 @@ var moment = require('moment');
 var sql = require('../config');
 var q = require('q');
 module.exports = {
-    getTimeZoneDate: (dateparam, timezone, format) => {
+ getTimeZoneDate: (dateparam, timezone, format) => {
         var timezone = (timezone != undefined && timezone != '') ? timezone : '+00:00';
         var date = new Date();
         if (dateparam != undefined && dateparam != '') {
