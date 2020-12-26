@@ -4,6 +4,7 @@ var passwordHash = require('password-hash');
 var counter=require('../schema/counterfunction')
 var CustomerProfile=require('../schema/customer.js')
 var db=require('../config')
+var logger  = require('../log/logger');
 module.exports = {
     addCustomer: async (req) => {
         var deferred = q.defer();
@@ -100,36 +101,60 @@ module.exports = {
 
 
     customerLogin: async (req) => {
-        var deferred = q.defer();
+        
 
-        let {username, password } = req.body;
-var password_login=password; //user enter password
-     var actualpassword = ''
-      
-        CustomerProfile.find({username:username},function(err,data)
+    var deferred = q.defer();
+    let {username, password } = req.body;
+    var password_login=password; //user enter password
+         var actualpassword = ''
+          console.log('username',username)
+          if (username!=undefined || password!=undefined) {
+            try {
+            CustomerProfile.find({username:username},function(err,data)
             {
                 if(err)
-                {
-                    deferred.resolve({status:0,message:"Error occured"})
+                {  
+                    
+                    logger.simple.info('error',err)
+                    deferred.resolve({status:0,message:"Error occured",err})
+                    
                 }
                 else
-                {
-                   
+                { 
                     if(data.length > 0)
                     {
                         
                        actualpassword =passwordHash.verify
-
-                       console.log(data)
+    
+                        
+                       logger.simple.info("Email already exist")
                         deferred.resolve({status:0,message:"Email already exist"})
+                     
                     }
                     else{
-                        
-
+                        logger.simple.error("Email already exist",data)
+    
                     }
                     
                 }
             })
+        } catch (error) {
+            // errorlogger.info(error)
+             deferred.resolve(error)
+             logger.simple.error(error)
+         }
+              
+          }
+          else
+          {
+            deferred.resolve({status:0,message:'please pass username and password'})
+            logger.simple.warn("please pass username and password")
+              
+             // errorlogger.info("please pass username and password")
+            }
+    
+   
+     
       
         
         return deferred.promise;
