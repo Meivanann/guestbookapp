@@ -21,5 +21,14 @@ customerLogin: (req,res) => {
     
         })
 
-    }
+    },
+    customerDetails: (req,res) => {
+         
+        customerModel.customerDetails(req).then(values=>
+            {
+                    res.json(values)
+        
+            })
+    
+        }
 }

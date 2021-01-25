@@ -1,0 +1,1021 @@
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:Email already exist',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-18T08:01:53.078Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-18T08:07:44.270Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-18T16:18:58.698Z'
+}
+ 
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-18T16:24:46.265Z'
+}
+ {
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-18T16:40:51.304Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:Incorrect password',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-18T16:41:17.084Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:Incorrect password',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-18T17:02:55.564Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:Incorrect password',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-18T17:03:41.444Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-18T17:06:37.490Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-18T17:17:30.308Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:User is not found',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-18T17:17:56.263Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:User is not found',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-21T07:17:42.429Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:User is not found',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-21T07:17:50.955Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:User is not found',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-21T07:29:18.711Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:User is not found',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-21T07:32:06.829Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:User is not found',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-21T07:32:28.101Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:User is not found',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-21T07:33:41.768Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:User is not found',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-21T07:34:33.901Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:User is not found',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-21T07:35:20.230Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T07:36:12.444Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:User is not found',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-21T07:39:13.994Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:User is not found',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-21T08:51:12.774Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T08:51:40.334Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:User is not found',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-21T09:01:48.589Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:User is not found',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-21T11:37:29.553Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:User is not found',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-21T12:24:13.308Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T12:24:58.758Z'
+}
+{
+  message: 'method:GET,endpoint:/customerdetails,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T12:54:58.046Z'
+}
+{
+  message: 'method:GET,endpoint:/customerdetails,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T12:56:04.964Z'
+}
+{
+  message: 'method:GET,endpoint:/customerdetails,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T12:56:33.661Z'
+}
+{
+  message: 'method:GET,endpoint:/customerdetails,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T12:57:04.096Z'
+}
+{
+  message: 'method:GET,endpoint:/customerdetails,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T12:57:08.905Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T12:57:22.416Z'
+}
+{
+  message: 'method:GET,endpoint:/customerdetails,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T12:57:22.439Z'
+}
+{
+  message: 'method:GET,endpoint:/customerdetails,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T13:00:58.103Z'
+}
+{
+  message: 'method:GET,endpoint:/customerdetails,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T13:02:07.121Z'
+}
+{
+  message: 'method:GET,endpoint:/customerdetails,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T13:02:13.983Z'
+}
+{
+  message: 'method:GET,endpoint:/customerdetails,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T13:03:12.348Z'
+}
+{
+  message: 'method:GET,endpoint:/customerdetails,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T13:03:54.210Z'
+}
+{
+  message: 'method:GET,endpoint:/customerdetails,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T13:08:35.755Z'
+}
+{
+  message: 'method:GET,endpoint:/customerdetails,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T13:10:01.107Z'
+}
+{
+  message: 'method:GET,endpoint:/customerdetails,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:06:42.049Z'
+}
+{
+  message: 'method:GET,endpoint:/customerdetails,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:15:20.751Z'
+}
+{
+  message: 'method:GET,endpoint:/customerdetails,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:15:29.069Z'
+}
+{
+  message: 'method:GET,endpoint:/customerdetails,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:21:16.979Z'
+}
+{
+  message: 'method:GET,endpoint:/customerdetails,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:28:24.338Z'
+}
+{
+  message: 'method:GET,endpoint:/customerdetails,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:32:15.676Z'
+}
+{
+  message: 'method:POST,endpoint:/customerdetails,statusmessage:No data found',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-21T14:41:07.892Z'
+}
+{
+  message: 'method:POST,endpoint:/customerdetails,statusmessage:No data found',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-21T14:42:27.724Z'
+}
+{
+  message: 'method:POST,endpoint:/customerdetails,statusmessage:No data found',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-21T14:42:49.025Z'
+}
+{
+  message: 'method:POST,endpoint:/customerdetails,statusmessage:No data found',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-21T14:50:14.419Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:50:36.271Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:50:38.827Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:50:39.788Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:50:40.054Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:50:45.819Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:50:47.992Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:50:48.768Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:50:49.098Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:50:49.469Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:50:49.852Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:50:55.789Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:50:56.610Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:50:56.787Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:50:57.012Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:56:53.923Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:57:31.271Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:57:33.904Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:57:35.116Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:57:35.885Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:59:36.880Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:59:38.699Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:59:39.510Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:59:39.757Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:59:39.886Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:59:40.084Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:59:40.278Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:59:40.447Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:59:40.601Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:59:40.804Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:59:40.934Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:59:41.097Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:59:41.234Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:59:41.454Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:59:41.565Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:59:41.748Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:59:41.978Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:59:48.884Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:59:49.677Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:59:49.916Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:59:50.461Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T14:59:50.725Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:00:31.560Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:00:32.486Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:00:32.740Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:00:32.925Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:00:33.124Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:00:33.320Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:01:15.353Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:07:12.945Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:07:15.708Z'
+}
+{
+  message: 'method:POST,endpoint:/customerdetails,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:11:36.696Z'
+}
+{
+  message: 'method:POST,endpoint:/customerdetails,statusmessage:please pass username and password',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:12:07.919Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:13:43.815Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:13:46.770Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:13:47.619Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:13:47.823Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:13:48.047Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:13:48.191Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:13:48.298Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:13:48.552Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:13:48.652Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:13:48.857Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:13:48.984Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:13:49.234Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:14:12.822Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:14:15.594Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:14:16.414Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:14:16.623Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T15:15:12.631Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:25:07.377Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:25:08.709Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:25:46.879Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:25:47.665Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:25:47.868Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:25:48.086Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:User is not found',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-21T16:27:46.392Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:User is not found',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-21T16:29:52.906Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:31:31.644Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:31:33.962Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:31:34.679Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:31:35.006Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:31:35.350Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:31:35.742Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:32:35.967Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:32:37.477Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:32:38.176Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:32:38.565Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:32:38.984Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:53:06.463Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:53:08.017Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:53:08.710Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:53:08.923Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:53:09.074Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:53:09.242Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:53:09.460Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:54:43.715Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:54:44.272Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:54:44.558Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:54:44.746Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:54:53.302Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:55:44.809Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T16:56:54.982Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-21T17:01:47.946Z'
+}
+{
+  message: 'method:POST,endpoint:/createcustomer,statusmessage:Inserted Successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-22T02:37:40.972Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-22T02:38:08.209Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-22T03:09:20.264Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-22T03:13:03.678Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-22T07:36:57.667Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-22T08:22:14.568Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-22T14:31:19.139Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-22T14:36:03.933Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:User is not found',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-23T07:59:13.318Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-23T07:59:36.384Z'
+}
+{
+  message: 'method:POST,endpoint:/createcustomer,statusmessage:Inserted Successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-23T08:03:51.479Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:User is not found',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-23T08:04:05.664Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:User is not found',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-23T08:04:33.878Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:Incorrect password',
+  level: 'warn',
+  label: 'log',
+  timestamp: '2021-01-23T08:05:52.237Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-23T08:09:05.984Z'
+}
+{
+  message: 'method:POST,endpoint:/customerlogin,statusmessage:login successfully',
+  level: 'info',
+  label: 'log',
+  timestamp: '2021-01-23T08:13:37.875Z'
+}
