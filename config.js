@@ -1,10 +1,8 @@
 var mongoose      = require('mongoose');
 //Set up database link 
-var mongoDB = 'mongodb://10.0.0.240:27017/guestbookingdb'
+var mongoDB = 'mongodb://localhost:27017/guestbookingdb'
 //var mongoDB = 'mongodb://localhost:27017/guestbookingdb';
 mongoose.connect(mongoDB, { useNewUrlParser: true });
-
-
  //Get the default connection
 var db = mongoose.connection;
  
