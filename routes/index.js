@@ -13,7 +13,7 @@ module.exports = app => {
     app.post('/createcustomer', studentcontroller.createCustomer);
     app.post('/customerlogin', studentcontroller.customerLogin);
 
-
+    app.get('/customerdetails', studentcontroller.customerDetails);
 
 
 }

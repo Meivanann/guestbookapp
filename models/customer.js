@@ -112,6 +112,7 @@ module.exports = {
         
 
     var deferred = q.defer();
+ 
     let {username, password } = req.body;
   
     var password_login=password; //user enter password
