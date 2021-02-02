@@ -36,7 +36,7 @@ module.exports = {
                             if(err)
                             {
                                 logger.error.info('method:'+req.method+",endpoint:" +req.originalUrl + ",statusmessage:"+err)
-                                deferred.resolve({status:0,message:"Error Occured"})
+                                deferred.resolve({status:0,message:"Error Occured",err})
                             }
                             else
                             {

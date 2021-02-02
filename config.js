@@ -1,6 +1,6 @@
 var mongoose      = require('mongoose');
 //Set up database link 
-var mongoDB = 'mongodb://localhost:27017/guestbookingdb'
+var mongoDB = 'mongodb://superadmin:mukesh@3.129.218.61:27017/guestbookingdb?authSource=admin'
 //var mongoDB = 'mongodb://localhost:27017/guestbookingdb';
 mongoose.connect(mongoDB, { useNewUrlParser: true });
  //Get the default connection
