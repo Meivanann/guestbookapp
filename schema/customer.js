@@ -8,7 +8,7 @@ var customer_details = new Schema({
     email:{type:String},
     user_name:{type:String},
     customer_id:{type:Number},
-   
+    client_ipaddress:{type:String},
     address:{type:String},
      
     mobile_number:{type:String},
