@@ -13,7 +13,7 @@ module.exports = {
 
         var hashedPassword = passwordHash.generate(password)
       var client_ipaddress=getClientIp(req)
-      console.log("clientreq",req.client_ipaddress)
+      console.log("clientreq",req,req.ip,client_ipaddress)
       
         CustomerProfile.find({email:email},function(err,data)
             {
