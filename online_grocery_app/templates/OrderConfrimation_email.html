@@ -1,0 +1,54 @@
+{% load static %}
+ 
+<html>
+     <body>
+         <h5>OrderSummary</h5>
+       
+         <div class="card">
+             <div class="card-body">
+                
+                <h2>Order Details</h2>
+                {% for item in postdata %}
+                <div class="row mb-4">
+                    <div class="col-md-5 col-lg-3 col-xl-3">
+                      <div class="view zoom overlay z-depth-1 rounded mb-3 mb-md-0" style="background-image: url({{item.product_list.0.imageurl}});">
+                        <img class="img-fluid w-100"
+                          src="cid:Potatoes.jpg" alt="Sample" title="sample" style="display:block" width="200" height="87" >
+                          <h6>{{item.product_list.0.imageurl}}</h6>
+                         
+                      </div>
+                    </div>
+                    <div class="col-md-7 col-lg-9 col-xl-9">
+                      <div>
+                        <div class="d-flex justify-content-between">
+                          <div>
+                            <h5>{{item.product_list.0.name}}</h5>
+                         
+                            <p class="mb-3 text-muted text-uppercase small">{{item.product_list.0.category_name}} - {{item.product_list.0.sub_category_name}}</p>
+                            <p class="mb-2 text-muted text-uppercase small">By: {{item.product_list.0.store_name}}</p>
+                            <p class="mb-3 text-muted text-uppercase small">Size: {{item.product_list.0.sizename}}</p>
+                          </div>
+                          <div>
+                            <p>
+                              
+                               <span style="font-size: large;"  name="countvalue">{{item.product_list.0.number}}</span>
+                               
+                          <span> * </span>
+                          <span class="text-muted">{{item.product_list.0.price}}</span>
+                           </p>
+                             
+                          </div>
+                        </div>
+                       
+                          <p class="mb-0"><span><strong id="summary">{{item.product_list.0.rating}}</strong></span></p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+             </div>
+
+         </div>
+        
+     </body>
+ </html>

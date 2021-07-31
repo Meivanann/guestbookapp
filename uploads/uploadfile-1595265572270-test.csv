@@ -1,4 +1,0 @@
-shipper_code,shipper_name,receiver_code,receiver_name,destination_code,region,carton_size,m3_size,pallet_size,s_size,m_size,l_size,xl_size,pkt_size,other_charges,m3_min_size,weight_min_size,weight_size,p_size
-ANEKA,Aneka,BUNCHO,BUNCHO,KEDAH,HQ,1,1,1,1,1,1,1,1,1,1,1,1,1
-ANEKA,Aneka,BUNCHO,BUNCHO,KEDAH,NORTH,2,2,2,2,2,2,0,2,2,2,2,2,2
-ANEKA,Aneka,BUNCHO,BUNCHO,KEDAH,SOUTH,3,3,3,3,3,3,3,3,3,3,3,3,3
