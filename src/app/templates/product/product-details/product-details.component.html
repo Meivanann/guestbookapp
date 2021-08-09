@@ -1,0 +1,211 @@
+ 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.0/css/font-awesome.css" crossorigin="anonymous"/>
+<div class="modal-dialog">
+    <div class="modal-content" width="100%">
+        <div class="modal-header">
+            <h5 class="modal-title">Product Details</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>
+        </div>
+        <div class="modal-body">
+          
+        </div><!--Section: Block Content-->
+        <section class="mb-5">
+        
+          <div class="row">
+            <div class="col-md-6 mb-4 mb-md-0">
+        
+              <div id="mdb-lightbox-ui"></div>
+        
+              <div class="mdb-lightbox">
+        
+                <div class="row product-gallery mx-1">
+        
+                  <div class="col-12 mb-0">
+                    <figure class="view overlay thumbnail   rounded z-depth-1 main-img">
+                      <!-- <pinch-zoom    [auto-zoom-out]="true"> -->
+                        <div class="img-container" >
+                          <div id="lens"></div>
+                          <a href="{{productData.imageurl}}"
+                          data-size="710x823">
+                       
+                            <img src="{{productData.imageurl}}"  (mouseover)="imagezommer('image',$event)" id="image"
+                            class="img-fluid z-depth-1" >
+                         
+                          
+                          
+                        </a>
+                        </div>
+                     
+                    <!-- </pinch-zoom> -->
+                    <!-- <ngx-image-zoom
+    
+    [fullImage]=productData.imageurl
+    [magnification]="1"
+    [enableScrollZoom]="true"
+    [enableLens]="true"
+    [lensWidth]="200"
+></ngx-image-zoom> -->
+                      
+     
+                    </figure>
+                    <figure class="view overlay rounded z-depth-1" style="visibility: hidden;">
+                      <a href="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/12a.jpg"
+                        data-size="710x823">
+                        <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/12a.jpg"
+                          class="img-fluid z-depth-1" >
+                      </a>
+                    </figure>
+                    <figure class="view overlay rounded z-depth-1" style="visibility: hidden;">
+                      <a href="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/13a.jpg"
+                        data-size="710x823">
+                        <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/13a.jpg"
+                          class="img-fluid z-depth-1">
+                      </a>
+                    </figure>
+                    <figure class="view overlay rounded z-depth-1" style="visibility: hidden;">
+                      <a href="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/14a.jpg"
+                        data-size="710x823">
+                        <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/14a.jpg"
+                          class="img-fluid z-depth-1">
+                      </a>
+                    </figure>
+                  </div>
+                  <div class="col-12">
+                    <div class="row">
+                      <div class="col-3">
+                        <div class="view overlay rounded z-depth-1 gallery-item">
+                          <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/12a.jpg"
+                            class="img-fluid">
+                          <div class="mask rgba-white-slight"></div>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="view overlay rounded z-depth-1 gallery-item">
+                          <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/13a.jpg"
+                            class="img-fluid">
+                          <div class="mask rgba-white-slight"></div>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="view overlay rounded z-depth-1 gallery-item">
+                          <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/14a.jpg"
+                            class="img-fluid">
+                          <div class="mask rgba-white-slight"></div>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="view overlay rounded z-depth-1 gallery-item">
+                          <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/15a.jpg"
+                            class="img-fluid">
+                          <div class="mask rgba-white-slight"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+        
+              </div>
+        
+            </div>
+            <div class="col-md-6">
+        
+              <h5>{{productData.name}}</h5>
+              <p class="mb-2 text-muted text-uppercase small">{{productData.category_name}}</p>
+              <!-- <ul class="rating">
+                <li>
+                  <i class="glyphicon glyphicon-star fa-sm text-primary"></i>
+                </li>
+                <li>
+                  <i class="fa fa-star fa-sm text-primary"></i>
+                </li>
+                <li>
+                  <i class="fa fa-star fa-sm text-primary"></i>
+                </li>
+                <li>
+                  <i class="fa fa-star fa-sm text-primary"></i>
+                </li>
+                <li>
+                  <i class="fa fa-star fa-sm text-primary"></i>
+                </li>
+              </ul> -->
+              <p><span class="mr-1"><span class="text-muted">Product MRP:</span><strong> <span class="WebRupee">&#x20B9; &nbsp;</span>{{productData.price}}</strong></span></p>
+              <p class="pt-1">Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam, sapiente illo. Sit
+                error voluptas repellat rerum quidem, soluta enim perferendis voluptates laboriosam. Distinctio,
+                officia quis dolore quos sapiente tempore alias.</p>
+              <div class="table-responsive">
+                <table class="table table-sm table-borderless mb-0">
+                  <tbody>
+                    <tr>
+                      <th class="pl-0 w-25" scope="row" style="font-size:small"><strong>Unit</strong></th>
+                      <td>{{productData.sizename}}</td>
+                    </tr>
+                    <tr>
+                      <th class="pl-0 w-25" scope="row" style="font-size:small"><strong>Category</strong></th>
+                      <td>{{productData.category_name}}</td>
+                    </tr>
+                    <tr>
+                      <th class="pl-0 w-25" scope="row" style="font-size:small"><strong>Seller</strong></th>
+                      <td>{{productData.store_name}}</td>
+                    </tr>
+                    
+                  </tbody>
+                </table>
+              </div>
+              <hr>
+              <div class="table-responsive mb-2">
+                <table class="table table-sm table-borderless">
+                  <tbody>
+                    <tr>
+                      <td class="pl-0 pb-0 w-25">Quantity</td>
+                    
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                      <td>
+                         <p>
+                            <i class="fa fa-minus-circle fa-lg" style="color:#FF4646;size: 10px;" (click)="decreasecount()"></i>
+                            &nbsp;
+                             <span style="font-size: large;">{{count}}</span>
+                             &nbsp;
+                        <i class="fa fa-plus-circle fa-lg" style="color:#68C549" (click)="increasecount()"></i>
+                         </p>
+                        <!-- <i class="fa fa-minus-circle" style="color:#FF4646" (click)="decreasecount()"></i>
+                        <input type="text" class="form-control" value="{{count}}">
+                        <i class="fa fa-plus-circle" style="color:#68C549" (click)="increasecount()"></i>   -->
+                      </td>
+                      <td>
+                        <div class="mt-1">
+                          <!-- <div class="form-check form-check-inline pl-0">
+                            <input type="radio" class="form-check-input" id="small" name="materialExampleRadios"
+                              checked>
+                            <label class="form-check-label small text-uppercase card-link-secondary"
+                              for="small">Small</label>
+                          </div>
+                          <div class="form-check form-check-inline pl-0">
+                            <input type="radio" class="form-check-input" id="medium" name="materialExampleRadios">
+                            <label class="form-check-label small text-uppercase card-link-secondary"
+                              for="medium">Medium</label>
+                          </div>
+                          <div class="form-check form-check-inline pl-0">
+                            <input type="radio" class="form-check-input" id="large" name="materialExampleRadios">
+                            <label class="form-check-label small text-uppercase card-link-secondary"
+                              for="large">Large</label> -->
+                          <!-- </div> -->
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <button type="button" class="btn btn-primary btn-md mr-1 mb-2">Buy now</button>
+              <button type="button" class="btn btn-light btn-md mr-1 mb-2" (click)="add_cart()"><i
+                  class="fa fa-shopping-cart pr-2"></i>Add to cart</button>
+            </div>
+          </div>
+        
+        </section>
+        <!--Section: Block Content-->
+    </div>
+</div>

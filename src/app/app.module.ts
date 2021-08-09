@@ -1,36 +1,55 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule,NO_ERRORS_SCHEMA} from '@angular/core';
- 
+import { NgModule } from '@angular/core';
 
-import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AppComponent } from './app.component';
-import { HomeComponent } from './home/home.component';
-import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
-import { appRoutingModule } from './app-routing.module';
-import { JwtInterceptor, ErrorInterceptor } from './_helpers';
+import { FormsModule } from '@angular/forms';
+import { TemplatesComponent } from './templates/templates.component';
+import { LoginComponent } from './templates/login/login.component';
+import { ProductComponent } from './templates/product/product.component';
+import { CustomerLoginComponent } from './templates/login/customer-login/customer-login.component';
+import { AddproductComponent } from './templates/product/addproduct/addproduct.component';
+import { ProductListComponent } from './templates/product/product-list/product-list.component';
+import { ProductDetailsComponent } from './templates/product/product-details/product-details.component';
+import { AppRoutingModule } from './app-routing.module';
+import { ReactiveFormsModule } from '@angular/forms';
+ // Import the library
+ 
+ 
+// import { NgxImageZoomModule } from 'ngx-image-zoom';
+import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
+import { SignupComponent } from './templates/login/signup/signup.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { CartComponent } from './templates/product/cart/cart.component';
+import { OrderComponent } from './templates/product/order/order.component';
+import { CheckoutComponent } from './templates/product/checkout/checkout.component';
+import { PinchZoomModule } from 'ngx-pinch-zoom';
+
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
+    TemplatesComponent,
     LoginComponent,
-    RegisterComponent
+    ProductComponent,
+    CustomerLoginComponent,
+    AddproductComponent,
+    ProductListComponent,
+    ProductDetailsComponent,
+    SignupComponent,
+    CartComponent,
+    OrderComponent,
+    CheckoutComponent
   ],
   imports: [
     BrowserModule,
-    appRoutingModule,
+    AppRoutingModule,
     ReactiveFormsModule,
-    HttpClientModule
+    // NgxImageZoomModule,
+    FormsModule,
+    HttpClientModule,
+    NgbModule,
+    PinchZoomModule
   ],
-  providers: [ 
-    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
-
-    // provider used to create fake backend
-     
-],
-  bootstrap: [AppComponent],
-  schemas: [NO_ERRORS_SCHEMA]
+  providers: [],
+  bootstrap: [AppComponent]
 })
 export class AppModule { }

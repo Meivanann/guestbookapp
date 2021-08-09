@@ -1,0 +1,109 @@
+ 
+  <body style="background-color:#DCE1E3">
+    <br>
+
+    <div class="row">
+        <div class="card" style="width:50%;height: 50%;">
+            <div class="card-text " ><i><h3>Add a product</h3>  </i></div>
+            
+          
+            <div class="card-body">
+                <form [formGroup]="productform">
+                   <div>
+                    <label class="col-md-4 control-label text-right" style="margin:5px">Name</label>
+            
+                    <input type="text" class="form-control" formControlName="name" name='name' >
+                    <span *ngIf="f.name.value.length==0 && !f.name.pristine" style="font-size: medium;color: red;">Name is required</span>
+                   </div>
+                   
+                   <div>
+                    <label class="col-md-4 control-label text-right" style="margin:5px">Descripation</label>
+                    <textarea  class="form-control" formControlName="descripation" name='descripation' >
+                        </textarea>
+                    <span *ngIf="f.descripation.value.length==0 && !f.descripation.pristine" style="font-size: medium;color: red;">Descripation is required</span>
+                   </div> 
+                   
+                    
+                    <div>
+                        <label class="col-md-4 control-label text-right" style="margin:5px">Material Type</label>
+                        <input type="text" class="form-control" formControlName="materialtype" name='materialtype'>
+                        <span *ngIf="f.materialtype.value.length==0 && !f.materialtype.pristine" style="font-size: medium;color: red;">Material Type is required</span>
+                    </div>
+                    <br>
+                    <div>
+                        <label class="col-md-4 control-label text-right" style="margin:5px">Supplier</label>
+                        <select formControlName="supplier">
+                            
+                            <option value="">Select a Supplier</option>
+                            <option *ngFor="let suit of suppler_list" value="{{suit.id}}">{{suit.store_name}}</option>
+                          </select>
+                        
+                    </div>
+                   <hr>
+
+                    <div>
+                        <label class="col-md-4 control-label text-right" style="margin:5px">Category</label>
+                        <select formControlName="category" (change)="categorychange($event.target.value)">
+                            <option value="" >Select a Category</option>
+                             
+                            <option *ngFor="let suit of category_list"  value="{{suit.id}}">{{suit.category_name}}</option>
+                          </select>
+                        
+                    </div>
+                  <hr>
+
+                    <div>
+                        <label class="col-md-4 control-label text-right" style="margin:5px">Subcategory</label>
+                        <select formControlName="subcategory" (change)="subcategorychange($event.target.value)">
+                            <option value="" >Select a Subcategory</option>
+                           
+                            <option *ngFor="let suit of sub_category" value="{{suit.id}}">{{suit.category_name}}</option>
+                          </select>
+                        
+                    </div>
+                   <hr>
+                    <div>
+                        <label class="col-md-4 control-label text-right" style="margin:5px">Size</label>
+                        <select formControlName="size">
+                           
+                            <option value="">Select a Size</option>
+                            <option *ngFor="let suit of size_list" value="{{suit.id}}">{{suit.size_name}}</option>
+                          </select>
+                       
+                    </div>
+                   <hr>
+                    <div>
+                        <label class="col-md-4 control-label text-right" style="margin:5px">Price</label>
+                        <input type="text" class="form-control"  formControlName="price">
+                        <span *ngIf="f.price.value.length==0 && !f.price.pristine" style="font-size: medium;color: red;">Password is required</span>
+                    </div>
+
+                    <div>
+                        <label class="col-md-4 control-label text-right" style="margin:5px">Company Name</label>
+                        <input type="text" class="form-control"  formControlName="companyname">
+                        <span *ngIf="f.companyname.value.length==0 && !f.companyname.pristine" style="font-size: medium;color: red;">Company Name is required</span>
+                    </div>
+                    <div>
+                        <label class="col-md-4 control-label text-right" style="margin:5px">Product Image</label>
+                        <input type="file" 
+                        formControlName="image"
+                        id="file" 
+                        type="file" 
+                        class="form-control"
+                        (change)="onFileChange($event)"
+
+                        >
+                        
+                    </div>
+                   
+                    <br>
+                    
+                    <button type="submit" class="btn btn-primary" (click)="onSubmit()" [disabled]="productform.invalid">Register</button>
+                </form>
+   
+            </div>
+        </div>
+    
+    </div>
+  </body>
+

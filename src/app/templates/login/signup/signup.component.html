@@ -1,0 +1,74 @@
+<div class="modal-dialog">
+    <div class="modal-content" width="100%">
+        <div class="modal-header">
+            <h5 class="modal-title">Create a account on Funooze</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>
+        </div>
+    <div class="model-body">
+        <body style="background-color:#DCE1E3">
+            <br>
+        
+            <div class="row">
+                <div class="card" style="width:50%;height: 50%;">
+                    <!-- <div class="card-text " ><i><h3>Create a account on Funooze</h3>  </i></div> -->
+                    
+                  
+                    <div class="card-body">
+                        <form [formGroup]="customerform">
+                           <div style="margin-bottom: 20px;">
+                          
+                    
+                            <input type="text" class="form-control" formControlName="name" name='name' placeholder="Name">
+                            <span *ngIf="f.name.value.length==0 && !f.name.pristine" style="font-size: medium;color: red;">Name is required</span>
+                           </div>
+ 
+
+                           <div style="margin-bottom: 20px;">
+                           
+                            <input type="text" class="form-control" formControlName="username" name='username' placeholder="Username" >
+                            <span *ngIf="f.username.value.length==0 && !f.username.pristine" style="font-size: medium;color: red;">Username is required</span>
+                           </div> 
+                           
+                            
+                            <div style="margin-bottom: 20px;">
+                                
+                                <input type="text" class="form-control" formControlName="email" name='email' placeholder="Email">
+                                <span *ngIf="f.email.value.length==0 && !f.email.pristine" style="font-size: medium;color: red;">Email is required</span>
+                            </div>
+                            
+                            <div style="margin-bottom: 20px;">
+                                 
+                                <input type="text" class="form-control"  formControlName="phonenumber" name='phonenumber' placeholder="Mobile number">
+                                <span *ngIf="f.phonenumber.value.length==0 && !f.phonenumber.pristine" style="font-size: medium;color: red;">Mobile number is required</span>
+                            </div>
+                           
+        
+                            <div style="margin-bottom: 20px;">
+                                 
+                                <textarea class="form-control" formControlName="address" name='address' placeholder="Enter a address">
+                                
+                                </textarea>
+                                <span *ngIf="f.address.value.length==0 && !f.address.pristine" style="font-size: medium;color: red;">Address is required</span>
+                            </div>
+                          
+                            <div style="margin-bottom: 20px;">
+                                
+                                <input type="password" class="form-control"  formControlName="password" placeholder="Password">
+                                <span *ngIf="f.password.value.length==0 && !f.password.pristine" style="font-size: medium;color: red;">Password is required</span>
+                            </div>
+                           
+                             
+                            
+                            <button type="submit" class="btn btn-primary" (click)="onSubmit()" [disabled]="customerform.invalid">Register</button>
+                        </form>
+           
+                    </div>
+                </div>
+            
+            </div>
+          </body>
+    </div>
+    </div>
+    </div>
+    
+ 
