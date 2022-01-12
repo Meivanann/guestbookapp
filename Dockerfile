@@ -1,6 +1,8 @@
-FROM node:10.15
-WORKDIR /usr/src/app
-COPY package*.json index.js ./
+FROM node:8
+WORKDIR /auth-app
+COPY package.json /auth-app
 RUN npm install
-EXPOSE 8011
-CMD ["node", "index.js"]
+COPY . /auth-app
+#CMD node server.js
+CMD ["npm","start"]docker 
+EXPOSE 8092
