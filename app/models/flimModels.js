@@ -136,7 +136,7 @@ console.log('req.files',req.file,req.files)
             let flimid=flimData[0].flim_id
         
             var CommentQuery="select * from flims_comments where flim_id="+flimid+" and status=0";
-            var commentdata=commonFunction.getQueryResults(CommentQuery)
+            var commentdata=await commonFunction.getQueryResults(CommentQuery)
             flimData[0].commentlist=commentdata.length>0?commentdata:[]
             flimData[0].imagelist=flimData[0].image_path.split(',').length>0?flimData[0].image_path.split(',').map(el => prefix  + el):[]
             deferred.resolve({
