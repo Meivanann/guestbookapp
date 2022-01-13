@@ -1,17 +1,36 @@
 <mat-card class="example-card">
-    <mat-card-header>
-       
-      <mat-card-title>{{flimdetails?.flim_name}}</mat-card-title>
-      <mat-card-subtitle>Dog Breed</mat-card-subtitle>
-    </mat-card-header>
-    
-    <mat-card-content>
-      <p>
-        {{flimdetails?.descripation}}
-      </p>
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-button>LIKE</button>
-      <button mat-button>SHARE</button>
-    </mat-card-actions>
-  </mat-card>
+  <mat-card-header style="    position: relative;
+  left: -17px;">
+     
+    <mat-card-title>{{flimdetails?.flim_name}}</mat-card-title>
+    <mat-card-subtitle><b>Category:</b>{{flimdetails?.genre}}</mat-card-subtitle>
+  </mat-card-header>
+  
+  <mat-card-content>
+    <b>Movie Summary</b>
+    <p>
+      {{flimdetails?.descripation}}
+    </p>
+    <b>Rating</b>
+    <p>
+      {{flimdetails?.rating}}/5
+    </p>
+    <b>Country</b>
+    <p>
+      {{flimdetails?.country}}
+    </p>
+    <b>Relase date</b>
+    <p>
+      {{flimdetails?.relase_date}}
+    </p>
+    <b>Ticket price</b>
+    <p>
+      {{flimdetails?.ticket_price}}
+    </p>
+
+  </mat-card-content>
+  <mat-card-actions>
+    <!-- <button mat-button>LIKE</button>
+    <button mat-button>SHARE</button> -->
+  </mat-card-actions>
+</mat-card>

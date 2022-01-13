@@ -57,11 +57,11 @@ viewClick(filename)
 {
   this.filename=filename
   console.log(filename)
-this.view.getflimdetails(filename).then(data=>
-  {
+// this.view.getflimdetails(filename).then(data=>
+//   {
 
     this.router.navigate(['movie_details/'+filename]);
-  })
+  // })
   
 }
 showIcon(index:number) {
