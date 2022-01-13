@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 var expressValidator = require('express-validator');
-var commonConfig = require('./app/config/common_config.json');
+
   
 // create express app
 const app = express();
