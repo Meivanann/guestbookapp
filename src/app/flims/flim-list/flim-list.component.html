@@ -1,0 +1,39 @@
+<button mat-stroked-button color="primary" style="position: relative;
+
+left: 1538px;
+
+" ><a routerLink="/createmovie">Add movie</a></button>
+<mat-card class="example-card" *ngFor="let items of items;let i=index">
+ 
+    <mat-card-header>
+     
+    <mat-card-title>{{items.flim_name}}</mat-card-title>
+    <mat-card-subtitle>{{items.genre}}</mat-card-subtitle>
+  </mat-card-header>
+  
+  <mat-card-content>
+    
+    <!-- <button mat-icon-button [color]="color" *ngFor="let ratingId of ratingArr;index as i" [id]="'star_'+i" (click)="onClick(i+1)" [matTooltip]="ratingId+1" matTooltipPosition="above">
+        
+        <mat-icon>
+          {{showIcon(i)}}
+        </mat-icon>
+      </button> -->
+
+    <p>
+        {{items.descripation}}
+    </p>
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-stroked-button color="primary"(click)="viewClick(items.flim_slug_name)">View details</button>
+    <button mat-stroked-button color="accent">Rs {{items.ticket_price}}</button>
+  </mat-card-actions>
+  
+</mat-card>
+ 
+<!-- <mat-paginator [length]="length"[pageSize]="1"
+  [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page">
+</mat-paginator> -->
+ 
+   
+ 

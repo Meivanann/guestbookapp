@@ -1,0 +1,93 @@
+<mat-card>
+    <mat-card-title>Register a movie</mat-card-title>
+<mat-card-content>
+<form [formGroup]="flimform"  >
+  <p>
+    <mat-form-field>
+      <input type="text" matInput placeholder="Movie name" formControlName="flimname">
+    </mat-form-field>
+</p>
+<div *ngIf="submitted && w.flimname.errors">
+    <span>Movie Name is required</span>
+        </div>
+<p>
+    <mat-form-field>
+      <textarea matInput   cols="35" rows="8" placeholder="movie summary" formControlName="descripation"  required></textarea>
+    </mat-form-field>
+</p>
+<div *ngIf="submitted && w.descripation.errors">
+    <span>Movie summary is required</span>
+        </div>   
+  
+
+  <p>
+    <mat-form-field>
+      <input matInput [matDatepicker]="picker" placeholder="Choose a date" formControlName="relase_date"  >
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+  </p>
+  <div *ngIf="submitted && w.relase_date.errors">
+    <span>relase_date is required</span>
+        </div>
+
+        <p>
+          <mat-form-field>
+            <mat-label>select a rating</mat-label>
+            <mat-select  formControlName="rating"  name="rating">
+              <mat-option value="1">1</mat-option>
+              <mat-option value="2"> 2</mat-option>
+              <mat-option value="3"> 3</mat-option>
+              <mat-option value="4">4</mat-option>
+              <mat-option value="5">5</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </p>
+        <div *ngIf="submitted && w.rating.errors">
+          <span>rating is required</span>
+              </div>
+
+              <p>
+                <mat-form-field>
+                  <input type="number" matInput placeholder="Enter a ticket price" formControlName="ticket_price">
+                </mat-form-field>
+            </p>
+            <div *ngIf="submitted && w.ticket_price.errors">
+                <span>ticket_price is required</span>
+                    </div> 
+              <p>
+                <mat-form-field>
+                  <input type="text" matInput placeholder="Enter a country" formControlName="country">
+                </mat-form-field>
+            </p>
+            <div *ngIf="submitted && w.country.errors">
+                <span>country is required</span>
+                    </div> 
+
+                    <p>
+                      <mat-form-field>
+                        <input type="text" matInput placeholder="Enter a category" formControlName="gener">
+                      </mat-form-field>
+                  </p>
+                  <div *ngIf="submitted && w.gener.errors">
+                      <span>genere is required</span>
+                          </div> 
+                          
+                          <input type="file" class="file-input"
+                          multiple="true"    type="file"
+                          formControlName="image"
+                          (change)="onFileSelected($event)" #fileInput >
+                          <div *ngFor="let selected of fileList;let index = index">
+                            <h3>{{selected.name}}</h3>
+                            <button mat-icon-button style="position: relative;
+                            left: 244px;
+                            bottom: 47px;" (click)="removeSelectedFile(index)">delete</button>
+                          </div>
+                    
+  <div class="button">
+    <button type="submit" mat-raised-button color="primary" (click)="submit()">Submit</button>
+  </div>
+
+</form>
+</mat-card-content>
+</mat-card>
